@@ -1,5 +1,4 @@
 ﻿using ITPortal.Lib.Utils;
-using System.Collections;
 using System.Management.Automation;
 using System.Management.Automation.Language;
 
@@ -9,12 +8,11 @@ public class PowerShellScript
 {
     private readonly IOutputStreamService<PSMessage, PSStream> _outputStreamService;
 
-    private string? _scriptBlock;
-    private string? _filePath;
-    private bool _loaded;
+    public string? ScriptBlock { get; private set; }
+    public string? FilePath { get; private set; }
+    public bool Loaded { get; private set; }
 
-    private Dictionary<string, Type>? _parameterTypes;
-    private Dictionary<string, object?>? _parameters;
+    public Dictionary<string, PSParameter>? Parameters { get; private set; }
 
     public PowerShellScript(IOutputStreamService<PSMessage, PSStream> outputStreamService)
     {
@@ -30,63 +28,59 @@ public class PowerShellScript
 
     public bool Load(string filePath)
     {
-        _filePath = filePath;
+        FilePath = filePath;
 
-        return LoadScriptBlock(_filePath);
+        return LoadScriptBlock(FilePath);
     }
 
     public bool Refresh()
     {
-        if (_filePath == null) return false;
+        if (FilePath == null) return false;
 
-        return LoadScriptBlock(_filePath);
+        return LoadScriptBlock(FilePath);
     }
 
     private bool LoadScriptBlock(string filePath)
     {
-        _scriptBlock = FileHandler.GetFileContent(filePath);
+        ScriptBlock = FileHandler.GetFileContent(filePath);
 
         ScriptBlockAst ast = Parser.ParseInput(
-            _scriptBlock,
+            ScriptBlock,
             out _,
             out ParseError[] errors
         );
 
         if (errors.Length != 0) return false;
 
-        _parameterTypes = new Dictionary<string, Type>();
-        _parameters = new Dictionary<string, object?>();
+        Parameters = new Dictionary<string, PSParameter>();
 
         if (ast.ParamBlock != null)
         {
             foreach (var p in ast.ParamBlock.Parameters)
             {
-                var name = p.Name.ToString();
-
-                _parameterTypes.Add(name, p.StaticType);
-                _parameters.Add(name, null);
+                Parameters.Add(p.Name.ToString(), new PSParameter(p.StaticType));
             }
         }
 
-        _loaded = true;
+        Loaded = true;
 
         return true;
     }
 
     public async Task<PSDataCollection<PSObject>?> Invoke(CancellationToken cancellationToken)
     {
-        if (!_loaded) return null;
+        if (!Loaded) return null;
 
         try
         {
             // "using" relies on compiler to dispose of shell when method is popped from call stack
             using PowerShell shell = PowerShell.Create();
-            shell.AddScript(_scriptBlock);
+            shell.AddScript(ScriptBlock);
 
-            if (_parameters != null && _parameters.Any())
+            if (Parameters != null && Parameters.Any())
             {
                 // TODO: Might need to wrap in try/catch
-                shell.AddParameters(_parameters);
+                shell.AddParameters(Parameters);
             }
 
             var outputCollection = new PSDataCollection<PSObject>();
@@ -122,36 +116,11 @@ public class PowerShellScript
 
     public void SetArgument(string parameterName, object parameter)
     {
-        if (_parameterTypes == null) return;
-
-        if (parameter.GetType() == _parameterTypes[parameterName])
-        {
-            _parameters?.Add(parameterName, parameter);
-        }
+        Parameters?[parameterName].SetValue(parameter);
     }
 
     public override string? ToString()
     {
-        return _scriptBlock;
-    }
-
-    public string? GetScriptBlock()
-    {
-        return _scriptBlock;
-    }
-
-    public string? GetFilePath()
-    {
-        return _filePath;
-    }
-
-    public Dictionary<string, Type>? GetParameterTypes()
-    {
-        return _parameterTypes;
-    }
-
-    public bool IsLoaded()
-    {
-        return _loaded;
+        return ScriptBlock;
     }
 }

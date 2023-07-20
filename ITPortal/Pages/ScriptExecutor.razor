@@ -17,9 +17,9 @@
 <p>@script</p>
 
 <div class="form-group">
-    <button @onclick="RunScript" class="btn btn-primary" disabled="@(!script.IsLoaded())">Run</button>
+    <button @onclick="RunScript" class="btn btn-primary" disabled="@(!script.Loaded)">Run</button>
     <button @onclick="CancelRunScript" class="btn btn-primary" disabled="@(!scriptRunning)">Cancel</button>
-    @if (script.IsLoaded())
+    @if (script.Loaded)
     {
         <button @onclick="(() => LoadScript())" class="btn btn-primary">Refresh</button>
         <button @onclick="EditScript" class="btn btn-primary">Edit</button>
@@ -27,12 +27,12 @@
     }
 </div>
 
-@if (script.GetParameterTypes() != null)
+@if (script.Parameters != null)
 {
     <hr>
     <p>Parameters:</p>
 
-    @foreach (var param in script.GetParameterTypes())
+    @foreach (var param in script.Parameters)
     {
         <div class="form-group">
             <p>@param.Key    @param.Value</p>
@@ -159,12 +159,8 @@ else
 
     private void EditScript()
     {
-        if (!script.IsLoaded()) return;
-
-        string filePath = script.GetFilePath();
-
-        if (script.GetFilePath() == null) return;
+        if (!script.Loaded || script.FilePath == null) return;
         
-        FileHandler.OpenFileWithDefaultProgram(filePath);
+        FileHandler.OpenFileWithDefaultProgram(script.FilePath);
     }
 }
