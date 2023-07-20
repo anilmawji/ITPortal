@@ -5,7 +5,7 @@ public class PSParameter
     public object? Value { get; private set; }
 
     // More effective than generics since this allows type to be set at runtime
-    Type? RequiredType { get; set; }
+    public Type? RequiredType { get; set; }
 
     public PSParameter(Type requiredType)
     {
@@ -21,5 +21,10 @@ public class PSParameter
             return true;
         }
         return false;
+    }
+
+    public override string? ToString()
+    {
+        return Value?.ToString();
     }
 }

@@ -1,9 +1,10 @@
-﻿using System.Management.Automation;
+﻿using System.Collections;
+using System.Management.Automation;
 using System.Management.Automation.Language;
 
 namespace ITPortal.Lib.Services.Automation;
 
-public class PSParameterDictionary
+public class PSParameterDictionary : IEnumerable
 {
     private readonly Dictionary<string, PSParameter> _parameters = new();
 
@@ -38,5 +39,10 @@ public class PSParameterDictionary
     public bool Any()
     {
         return _parameters.Any();
+    }
+
+    public IEnumerator GetEnumerator()
+    {
+        return _parameters.GetEnumerator();
     }
 }

@@ -8,7 +8,7 @@ public class PowerShellScript
 {
     private readonly IOutputStreamService<PSMessage, PSStream> _outputStreamService;
 
-    public string? ScriptBlock { get; private set; }
+    public string? Content { get; private set; }
     public string? FilePath { get; private set; }
     public bool Loaded { get; private set; }
 
@@ -40,13 +40,9 @@ public class PowerShellScript
 
     private bool LoadScriptBlock(string filePath)
     {
-        ScriptBlock = FileHandler.GetFileContent(filePath);
+        Content = FileHandler.GetFileContent(filePath);
 
-        ScriptBlockAst ast = Parser.ParseInput(
-            ScriptBlock,
-            out _,
-            out ParseError[] errors
-        );
+        ScriptBlockAst ast = Parser.ParseInput(Content, out _, out ParseError[] errors);
 
         if (errors.Length != 0) return false;
 
@@ -73,7 +69,7 @@ public class PowerShellScript
         {
             // "using" relies on compiler to dispose of shell when method is popped from call stack
             using PowerShell shell = PowerShell.Create();
-            shell.AddScript(ScriptBlock);
+            shell.AddScript(Content);
 
             // TODO: Might need to wrap in try/catch
             Parameters?.Register(shell);
@@ -111,6 +107,6 @@ public class PowerShellScript
 
     public override string? ToString()
     {
-        return ScriptBlock;
+        return Content;
     }
 }
