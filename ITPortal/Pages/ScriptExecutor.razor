@@ -1,0 +1,170 @@
+﻿@page "/script-executor"
+
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Management.Automation;
+@using System.Diagnostics;
+@using ITPortal.Lib.Services.Automation;
+@using ITPortal.Lib.Services.Core;
+@using ITPortal.Lib.Utils;
+
+@inject IOutputStreamService<PSMessage, PSStream> PowerShellService
+
+@*@attribute [Authorize]*@
+
+<button @onclick="PickAndLoadScript">Choose file</button>
+
+<p>@script</p>
+
+<div class="form-group">
+    <button @onclick="RunScript" class="btn btn-primary" disabled="@(!script.IsLoaded())">Run</button>
+    <button @onclick="CancelRunScript" class="btn btn-primary" disabled="@(!scriptRunning)">Cancel</button>
+    @if (script.IsLoaded())
+    {
+        <button @onclick="(() => LoadScript())" class="btn btn-primary">Refresh</button>
+        <button @onclick="EditScript" class="btn btn-primary">Edit</button>
+        <button @onclick="RemoveScript" class="btn btn-primary">Remove</button>
+    }
+</div>
+
+@if (script.GetParameters() != null)
+{
+    <hr>
+    <p>Parameters:</p>
+
+    @foreach (var param in script.GetParameters())
+    {
+        <div class="form-group">
+            <p>@param.Key    @param.Value</p>
+            @*<input @bind=scriptArguments[param.Key] @bind:event=oninput)>*@
+        </div>
+    }
+}
+else
+{
+    <p>No parameters found</p>
+}
+
+<hr background-color="black" color="black" border="none">
+
+@*Use standard for loop to avoid "Collection Was Modified error" caused by
+  invalidating the iterator by adding elements while iterating (foreach has an implicit iterator)*@ 
+@for (int i = 0; i < PowerShellService.Output.Count(); i++)
+{
+    var psMessage = PowerShellService.Output[i];
+
+    <div class="@psMessage.Stream">
+        @((MarkupString)psMessage.Data)
+    </div>
+}
+
+@code {
+
+    private FilePickerFileType psFileType;
+    private PickOptions pickOptions;
+    private PowerShellScript script;
+    private CancellationTokenSource cts;
+    private bool scriptRunning;
+
+    protected override void OnInitialized()
+    {
+        psFileType = new(new Dictionary<DevicePlatform, IEnumerable<string>>
+            {
+                { DevicePlatform.WinUI, new[] { ".ps1" } },
+                { DevicePlatform.macOS, new[] { "ps1" } }
+            }
+        );
+        pickOptions = new()
+        {
+                // PickerTitle is used by macOS but not Windows - unreliable way of informing user
+            PickerTitle = "Please select a PowerShell script file",
+            FileTypes = psFileType,
+        };
+        script = new PowerShellScript(PowerShellService);
+        PowerShellService.OutputChanged += OutputChanged;
+    }
+
+    private void OutputChanged(object sender, List<PSMessage> newOutput)
+    {
+        InvokeAsync(() => this.StateHasChanged());
+    }
+
+    private async void PickAndLoadScript()
+    {
+        var fileResult = await FilePickerHandler.PickFile(pickOptions);
+
+        if (fileResult != null)
+        {
+            LoadScript(fileResult.FullPath);
+        }
+    }
+
+    private void LoadScript(string filePath = null)
+    {
+        if (scriptRunning) CancelRunScript();
+
+        PowerShellService.Output.Clear();
+
+        var loaded = filePath != null ? script.Load(filePath) : script.Refresh();
+
+        if (loaded)
+        {
+            this.StateHasChanged();
+        }
+        else
+        {
+            PowerShellService.AddOutput("Error loading script");
+            PowerShellService.AddOutput("<hr width=\"300px\" height=\"1px\"><b>EXECUTION FAILED</b>");
+        }
+    }
+
+    private async void RunScript()
+    {
+        PowerShellService.Output.Clear();
+
+        scriptRunning = true;
+        cts = new CancellationTokenSource();
+
+        cts.Token.Register(() =>
+        {
+            scriptRunning = false;
+            PowerShellService.AddOutput("<hr width=\"300px\" height=\"1px\"><b>EXECUTION CANCELLED</b>");
+        });
+
+        PowerShellService.AddOutput("<b>BEGIN</b><hr width=\"300px\" height=\"1px\">");
+
+        var scriptTask = script.Invoke(cts.Token);
+        await scriptTask;
+
+        if (scriptTask.IsCompleted && !cts.IsCancellationRequested)
+        {
+            scriptRunning = false;
+            PowerShellService.AddOutput("<hr width=\"300px\" height=\"1px\"><b>EXECUTION COMPLETE</b>");
+        }
+    }
+
+    private void CancelRunScript()
+    {
+        cts.Cancel();
+    }
+
+    private void RemoveScript()
+    {
+        PowerShellService.Output.Clear();
+
+        script = new PowerShellScript(PowerShellService);
+
+        this.StateHasChanged();
+    }
+
+    private void EditScript()
+    {
+        if (!script.IsLoaded()) return;
+
+        string filePath = script.GetFilePath();
+
+        if (script.GetFilePath() == null) return;
+        
+        FileHandler.OpenFileWithDefaultProgram(filePath);
+    }
+}

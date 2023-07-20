@@ -1,0 +1,23 @@
+﻿@page "/login"
+
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+
+@attribute [AllowAnonymous]
+
+<button @onclick="PromptLogin">Log in</button>
+
+@code
+{
+    public async Task PromptLogin()
+    {
+        ExternalAuthStateProvider provider = (ExternalAuthStateProvider)AuthenticationStateProvider;
+
+        await provider.LogInAsync();
+
+        NavigationManager.NavigateTo("/");
+    }
+}
