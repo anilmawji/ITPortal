@@ -12,7 +12,7 @@ public class PowerShellScript
     public string? FilePath { get; private set; }
     public bool Loaded { get; private set; }
 
-    public Dictionary<string, PSParameter>? Parameters { get; private set; }
+    public PSParameterDictionary? Parameters { get; private set; }
 
     public PowerShellScript(IOutputStreamService<PSMessage, PSStream> outputStreamService)
     {
@@ -35,9 +35,7 @@ public class PowerShellScript
 
     public bool Refresh()
     {
-        if (FilePath == null) return false;
-
-        return LoadScriptBlock(FilePath);
+        return FilePath != null && LoadScriptBlock(FilePath);
     }
 
     private bool LoadScriptBlock(string filePath)
@@ -52,13 +50,13 @@ public class PowerShellScript
 
         if (errors.Length != 0) return false;
 
-        Parameters = new Dictionary<string, PSParameter>();
+        Parameters = new PSParameterDictionary();
 
         if (ast.ParamBlock != null)
         {
-            foreach (var p in ast.ParamBlock.Parameters)
+            foreach (var parameterAst in ast.ParamBlock.Parameters)
             {
-                Parameters.Add(p.Name.ToString(), new PSParameter(p.StaticType));
+                Parameters.Add(parameterAst);
             }
         }
 
@@ -77,11 +75,8 @@ public class PowerShellScript
             using PowerShell shell = PowerShell.Create();
             shell.AddScript(ScriptBlock);
 
-            if (Parameters != null && Parameters.Any())
-            {
-                // TODO: Might need to wrap in try/catch
-                shell.AddParameters(Parameters);
-            }
+            // TODO: Might need to wrap in try/catch
+            Parameters?.Register(shell);
 
             var outputCollection = new PSDataCollection<PSObject>();
 
@@ -112,11 +107,6 @@ public class PowerShellScript
 
             return null;
         }
-    }
-
-    public void SetArgument(string parameterName, object parameter)
-    {
-        Parameters?[parameterName].SetValue(parameter);
     }
 
     public override string? ToString()
