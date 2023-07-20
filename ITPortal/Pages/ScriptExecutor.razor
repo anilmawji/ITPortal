@@ -27,12 +27,12 @@
     }
 </div>
 
-@if (script.GetParameters() != null)
+@if (script.GetParameterTypes() != null)
 {
     <hr>
     <p>Parameters:</p>
 
-    @foreach (var param in script.GetParameters())
+    @foreach (var param in script.GetParameterTypes())
     {
         <div class="form-group">
             <p>@param.Key    @param.Value</p>

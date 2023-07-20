@@ -1,4 +1,5 @@
 ﻿using ITPortal.Lib.Utils;
+using System.Collections;
 using System.Management.Automation;
 using System.Management.Automation.Language;
 
@@ -12,8 +13,8 @@ public class PowerShellScript
     private string? _filePath;
     private bool _loaded;
 
+    private Dictionary<string, Type>? _parameterTypes;
     private Dictionary<string, object?>? _parameters;
-    private Dictionary<string, object?>? _arguments;
 
     public PowerShellScript(IOutputStreamService<PSMessage, PSStream> outputStreamService)
     {
@@ -45,7 +46,7 @@ public class PowerShellScript
     {
         _scriptBlock = FileHandler.GetFileContent(filePath);
 
-        var ast = Parser.ParseInput(
+        ScriptBlockAst ast = Parser.ParseInput(
             _scriptBlock,
             out _,
             out ParseError[] errors
@@ -53,8 +54,8 @@ public class PowerShellScript
 
         if (errors.Length != 0) return false;
 
+        _parameterTypes = new Dictionary<string, Type>();
         _parameters = new Dictionary<string, object?>();
-        _arguments = new Dictionary<string, object?>();
 
         if (ast.ParamBlock != null)
         {
@@ -62,21 +63,14 @@ public class PowerShellScript
             {
                 var name = p.Name.ToString();
 
-                _parameters.Add(name, p.StaticType);
-                _arguments.Add(name, null);
+                _parameterTypes.Add(name, p.StaticType);
+                _parameters.Add(name, null);
             }
         }
 
         _loaded = true;
 
         return true;
-    }
-
-    public void SetArgument(string parameterName, object argument)
-    {
-        if (_arguments == null) return;
-
-        _arguments[parameterName] = argument;
     }
 
     public async Task<PSDataCollection<PSObject>?> Invoke(CancellationToken cancellationToken)
@@ -89,10 +83,10 @@ public class PowerShellScript
             using PowerShell shell = PowerShell.Create();
             shell.AddScript(_scriptBlock);
 
-            if (_arguments != null && _arguments.Any())
+            if (_parameters != null && _parameters.Any())
             {
                 // TODO: Might need to wrap in try/catch
-                shell.AddParameters(_arguments);
+                shell.AddParameters(_parameters);
             }
 
             var outputCollection = new PSDataCollection<PSObject>();
@@ -105,9 +99,11 @@ public class PowerShellScript
 
             // Use Task.Factory to opt for the newer async/await keywords
             // Moves away from the old IAsyncResult functionality still used by the PowerShell API
-            var result = await Task.Factory.FromAsync(shell
-                .BeginInvoke<PSObject, PSObject>(null, outputCollection), shell.EndInvoke)
-                .WaitAsync(cancellationToken)
+            var shellTask = Task.Factory.FromAsync(
+                shell.BeginInvoke<PSObject, PSObject>(null, outputCollection),
+                shell.EndInvoke);
+
+            PSDataCollection<PSObject> result = await shellTask.WaitAsync(cancellationToken)
                 .ConfigureAwait(false);
 
             return result;
@@ -121,6 +117,16 @@ public class PowerShellScript
             _outputStreamService.AddOutput(PSStream.Error, e.Message);
 
             return null;
+        }
+    }
+
+    public void SetArgument(string parameterName, object parameter)
+    {
+        if (_parameterTypes == null) return;
+
+        if (parameter.GetType() == _parameterTypes[parameterName])
+        {
+            _parameters?.Add(parameterName, parameter);
         }
     }
 
@@ -139,9 +145,9 @@ public class PowerShellScript
         return _filePath;
     }
 
-    public Dictionary<string, object?>? GetParameters()
+    public Dictionary<string, Type>? GetParameterTypes()
     {
-        return _parameters;
+        return _parameterTypes;
     }
 
     public bool IsLoaded()
