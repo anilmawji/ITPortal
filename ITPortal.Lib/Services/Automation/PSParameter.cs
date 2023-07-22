@@ -1,30 +1,42 @@
-﻿namespace ITPortal.Lib.Services.Automation;
+﻿using System.ComponentModel;
+
+namespace ITPortal.Lib.Services.Automation;
 
 public class PSParameter
 {
-    public object? Value { get; private set; }
+    public string Name { get; set; }
 
-    // More effective than generics since this allows type to be set at runtime
-    public Type? RequiredType { get; set; }
+    public string? Value { get; set; }
 
-    public PSParameter(Type requiredType)
+    // Used in place of generics since required type is discovered at runtime
+    public Type RequiredType { get; set; }
+
+    public PSParameter(string name, Type requiredType)
     {
+        Name = name;
         RequiredType = requiredType;
     }
 
-    public bool SetValue(object value)
+    public object? GetAsRequiredType()
     {
-        if (value.GetType() == RequiredType)
+        if (Value == null) return null; 
+        
+        try
         {
-            Value = value;
+            var typeConverter = TypeDescriptor.GetConverter(RequiredType);
 
-            return true;
+            //System.Diagnostics.Debug.WriteLine(RequiredType.FullName + "    " + typeConverter.ConvertFromString(Value));
+
+            return typeConverter.ConvertFromString(Value);
         }
-        return false;
+        catch (NotSupportedException)
+        {
+            return null;
+        }
     }
 
     public override string? ToString()
     {
-        return Value?.ToString();
+        return $"[{Name}, {Value}]";
     }
 }

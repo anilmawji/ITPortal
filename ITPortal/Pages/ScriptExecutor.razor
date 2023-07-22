@@ -16,18 +16,6 @@
 
 <p>@script</p>
 
-<div class="form-group">
-    <button @onclick="RunScript" class="btn btn-primary" disabled="@(!script.Loaded)">Run</button>
-    <button @onclick="CancelRunScript" class="btn btn-primary" disabled="@(!scriptRunning)">Cancel</button>
-
-    @if (script.Loaded)
-    {
-        <button @onclick="(() => LoadScript())" class="btn btn-primary">Refresh</button>
-        <button @onclick="EditScript" class="btn btn-primary">Edit</button>
-        <button @onclick="RemoveScript" class="btn btn-primary">Remove</button>
-    }
-</div>
-
 @if (script != null)
 {
     @if (script.Parameters != null)
@@ -35,17 +23,41 @@
         <hr>
         <p>Parameters:</p>
 
-        @foreach (var param in script.Parameters)
-        {
+        <EditForm Model="@script.Parameters" OnSubmit="@RunScript">
             <div class="form-group">
-                <p>@param</p>
-                @*<input @bind=scriptArguments[param.Key] @bind:event=oninput)>*@
+                <button type="submit" class="btn btn-primary" disabled="@(!script.Loaded)">Run</button>
             </div>
-        }
+
+            @foreach (var parameter in script.Parameters)
+            {
+                <div class="form-group">
+                    <p>@parameter</p>
+                    @if (parameter.RequiredType.Name == "Boolean")
+                    {
+                        <input type="checkbox" @oninput="(e) => UpdateBooleanParameter(e, parameter)">
+                    }
+                    else
+                    {
+                        <input type="text" @bind=@parameter.Value @bind:event="oninput">
+                    }
+                </div>
+            }
+        </EditForm>
     }
     else
     {
         <p>No parameters found</p>
+    }
+
+    <button @onclick="CancelRunScript" class="btn btn-primary" disabled="@(!scriptRunning)">Cancel</button>
+
+    @if (script.Loaded)
+    {
+        <div class="form-group">
+            <button @onclick="(() => LoadScript())" class="btn btn-primary">Refresh</button>
+            <button @onclick="EditScript" class="btn btn-primary">Edit</button>
+            <button @onclick="RemoveScript" class="btn btn-primary">Remove</button>
+        </div>
     }
 }
 
@@ -93,6 +105,13 @@
         InvokeAsync(() => this.StateHasChanged());
     }
 
+    // Booleans cannot be implicitly converted to strings
+    private void UpdateBooleanParameter(ChangeEventArgs e, PSParameter parameter)
+    {
+        bool ticked = (bool)e.Value;
+        parameter.Value = ticked.ToString();
+    }
+
     private async void PickAndLoadScript()
     {
         var fileResult = await FilePickerHandler.PickFile(pickOptions);
@@ -124,9 +143,9 @@
 
     private async void RunScript()
     {
-        PowerShellService.Output.Clear();
+        if (scriptRunning) CancelRunScript();
 
-        scriptRunning = true;
+        PowerShellService.Output.Clear();
         cts = new CancellationTokenSource();
 
         cts.Token.Register(() =>
@@ -136,13 +155,12 @@
         });
 
         PowerShellService.AddOutput("<b>BEGIN</b><hr width=\"300px\" height=\"1px\">");
+        scriptRunning = true;
+        await script.Invoke(cts.Token);
+        scriptRunning = false;
 
-        var scriptTask = script.Invoke(cts.Token);
-        await scriptTask;
-
-        if (scriptTask.IsCompleted && !cts.IsCancellationRequested)
+        if (!cts.IsCancellationRequested)
         {
-            scriptRunning = false;
             PowerShellService.AddOutput("<hr width=\"300px\" height=\"1px\"><b>EXECUTION COMPLETE</b>");
         }
     }
@@ -154,8 +172,9 @@
 
     private void RemoveScript()
     {
-        PowerShellService.Output.Clear();
+        if (scriptRunning) CancelRunScript();
 
+        PowerShellService.Output.Clear();
         script = new PowerShellScript(PowerShellService);
 
         this.StateHasChanged();

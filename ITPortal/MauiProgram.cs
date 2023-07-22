@@ -6,7 +6,6 @@ using ITPortal.Lib.Services.Core;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Kiota.Abstractions.Authentication;
-using System.Management.Automation;
 
 namespace ITPortal;
 

@@ -12,7 +12,7 @@ public class PowerShellScript
     public string? FilePath { get; private set; }
     public bool Loaded { get; private set; }
 
-    public PSParameterDictionary? Parameters { get; private set; }
+    public PSParameterList? Parameters { get; private set; }
 
     public PowerShellScript(IOutputStreamService<PSMessage, PSStream> outputStreamService)
     {
@@ -46,7 +46,7 @@ public class PowerShellScript
 
         if (errors.Length != 0) return false;
 
-        Parameters = new PSParameterDictionary();
+        Parameters = new PSParameterList();
 
         if (ast.ParamBlock != null)
         {
@@ -70,12 +70,9 @@ public class PowerShellScript
             // "using" relies on compiler to dispose of shell when method is popped from call stack
             using PowerShell shell = PowerShell.Create();
             shell.AddScript(Content);
-
-            // TODO: Might need to wrap in try/catch
             Parameters?.Register(shell);
 
             var outputCollection = new PSDataCollection<PSObject>();
-
             _outputStreamService.SubscribeToPowerShellStream(outputCollection, PSStream.Output);
             _outputStreamService.SubscribeToPowerShellStream(shell.Streams.Information, PSStream.Information);
             _outputStreamService.SubscribeToPowerShellStream(shell.Streams.Progress, PSStream.Progress);
