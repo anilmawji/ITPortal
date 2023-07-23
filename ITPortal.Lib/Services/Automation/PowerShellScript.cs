@@ -7,14 +7,13 @@ namespace ITPortal.Lib.Services.Automation;
 
 public class PowerShellScript
 {
-    private readonly IOutputStreamService<PSMessage, PSStream> _outputStreamService;
-    private readonly InitialSessionState _initialsessionState;
-
     public string? Content { get; private set; }
     public string? FilePath { get; private set; }
     public bool Loaded { get; private set; }
-
     public PSParameterList? Parameters { get; private set; }
+
+    private readonly IOutputStreamService<PSMessage, PSStream> _outputStreamService;
+    private readonly InitialSessionState _initialsessionState;
 
     public PowerShellScript(IOutputStreamService<PSMessage, PSStream> outputStreamService, string filePath) : this(outputStreamService)
     {
@@ -24,7 +23,7 @@ public class PowerShellScript
     public PowerShellScript(IOutputStreamService<PSMessage, PSStream> outputStreamService)
     {
         _outputStreamService = outputStreamService;
-        // Yeah, that's right, it's called CreateDefault*2*
+        // Yeah, it's called CreateDefault*2*
         _initialsessionState = InitialSessionState.CreateDefault2();
         // Set its script-file execution policy (for the current session only).
         _initialsessionState.ExecutionPolicy = Microsoft.PowerShell.ExecutionPolicy.Bypass;

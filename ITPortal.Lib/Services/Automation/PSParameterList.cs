@@ -14,16 +14,14 @@ public class PSParameterList
 
     public void Add(ParameterAst parameter)
     {
-        System.Diagnostics.Debug.WriteLine(parameter.StaticType.Name);
-
         _parameters.Add(new PSParameter(
             parameter.Name.VariablePath.ToString(),
             parameter.StaticType,
-            IsParameterMandatory(parameter)
+            IsMandatory(parameter)
         ));
     }
 
-    public static bool IsParameterMandatory(ParameterAst parameter)
+    public static bool IsMandatory(ParameterAst parameter)
     {
         bool mandatory = false;
 
@@ -31,7 +29,7 @@ public class PSParameterList
         {
             if (attr.TypeName.ToString() == "Parameter")
             {
-                // TODO: Find way to extract propert values from attribute
+                // TODO: Find way to extract property values from attribute
                 mandatory = attr.ToString().Contains("Mandatory=$true");
                 break;
             }

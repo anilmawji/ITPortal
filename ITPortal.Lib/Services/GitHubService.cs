@@ -45,19 +45,12 @@ public class GitHubService : IGitHubService
 
     public string? GetFileContent(FileModel? file)
     {
-        if (file == null)
-        {
-            return null;
-        }
-        return file.content.DecodeBase64();
+        return file?.content.DecodeBase64();
     }
 
     public async Task<List<string>?> GetFilePaths(string user, string repo, string branch, string options, string extension)
     {
-        if (_httpClient == null)
-        {
-            return null;
-        }
+        if (_httpClient == null) return null;
 
         BranchModel? repoBranch;
         FileTreeModel? fileTrees;

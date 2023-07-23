@@ -35,18 +35,16 @@ public class AuthenticatedUser
     {
         Claim? name = GetClaimWithType(oldClaimType);
 
-        if (name != null)
-        {
-            // Must recreate principal when adding a new claim
-            List<Claim> claims = Principal.Claims.ToList();
+        if (name == null) return false;
 
-            claims.Add(new Claim(newClaimType, name.Value));
-            claims.Remove(name);
+        // Must recreate principal when adding a new claim
+        List<Claim> claims = Principal.Claims.ToList();
 
-            Initialize(claims);
+        claims.Add(new Claim(newClaimType, name.Value));
+        claims.Remove(name);
 
-            return true;
-        }
-        return false;
+        Initialize(claims);
+
+        return true;
     }
 }

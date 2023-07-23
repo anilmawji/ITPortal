@@ -37,10 +37,7 @@ public class MsalAuthenticationService : IAuthenticationService
 
     public async Task<AuthenticationResult?> AcquireTokenSilentAsync()
     {
-        if (_authenticationClient == null)
-        {
-            throw new ApplicationException("Authentication client must be initialized");
-        }
+        ArgumentNullException.ThrowIfNull(_authenticationClient);
 
         // Used by MSAL to search user token cache for a valid accessToken
         var accounts = await _authenticationClient.GetAccountsAsync();
@@ -71,10 +68,7 @@ public class MsalAuthenticationService : IAuthenticationService
 
     public async Task<AuthenticationResult?> AcquireTokenInteractiveAsync()
     {
-        if (_authenticationClient == null)
-        {
-            throw new ApplicationException("Authentication client must be initialized");
-        }
+        ArgumentNullException.ThrowIfNull(_authenticationClient);
 
         AuthenticationResult result;
         try

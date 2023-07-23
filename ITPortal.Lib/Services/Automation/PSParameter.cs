@@ -49,7 +49,6 @@ public class PSParameter
             }
             return Value.ConvertToArray(elementType);
         }
-        
         try
         {
             var typeConverter = TypeDescriptor.GetConverter(RequiredType);
