@@ -14,7 +14,29 @@ public class PSParameterList
 
     public void Add(ParameterAst parameter)
     {
-        _parameters.Add(new PSParameter(parameter.Name.VariablePath.ToString(), parameter.StaticType));
+        System.Diagnostics.Debug.WriteLine(parameter.StaticType.Name);
+
+        _parameters.Add(new PSParameter(
+            parameter.Name.VariablePath.ToString(),
+            parameter.StaticType,
+            IsParameterMandatory(parameter)
+        ));
+    }
+
+    public static bool IsParameterMandatory(ParameterAst parameter)
+    {
+        bool mandatory = false;
+
+        foreach (var attr in parameter.Attributes)
+        {
+            if (attr.TypeName.ToString() == "Parameter")
+            {
+                // TODO: Find way to extract propert values from attribute
+                mandatory = attr.ToString().Contains("Mandatory=$true");
+                break;
+            }
+        }
+        return mandatory;
     }
 
     public void Register(PowerShell shell)

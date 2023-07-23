@@ -21,7 +21,9 @@ public class HttpClientService : IHttpClientService
     public async Task<T?> GetModelAsync<T>(string url)
     {
         if (url == null)
+        {
             throw new ArgumentNullException(nameof(url));
+        }
 
         var streamResponse = await Client.GetStreamAsync(url)
             .ConfigureAwait(false);

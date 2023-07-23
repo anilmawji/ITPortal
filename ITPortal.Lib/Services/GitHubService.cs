@@ -23,8 +23,7 @@ public class GitHubService : IGitHubService
 
     public async Task<FileModel?> GetFile(string user, string repo, string filePath)
     {
-        if (_httpClient == null)
-            return null;
+        if (_httpClient == null) return null;
 
         FileModel? file;
 
@@ -56,7 +55,9 @@ public class GitHubService : IGitHubService
     public async Task<List<string>?> GetFilePaths(string user, string repo, string branch, string options, string extension)
     {
         if (_httpClient == null)
+        {
             return null;
+        }
 
         BranchModel? repoBranch;
         FileTreeModel? fileTrees;
@@ -67,15 +68,19 @@ public class GitHubService : IGitHubService
             repoBranch = await _httpClient.GetModelAsync<BranchModel>($"/repos/{user}/{repo}/branches/{branch}")
                 .ConfigureAwait(false);
 
-            if (repoBranch is null)
+            if (repoBranch == null)
+            {
                 return null;
+            }
 
             string treeUrl = repoBranch.commit.commit.tree.url;
             fileTrees = await _httpClient.GetModelAsync<FileTreeModel>($"{treeUrl}?{options}")
                 .ConfigureAwait(false);
 
             if (fileTrees == null)
+            {
                 return null;
+            }
 
             Tree? fileTree = null;
 

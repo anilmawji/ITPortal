@@ -38,7 +38,7 @@
                     }
                     else
                     {
-                        <input type="text" @bind=@parameter.Value @bind:event="oninput">
+                        <input type="text" required="@parameter.Mandatory" @bind=@parameter.Value @bind:event="oninput">
                     }
                 </div>
             }

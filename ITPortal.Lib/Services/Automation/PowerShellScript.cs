@@ -1,12 +1,14 @@
 ﻿using ITPortal.Lib.Utils;
 using System.Management.Automation;
 using System.Management.Automation.Language;
+using System.Management.Automation.Runspaces;
 
 namespace ITPortal.Lib.Services.Automation;
 
 public class PowerShellScript
 {
     private readonly IOutputStreamService<PSMessage, PSStream> _outputStreamService;
+    private readonly InitialSessionState _initialsessionState;
 
     public string? Content { get; private set; }
     public string? FilePath { get; private set; }
@@ -14,16 +16,18 @@ public class PowerShellScript
 
     public PSParameterList? Parameters { get; private set; }
 
+    public PowerShellScript(IOutputStreamService<PSMessage, PSStream> outputStreamService, string filePath) : this(outputStreamService)
+    {
+        Load(filePath);
+    }
+
     public PowerShellScript(IOutputStreamService<PSMessage, PSStream> outputStreamService)
     {
         _outputStreamService = outputStreamService;
-    }
-
-    public PowerShellScript(IOutputStreamService<PSMessage, PSStream> outputStreamService, string filePath)
-    {
-        _outputStreamService = outputStreamService;
-
-        Load(filePath);
+        // Yeah, that's right, it's called CreateDefault*2*
+        _initialsessionState = InitialSessionState.CreateDefault2();
+        // Set its script-file execution policy (for the current session only).
+        _initialsessionState.ExecutionPolicy = Microsoft.PowerShell.ExecutionPolicy.Bypass;
     }
 
     public bool Load(string filePath)
@@ -41,7 +45,6 @@ public class PowerShellScript
     private bool LoadScriptBlock(string filePath)
     {
         Content = FileHandler.GetFileContent(filePath);
-
         ScriptBlockAst ast = Parser.ParseInput(Content, out _, out ParseError[] errors);
 
         if (errors.Length != 0) return false;
@@ -55,7 +58,6 @@ public class PowerShellScript
                 Parameters.Add(parameterAst);
             }
         }
-
         Loaded = true;
 
         return true;
@@ -68,7 +70,7 @@ public class PowerShellScript
         try
         {
             // "using" relies on compiler to dispose of shell when method is popped from call stack
-            using PowerShell shell = PowerShell.Create();
+            using PowerShell shell = PowerShell.Create(_initialsessionState);
             shell.AddScript(Content);
             Parameters?.Register(shell);
 
