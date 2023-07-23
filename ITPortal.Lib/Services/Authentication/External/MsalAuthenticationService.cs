@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Client;
 using System.Net.Http.Headers;
 
-namespace ITPortal.Lib.Services.Authentication;
+namespace ITPortal.Lib.Services.Authentication.External;
 
 public class MsalAuthenticationService : IAuthenticationService
 {

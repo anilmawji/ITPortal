@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace ITPortal.Lib.Services.Authentication;
+namespace ITPortal.Lib.Services.Authentication.External;
 
 public class ExternalAuthStateProvider : AuthenticationStateProvider
 {

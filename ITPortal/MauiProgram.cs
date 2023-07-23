@@ -3,9 +3,7 @@ using ITPortal.Lib.Services;
 using ITPortal.Lib.Services.Authentication;
 using ITPortal.Lib.Services.Automation;
 using ITPortal.Lib.Services.Core;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Kiota.Abstractions.Authentication;
 
 namespace ITPortal;
 
@@ -39,10 +37,7 @@ public static class MauiProgram
 
     public static void ConfigureServices(IServiceCollection services)
     {
-        services.AddAuthorizationCore();
-        services.AddScoped<AuthenticationStateProvider, ExternalAuthStateProvider>();
-        services.AddSingleton<IAuthenticationService, MsalAuthenticationService>();
-        services.AddSingleton<IAccessTokenProvider, TokenProvider>();
+        services.AddMsalAuthentication();
 
         services.AddSingleton<IOutputStreamService<PSMessage, PSStream>, PowerShellOutputStreamService>();
 
