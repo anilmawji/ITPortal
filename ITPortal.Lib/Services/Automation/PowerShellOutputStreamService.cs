@@ -5,16 +5,10 @@ namespace ITPortal.Lib.Services.Automation;
 
 public class PowerShellOutputStreamService : IOutputStreamService<PSMessage, PSStream>
 {
-    public List<PSMessage> Output { get; set; }
+    public List<PSMessage> Output { get; set; } = new();
     public event EventHandler<List<PSMessage>>? OutputChanged;
 
-    private PSMessage prevMessage;
-
-    public PowerShellOutputStreamService()
-    {
-        Output = new();
-        prevMessage = new();
-    }
+    private PSMessage prevMessage = new();
 
     public void SubscribeToPowerShellStream<T>(PSDataCollection<T> stream, PSStream streamType)
     {

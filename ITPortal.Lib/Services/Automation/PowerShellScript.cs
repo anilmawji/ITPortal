@@ -23,8 +23,9 @@ public class PowerShellScript
     public PowerShellScript(IOutputStreamService<PSMessage, PSStream> outputStreamService)
     {
         _outputStreamService = outputStreamService;
-        // Yeah, it's called CreateDefault*2*
-        _initialsessionState = InitialSessionState.CreateDefault2();
+        _initialsessionState = InitialSessionState.CreateDefault();
+        // Limit script execution to one thread
+        _initialsessionState.ApartmentState = ApartmentState.STA;
         // Set its script-file execution policy (for the current session only).
         _initialsessionState.ExecutionPolicy = Microsoft.PowerShell.ExecutionPolicy.Bypass;
     }
@@ -44,19 +45,13 @@ public class PowerShellScript
     private bool LoadScriptBlock(string filePath)
     {
         Content = FileHandler.GetFileContent(filePath);
-        ScriptBlockAst ast = Parser.ParseInput(Content, out _, out ParseError[] errors);
+        ScriptBlockAst scriptAst = Parser.ParseInput(Content, out _, out ParseError[] errors);
 
-        if (errors.Length != 0) return false;
-
-        Parameters = new PSParameterList();
-
-        if (ast.ParamBlock != null)
+        if (errors.Length != 0)
         {
-            foreach (var parameterAst in ast.ParamBlock.Parameters)
-            {
-                Parameters.Add(parameterAst);
-            }
+            return false;
         }
+        Parameters = scriptAst.ParamBlock != null ? new PSParameterList(scriptAst.ParamBlock.Parameters) : new();
         Loaded = true;
 
         return true;

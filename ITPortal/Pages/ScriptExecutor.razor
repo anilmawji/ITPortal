@@ -7,6 +7,7 @@
 @using ITPortal.Lib.Services.Automation;
 @using ITPortal.Lib.Services.Core;
 @using ITPortal.Lib.Utils;
+@using System.Management.Automation.Runspaces;
 
 @inject IOutputStreamService<PSMessage, PSStream> PowerShellService
 
@@ -25,7 +26,7 @@
 
         <EditForm Model="@script.Parameters" OnSubmit="@RunScript">
             <div class="form-group">
-                <button type="submit" class="btn btn-primary" disabled="@(!script.Loaded)">Run</button>
+                <button type="submit" class="btn btn-primary" disabled="@(!script.Loaded || scriptRunning)">Run</button>
             </div>
 
             @foreach (var parameter in script.Parameters)
@@ -44,8 +45,12 @@
             }
         </EditForm>
     }
-    else
+    else if (script.Loaded)
     {
+        <div class="form-group">
+            <button class="btn btn-primary" disabled="@(!script.Loaded || scriptRunning)">Run</button>
+        </div>
+
         <p>No parameters found</p>
     }
 
@@ -155,6 +160,7 @@
         });
 
         PowerShellService.AddOutput("<b>BEGIN</b><hr width=\"300px\" height=\"1px\">");
+
         scriptRunning = true;
         await script.Invoke(cts.Token);
         scriptRunning = false;
@@ -167,6 +173,7 @@
 
     private void CancelRunScript()
     {
+        scriptRunning = false;
         cts.Cancel();
     }
 

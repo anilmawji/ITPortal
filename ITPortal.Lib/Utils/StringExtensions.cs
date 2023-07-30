@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-
-namespace ITPortal.Lib.Utils;
+﻿namespace ITPortal.Lib.Utils;
 
 public static class StringExtensions
 {
@@ -35,7 +33,7 @@ public static class StringExtensions
     {
         string[] valueArray = text.Split(separators, StringSplitOptions.RemoveEmptyEntries);
 
-        // No need for further operations if the desired array type is string
+        // No need for further operations if the desired array type is string[]
         if (targetElementType == typeof(string))
         {
             return valueArray;
