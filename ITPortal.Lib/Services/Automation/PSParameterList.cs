@@ -19,41 +19,25 @@ public class PSParameterList : IEnumerable<PSParameter>
         }
     }
 
-    public void Add(string parameterName, Type parameterType)
-    {
-        _parameters.Add(new PSParameter(parameterName, parameterType));
-    }
-
     public void Add(ParameterAst parameter)
     {
         _parameters.Add(new PSParameter(
             parameter.Name.VariablePath.ToString(),
             parameter.StaticType,
-            IsMandatory(parameter)
+            parameter.IsMandatory()
         ));
     }
 
-    private static bool IsMandatory(ParameterAst parameter)
+    public void Add(string parameterName, Type parameterType, bool mandatory = false)
     {
-        bool mandatory = false;
-
-        foreach (var attribute in parameter.Attributes)
-        {
-            if (attribute.TypeName.ToString() == "Parameter")
-            {
-                // TODO: Find proper way to extract property values from attribute
-                mandatory = attribute.ToString().Contains("Mandatory=$true");
-                break;
-            }
-        }
-        return mandatory;
+        _parameters.Add(new PSParameter(parameterName, parameterType, mandatory));
     }
 
     public void Register(PowerShell shell)
     {
         foreach (var parameter in _parameters)
         {
-            shell.AddParameter(parameter.Name, parameter.GetAsRequiredType());
+            shell.AddParameter(parameter.Name, parameter.Value);
         }
     }
 

@@ -15,8 +15,6 @@
 
 <button @onclick="PickAndLoadScript">Choose file</button>
 
-<p>@script</p>
-
 @if (script != null)
 {
     @if (script.Parameters != null)
@@ -31,17 +29,39 @@
 
             @foreach (var parameter in script.Parameters)
             {
-                <div class="form-group">
-                    <p>@parameter</p>
-                    @if (parameter.RequiredType.Name == "Boolean")
-                    {
-                        <input type="checkbox" @oninput="(e) => UpdateBooleanParameter(e, parameter)">
-                    }
-                    else
-                    {
-                        <input type="text" required="@parameter.Mandatory" @bind=@parameter.Value @bind:event="oninput">
-                    }
-                </div>
+                <p>@parameter.Name</p>
+                //System.Diagnostics.Debug.WriteLine("Value:   " + parameter.Value + "   Type:   " + parameter.GetType());
+                // Cannot use two-way binding for these since parameter.Value is an object and must be casted to the correct type
+                @if (parameter.DesiredType == typeof(string))
+                {
+                    <MudTextField T="string" Required="@parameter.Mandatory" Text="@((string)parameter.Value)" TextChanged="(text) => parameter.Value = text" />
+                }
+                else if (parameter.DesiredType == typeof(int))
+                {
+                    <MudNumericField T="int" Required="@parameter.Mandatory" Value="@((int)parameter.Value)" ValueChanged="(num) => parameter.Value = num" />
+                }
+                else if (parameter.DesiredType == typeof(bool))
+                {
+                    <MudSwitch T="bool" Required="@parameter.Mandatory" Checked="@((bool)parameter.Value)" CheckedChanged="(checkedValue) => parameter.Value = checkedValue" />
+                }
+                else if (parameter.DesiredType == typeof(DateTime))
+                {
+                    <MudDatePicker PickerVariant="PickerVariant.Inline" Required="@parameter.Mandatory" Date="@((DateTime)parameter.Value)" DateChanged="(date) => parameter.Value = date" />
+                }
+                else if (parameter.DesiredType == typeof(string[]))
+                {
+                    <MudExtensions.MudChipField T="string" Values="@((List<string>)parameter.Value)" StyleChip="@(_disableRadius ? "border-radius: 0 !important" : null)" Delimiter="@_delimiter" FullWidth="true" Disabled="_disabled" ReadOnly="_readonly"
+                                                ChipColor="_color" ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" MaxChips="_maxChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable" Variant="_variant" Label="ChipField" />
+                }
+                else if (parameter.DesiredType == typeof(int[]))
+                {
+                    <MudExtensions.MudChipField T="int" Value="@_intValue" Values="@((List<string>)parameter.Value)" StyleChip="@(_disableRadius ? "border-radius: 0 !important" : null)" Delimiter="@_delimiter" FullWidth="true" Disabled="_disabled" ReadOnly="_readonly"
+                                                ChipColor="_color" ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" MaxChips="_maxChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable" Variant="_variant" Label="ChipField" />
+                }
+                else
+                {
+                    <p>Parameter @parameter.Name is not supported</p>
+                }
             }
         </EditForm>
     }
@@ -59,7 +79,7 @@
     @if (script.Loaded)
     {
         <div class="form-group">
-            <button @onclick="(() => LoadScript())" class="btn btn-primary">Refresh</button>
+            <button @onclick="() => LoadScript()" class="btn btn-primary">Refresh</button>
             <button @onclick="EditScript" class="btn btn-primary">Edit</button>
             <button @onclick="RemoveScript" class="btn btn-primary">Remove</button>
         </div>
@@ -80,12 +100,28 @@
 }
 
 @code {
-
     private FilePickerFileType psFileType;
     private PickOptions pickOptions;
     private PowerShellScript script;
     private CancellationTokenSource cts;
+    //private DateTime date;
     private bool scriptRunning;
+
+    char _delimiter = ' ';
+    string _stringValue;
+    int _intValue;
+    List<string> _values;
+    int _maxChips = 0;
+    int _chipsMaxWidth = 80;
+    Color _color = Color.Default;
+    Variant _chipVariant = Variant.Filled;
+    Variant _variant = Variant.Text;
+    Size _chipSize = Size.Medium;
+    bool _wrapChips;
+    bool _disabled;
+    bool _readonly;
+    bool _disableRadius;
+    bool _closeable = true;
 
     protected override void OnInitialized()
     {
@@ -102,19 +138,17 @@
             FileTypes = psFileType,
         };
         script = new PowerShellScript(PowerShellService);
-        PowerShellService.OutputChanged += OutputChanged;
+        PowerShellService.OutputChanged += OnOutputChanged;
     }
 
-    private void OutputChanged(object sender, List<PSMessage> newOutput)
+    private void OnOutputChanged(object sender, List<PSMessage> newOutput)
     {
         InvokeAsync(() => this.StateHasChanged());
     }
 
-    // Booleans cannot be implicitly converted to strings
-    private void UpdateBooleanParameter(ChangeEventArgs e, PSParameter parameter)
+    private void FieldChanged(string newValue)
     {
-        bool ticked = (bool)e.Value;
-        parameter.Value = ticked.ToString();
+        System.Diagnostics.Debug.WriteLine("New value: " + newValue);
     }
 
     private async void PickAndLoadScript()

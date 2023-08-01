@@ -1,64 +1,66 @@
-﻿using ITPortal.Lib.Utils;
-using System.ComponentModel;
-using System.Management.Automation;
+﻿using System.Management.Automation;
+using System.Runtime.Serialization;
 
 namespace ITPortal.Lib.Services.Automation;
 
-public class PSParameter
-{
-    public string Name { get; set; }
-    public string? Value { get; set; }
-    // Used in place of generics since required type is discovered at runtime
-    public Type RequiredType { get; set; }
-    public bool Mandatory { get; private set; }
-    public int? Position { get; private set; }
+public class PSParameter {
+    public string Name { get; }
+    public object? Value { get; set; }
+    public bool Mandatory { get; }
+    public Type DesiredType { get; private set; }
 
-    public PSParameter(string name, Type? requiredType, bool mandatory = false, int? position = null)
+    public PSParameter(string name, Type desiredType, bool mandatory = false)
     {
         Name = name;
-        RequiredType = requiredType ?? typeof(string);
+        DesiredType = desiredType;
         Mandatory = mandatory;
-        Position = position;
-
-        // Set default value to false if parameter is a bool
-        if (RequiredType == typeof(bool))
-        {
-            Value = "False";
-        // PowerShell switche type should behave the same as a bool
-        } else if (RequiredType == typeof(SwitchParameter))
-        {
-            RequiredType = typeof(bool);
-            Value = "False";
-        }
+        Value = InitValue();
     }
 
-    public object? GetAsRequiredType()
+    private object? InitValue()
     {
-        if (Value == null)
+        // it's very important to check IsValueType before calling GetUninitializedObject
+        // GetUninitializedObject is valid for reference types, but it will not return null
+        if (DesiredType.IsValueType)
         {
-            return null;
-        }
-
-        if (RequiredType.IsArray)
-        {
-            Type? elementType = RequiredType.GetElementType();
-
-            if (elementType == null)
+            // The actual default value for DateTime given by C# sucks (1/1/1001)
+            if (DesiredType == typeof(DateTime))
             {
-                return null;
+                return DateTime.Today;
             }
-            return Value.ConvertToArray(elementType);
+            else if (DesiredType == typeof(SwitchParameter))
+            {
+                DesiredType = typeof(bool);
+                return false;
+            }
+            // This is what Microsoft's codebase uses to get default values for types at runtime
+            return FormatterServices.GetUninitializedObject(DesiredType);
         }
-        try
+        // Prepare default values for reference types
+        else
         {
-            var typeConverter = TypeDescriptor.GetConverter(RequiredType);
+            if (DesiredType == typeof(string))
+            {
+                return string.Empty;
+            }
+            else if (DesiredType.IsArray)
+            {
+                Type? elementType = DesiredType.GetElementType();
 
-            return typeConverter.ConvertFromString(Value);
+                if (elementType == null)
+                {
+                    return null;
+                }
+                // All PowerShell arrays will be treated internally as lists of strings
+                return new List<string>();
+            }
         }
-        catch (NotSupportedException)
-        {
-            return null;
-        }
+        return null;
+    }
+
+    public Type? GetValueType()
+    {
+        return Value?.GetType();
     }
 
     public override string? ToString()
@@ -66,3 +68,4 @@ public class PSParameter
         return $"[{Name}, {Value}]";
     }
 }
+

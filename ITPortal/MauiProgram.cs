@@ -4,6 +4,7 @@ using ITPortal.Lib.Services.Authentication;
 using ITPortal.Lib.Services.Automation;
 using ITPortal.Lib.Services.Core;
 using Microsoft.Extensions.Configuration;
+using MudBlazor.Services;
 
 namespace ITPortal;
 
@@ -47,5 +48,7 @@ public static class MauiProgram
         services.AddSingleton<IGitHubService, GitHubService>();
 
         services.AddSingleton<WeatherForecastService>();
+
+        services.AddMudServices();
     }
 }
