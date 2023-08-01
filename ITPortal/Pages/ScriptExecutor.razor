@@ -29,42 +29,49 @@
 
             @foreach (var parameter in _script.Parameters)
             {
-                <p>@parameter.Name</p>
                 // Cannot use two-way binding for these since parameter.Value is an object and must be casted to the correct type
                 @if (parameter.DesiredType == typeof(string))
                 {
-                    <MudTextField T="string" Required="@parameter.Mandatory" Text="@((string)parameter.Value)" TextChanged="(text) => parameter.Value = text" />
+                    <MudTextField T="string" Label="@parameter.Name" Required="@parameter.Mandatory"
+                        Text="@((string)parameter.Value)" TextChanged="(text) => parameter.Value = text" />
                 }
                 else if (parameter.DesiredType == typeof(int))
                 {
-                    <MudNumericField T="int" Required="@parameter.Mandatory" Value="@((int)parameter.Value)" ValueChanged="(num) => parameter.Value = num" />
+                    <MudNumericField T="int" Label="@parameter.Name" Required="@parameter.Mandatory"
+                        Value="@((int)parameter.Value)" ValueChanged="(num) => parameter.Value = num" />
                 }
                 else if (parameter.DesiredType == typeof(bool))
                 {
-                    <MudSwitch T="bool" Required="@parameter.Mandatory" Checked="@((bool)parameter.Value)" CheckedChanged="(checkedValue) => parameter.Value = checkedValue" />
+                    <MudSwitch T="bool" Label="@parameter.Name" Required="@parameter.Mandatory"
+                        Checked="@((bool)parameter.Value)" CheckedChanged="(checkedValue) => parameter.Value = checkedValue" />
                 }
                 else if (parameter.DesiredType == typeof(DateTime))
                 {
+                    // No need to explicitly update "date" since it references parameter.Value which is being updated every time the date changes
                     DateTime date = (DateTime)parameter.Value;
                     TimeSpan time = date.TimeOfDay;
 
-                    <MudDatePicker PickerVariant="PickerVariant.Inline" Required="@parameter.Mandatory" Date="@date" DateChanged="(newDate) => OnDateTimeChanged((DateTime)newDate, time, parameter)" />
-                    <MudTimePicker Label="12 hours" AmPm="true" Time="@time" TimeChanged="(newTime) => time = OnTimeSpanChanged((TimeSpan)newTime, date, parameter)" />
+                    <MudDatePicker Label="@parameter.Name" Required="@parameter.Mandatory" PickerVariant="PickerVariant.Inline"
+                        Date="@date" DateChanged="(newDate) => OnDateChanged((DateTime)newDate, time, parameter)" />
+                    <MudTimePicker AmPm="true" Time="@time" TimeChanged="(newTime) => time = OnTimeChanged((TimeSpan)newTime, date, parameter)" />
                 }
                 else if (parameter.DesiredType == typeof(string[]))
                 {
-                    <MudExtensions.MudChipField T="string" Required="@parameter.Mandatory" Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color"
-                        ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable" Variant="_variant" Label="ChipField" />
+                    <MudExtensions.MudChipField T="string" Label="@parameter.Name" Required="@parameter.Mandatory" Values="@((List<string>)parameter.Value)"
+                        Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color" ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips"
+                        ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable" Variant="_variant" />
                 }
                 else if (parameter.DesiredType == typeof(int[]))
                 {
-                    <MudExtensions.MudChipField T="int" Required="@parameter.Mandatory" Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color"
-                        ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable" Variant="_variant" Label="ChipField" />
+                    <MudExtensions.MudChipField T="int" Label="@parameter.Name" Required="@parameter.Mandatory" Values="@((List<string>)parameter.Value)"
+                        Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color" ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips"
+                        ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable" Variant="_variant" />
                 }
                 else if (parameter.DesiredType == typeof(bool[]))
                 {
-                    <MudExtensions.MudChipField T="bool" Required="@parameter.Mandatory" Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color"
-                                                ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable" Variant="_variant" Label="ChipField" />
+                    <MudExtensions.MudChipField T="bool" Label="@parameter.Name" Required="@parameter.Mandatory" Values="@((List<string>)parameter.Value)"
+                        Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color" ChipVariant="_chipVariant" ChipSize="_chipSize"
+                        WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable" Variant="_variant" />
                 }
                 else
                 {
@@ -147,12 +154,12 @@
         };
     }
 
-    private void OnDateTimeChanged(DateTime newDate, TimeSpan time, PSParameter parameter)
+    private void OnDateChanged(DateTime newDate, TimeSpan time, PSParameter parameter)
     {
         parameter.Value = newDate.Date.Add(time);
     }
 
-    private TimeSpan OnTimeSpanChanged(TimeSpan newTime, DateTime date, PSParameter parameter)
+    private TimeSpan OnTimeChanged(TimeSpan newTime, DateTime date, PSParameter parameter)
     {
         parameter.Value = date.Date.Add(newTime);
 
@@ -172,7 +179,6 @@
     private void LoadScript(string filePath = null)
     {
         if (_scriptRunning) CancelRunScript();
-
         PowerShellService.Output.Clear();
 
         var loaded = filePath != null ? _script.Load(filePath) : _script.Refresh();
@@ -191,10 +197,9 @@
     private async void RunScript()
     {
         if (_scriptRunning) CancelRunScript();
-
         PowerShellService.Output.Clear();
-        _cancellationTokenSource = new();
 
+        _cancellationTokenSource = new();
         _cancellationTokenSource.Token.Register(() =>
         {
             _scriptRunning = false;
@@ -222,8 +227,8 @@
     private void RemoveScript()
     {
         if (_scriptRunning) CancelRunScript();
-
         PowerShellService.Output.Clear();
+
         _script = new PowerShellScript(PowerShellService);
 
         this.StateHasChanged();
