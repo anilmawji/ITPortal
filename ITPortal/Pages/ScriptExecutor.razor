@@ -1,4 +1,4 @@
-﻿@page "/script-executor"
+﻿@page "/_script-executor"
 
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
@@ -15,22 +15,21 @@
 
 <button @onclick="PickAndLoadScript">Choose file</button>
 
-@if (script != null)
+@if (_script != null)
 {
-    @if (script.Parameters != null)
+    @if (_script.Parameters != null)
     {
         <hr>
         <p>Parameters:</p>
 
-        <EditForm Model="@script.Parameters" OnSubmit="@RunScript">
+        <EditForm Model="@_script.Parameters" OnSubmit="@RunScript">
             <div class="form-group">
-                <button type="submit" class="btn btn-primary" disabled="@(!script.Loaded || scriptRunning)">Run</button>
+                <button type="submit" class="btn btn-primary" disabled="@(!_script.Loaded || _scriptRunning)">Run</button>
             </div>
 
-            @foreach (var parameter in script.Parameters)
+            @foreach (var parameter in _script.Parameters)
             {
                 <p>@parameter.Name</p>
-                //System.Diagnostics.Debug.WriteLine("Value:   " + parameter.Value + "   Type:   " + parameter.GetType());
                 // Cannot use two-way binding for these since parameter.Value is an object and must be casted to the correct type
                 @if (parameter.DesiredType == typeof(string))
                 {
@@ -50,13 +49,18 @@
                 }
                 else if (parameter.DesiredType == typeof(string[]))
                 {
-                    <MudExtensions.MudChipField T="string" Values="@((List<string>)parameter.Value)" StyleChip="@(_disableRadius ? "border-radius: 0 !important" : null)" Delimiter="@_delimiter" FullWidth="true" Disabled="_disabled" ReadOnly="_readonly"
-                                                ChipColor="_color" ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" MaxChips="_maxChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable" Variant="_variant" Label="ChipField" />
+                    <MudExtensions.MudChipField T="string" Values="@((List<string>)parameter.Value)" Delimiter="@_delimiter" FullWidth="_fullWidth" ChipColor="_color"
+                        ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable" Variant="_variant" Label="ChipField" />
                 }
                 else if (parameter.DesiredType == typeof(int[]))
                 {
-                    <MudExtensions.MudChipField T="int" Value="@_intValue" Values="@((List<string>)parameter.Value)" StyleChip="@(_disableRadius ? "border-radius: 0 !important" : null)" Delimiter="@_delimiter" FullWidth="true" Disabled="_disabled" ReadOnly="_readonly"
-                                                ChipColor="_color" ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" MaxChips="_maxChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable" Variant="_variant" Label="ChipField" />
+                    <MudExtensions.MudChipField T="int" Values="@((List<string>)parameter.Value)" Delimiter="@_delimiter" FullWidth="_fullWidth" ChipColor="_color"
+                        ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable" Variant="_variant" Label="ChipField" />
+                }
+                else if (parameter.DesiredType == typeof(bool[]))
+                {
+                    <MudExtensions.MudChipField T="bool" Values="@((List<string>)parameter.Value)" Delimiter="@_delimiter" FullWidth="_fullWidth" ChipColor="_color"
+                                                ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable" Variant="_variant" Label="ChipField" />
                 }
                 else
                 {
@@ -65,18 +69,18 @@
             }
         </EditForm>
     }
-    else if (script.Loaded)
+    else if (_script.Loaded)
     {
         <div class="form-group">
-            <button class="btn btn-primary" disabled="@(!script.Loaded || scriptRunning)">Run</button>
+            <button class="btn btn-primary" disabled="@(!_script.Loaded || _scriptRunning)">Run</button>
         </div>
 
         <p>No parameters found</p>
     }
 
-    <button @onclick="CancelRunScript" class="btn btn-primary" disabled="@(!scriptRunning)">Cancel</button>
+    <button @onclick="CancelRunScript" class="btn btn-primary" disabled="@(!_scriptRunning)">Cancel</button>
 
-    @if (script.Loaded)
+    @if (_script.Loaded)
     {
         <div class="form-group">
             <button @onclick="() => LoadScript()" class="btn btn-primary">Refresh</button>
@@ -100,44 +104,38 @@
 }
 
 @code {
-    private FilePickerFileType psFileType;
-    private PickOptions pickOptions;
-    private PowerShellScript script;
-    private CancellationTokenSource cts;
-    //private DateTime date;
-    private bool scriptRunning;
+    private FilePickerFileType _psFileType;
+    private PickOptions _pickOptions;
+    private PowerShellScript _script;
+    private CancellationTokenSource _cancellationTokenSource;
+    private bool _scriptRunning;
 
+    // MudChipField settings
     char _delimiter = ' ';
-    string _stringValue;
-    int _intValue;
-    List<string> _values;
-    int _maxChips = 0;
     int _chipsMaxWidth = 80;
     Color _color = Color.Default;
     Variant _chipVariant = Variant.Filled;
     Variant _variant = Variant.Text;
     Size _chipSize = Size.Medium;
-    bool _wrapChips;
-    bool _disabled;
-    bool _readonly;
-    bool _disableRadius;
+    bool _fullWidth = true;
+    bool _wrapChips = true;
     bool _closeable = true;
 
     protected override void OnInitialized()
     {
-        psFileType = new(new Dictionary<DevicePlatform, IEnumerable<string>>
+        _psFileType = new(new Dictionary<DevicePlatform, IEnumerable<string>>
             {
                 { DevicePlatform.WinUI, new[] { ".ps1" } },
                 { DevicePlatform.macOS, new[] { "ps1" } }
             }
         );
-        pickOptions = new()
+        _pickOptions = new()
         {
                 // PickerTitle is used by macOS but not Windows - unreliable way of informing user
-            PickerTitle = "Please select a PowerShell script file",
-            FileTypes = psFileType,
+            PickerTitle = "Please select a PowerShell _script file",
+            FileTypes = _psFileType,
         };
-        script = new PowerShellScript(PowerShellService);
+        _script = new PowerShellScript(PowerShellService);
         PowerShellService.OutputChanged += OnOutputChanged;
     }
 
@@ -153,7 +151,7 @@
 
     private async void PickAndLoadScript()
     {
-        var fileResult = await FilePickerHandler.PickFile(pickOptions);
+        var fileResult = await FilePickerHandler.PickFile(_pickOptions);
 
         if (fileResult != null)
         {
@@ -163,11 +161,11 @@
 
     private void LoadScript(string filePath = null)
     {
-        if (scriptRunning) CancelRunScript();
+        if (_scriptRunning) CancelRunScript();
 
         PowerShellService.Output.Clear();
 
-        var loaded = filePath != null ? script.Load(filePath) : script.Refresh();
+        var loaded = filePath != null ? _script.Load(filePath) : _script.Refresh();
 
         if (loaded)
         {
@@ -175,31 +173,31 @@
         }
         else
         {
-            PowerShellService.AddOutput("Error loading script");
+            PowerShellService.AddOutput("Error loading _script");
             PowerShellService.AddOutput("<hr width=\"300px\" height=\"1px\"><b>EXECUTION FAILED</b>");
         }
     }
 
     private async void RunScript()
     {
-        if (scriptRunning) CancelRunScript();
+        if (_scriptRunning) CancelRunScript();
 
         PowerShellService.Output.Clear();
-        cts = new CancellationTokenSource();
+        _cancellationTokenSource = new();
 
-        cts.Token.Register(() =>
+        _cancellationTokenSource.Token.Register(() =>
         {
-            scriptRunning = false;
+            _scriptRunning = false;
             PowerShellService.AddOutput("<hr width=\"300px\" height=\"1px\"><b>EXECUTION CANCELLED</b>");
         });
 
         PowerShellService.AddOutput("<b>BEGIN</b><hr width=\"300px\" height=\"1px\">");
 
-        scriptRunning = true;
-        await script.Invoke(cts.Token);
-        scriptRunning = false;
+        _scriptRunning = true;
+        await _script.Invoke(_cancellationTokenSource.Token);
+        _scriptRunning = false;
 
-        if (!cts.IsCancellationRequested)
+        if (!_cancellationTokenSource.IsCancellationRequested)
         {
             PowerShellService.AddOutput("<hr width=\"300px\" height=\"1px\"><b>EXECUTION COMPLETE</b>");
         }
@@ -207,24 +205,24 @@
 
     private void CancelRunScript()
     {
-        scriptRunning = false;
-        cts.Cancel();
+        _scriptRunning = false;
+        _cancellationTokenSource.Cancel();
     }
 
     private void RemoveScript()
     {
-        if (scriptRunning) CancelRunScript();
+        if (_scriptRunning) CancelRunScript();
 
         PowerShellService.Output.Clear();
-        script = new PowerShellScript(PowerShellService);
+        _script = new PowerShellScript(PowerShellService);
 
         this.StateHasChanged();
     }
 
     private void EditScript()
     {
-        if (!script.Loaded || script.FilePath == null) return;
+        if (!_script.Loaded || _script.FilePath == null) return;
         
-        FileHandler.OpenFileWithDefaultProgram(script.FilePath);
+        FileHandler.OpenFileWithDefaultProgram(_script.FilePath);
     }
 }

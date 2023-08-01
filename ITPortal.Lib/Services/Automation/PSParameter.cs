@@ -23,9 +23,9 @@ public class PSParameter {
         // GetUninitializedObject is valid for reference types, but it will not return null
         if (DesiredType.IsValueType)
         {
-            // The actual default value for DateTime given by C# sucks (1/1/1001)
             if (DesiredType == typeof(DateTime))
             {
+                // The actual default value for DateTime given by C# sucks (1/1/1001)
                 return DateTime.Today;
             }
             else if (DesiredType == typeof(SwitchParameter))
@@ -45,9 +45,7 @@ public class PSParameter {
             }
             else if (DesiredType.IsArray)
             {
-                Type? elementType = DesiredType.GetElementType();
-
-                if (elementType == null)
+                if (DesiredType.GetElementType() == null)
                 {
                     return null;
                 }
