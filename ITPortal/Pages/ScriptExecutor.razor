@@ -1,4 +1,4 @@
-﻿@page "/_script-executor"
+﻿@page "/script-executor"
 
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
@@ -45,21 +45,25 @@
                 }
                 else if (parameter.DesiredType == typeof(DateTime))
                 {
-                    <MudDatePicker PickerVariant="PickerVariant.Inline" Required="@parameter.Mandatory" Date="@((DateTime)parameter.Value)" DateChanged="(date) => parameter.Value = date" />
+                    DateTime date = (DateTime)parameter.Value;
+                    TimeSpan time = date.TimeOfDay;
+
+                    <MudDatePicker PickerVariant="PickerVariant.Inline" Required="@parameter.Mandatory" Date="@date" DateChanged="(newDate) => OnDateTimeChanged((DateTime)newDate, time, parameter)" />
+                    <MudTimePicker Label="12 hours" AmPm="true" Time="@time" TimeChanged="(newTime) => time = OnTimeSpanChanged((TimeSpan)newTime, date, parameter)" />
                 }
                 else if (parameter.DesiredType == typeof(string[]))
                 {
-                    <MudExtensions.MudChipField T="string" Values="@((List<string>)parameter.Value)" Delimiter="@_delimiter" FullWidth="_fullWidth" ChipColor="_color"
+                    <MudExtensions.MudChipField T="string" Required="@parameter.Mandatory" Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color"
                         ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable" Variant="_variant" Label="ChipField" />
                 }
                 else if (parameter.DesiredType == typeof(int[]))
                 {
-                    <MudExtensions.MudChipField T="int" Values="@((List<string>)parameter.Value)" Delimiter="@_delimiter" FullWidth="_fullWidth" ChipColor="_color"
+                    <MudExtensions.MudChipField T="int" Required="@parameter.Mandatory" Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color"
                         ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable" Variant="_variant" Label="ChipField" />
                 }
                 else if (parameter.DesiredType == typeof(bool[]))
                 {
-                    <MudExtensions.MudChipField T="bool" Values="@((List<string>)parameter.Value)" Delimiter="@_delimiter" FullWidth="_fullWidth" ChipColor="_color"
+                    <MudExtensions.MudChipField T="bool" Required="@parameter.Mandatory" Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color"
                                                 ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable" Variant="_variant" Label="ChipField" />
                 }
                 else
@@ -104,22 +108,22 @@
 }
 
 @code {
+    // MudChipField settings
+    private readonly char _delimiter = ' ';
+    private readonly int _chipsMaxWidth = 80;
+    private readonly Color _color = Color.Default;
+    private readonly Variant _chipVariant = Variant.Filled;
+    private readonly Variant _variant = Variant.Text;
+    private readonly Size _chipSize = Size.Medium;
+    private readonly bool _fullWidth = true;
+    private readonly bool _wrapChips = true;
+    private readonly bool _closeable = true;
+
     private FilePickerFileType _psFileType;
     private PickOptions _pickOptions;
     private PowerShellScript _script;
     private CancellationTokenSource _cancellationTokenSource;
     private bool _scriptRunning;
-
-    // MudChipField settings
-    char _delimiter = ' ';
-    int _chipsMaxWidth = 80;
-    Color _color = Color.Default;
-    Variant _chipVariant = Variant.Filled;
-    Variant _variant = Variant.Text;
-    Size _chipSize = Size.Medium;
-    bool _fullWidth = true;
-    bool _wrapChips = true;
-    bool _closeable = true;
 
     protected override void OnInitialized()
     {
@@ -131,22 +135,28 @@
         );
         _pickOptions = new()
         {
-                // PickerTitle is used by macOS but not Windows - unreliable way of informing user
+            // PickerTitle is used by macOS but not Windows - unreliable way of informing user
             PickerTitle = "Please select a PowerShell _script file",
             FileTypes = _psFileType,
         };
         _script = new PowerShellScript(PowerShellService);
-        PowerShellService.OutputChanged += OnOutputChanged;
+
+        PowerShellService.OutputChanged += (object sender, List<PSMessage> newOutput) =>
+        {
+            InvokeAsync(() => this.StateHasChanged());
+        };
     }
 
-    private void OnOutputChanged(object sender, List<PSMessage> newOutput)
+    private void OnDateTimeChanged(DateTime newDate, TimeSpan time, PSParameter parameter)
     {
-        InvokeAsync(() => this.StateHasChanged());
+        parameter.Value = newDate.Date.Add(time);
     }
 
-    private void FieldChanged(string newValue)
+    private TimeSpan OnTimeSpanChanged(TimeSpan newTime, DateTime date, PSParameter parameter)
     {
-        System.Diagnostics.Debug.WriteLine("New value: " + newValue);
+        parameter.Value = date.Date.Add(newTime);
+
+        return newTime;
     }
 
     private async void PickAndLoadScript()

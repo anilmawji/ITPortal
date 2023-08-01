@@ -38,6 +38,8 @@ public static class MauiProgram
 
     public static void ConfigureServices(IServiceCollection services)
     {
+        services.AddMudServices();
+
         services.AddMsalAuthentication();
 
         services.AddSingleton<IOutputStreamService<PSMessage, PSStream>, PowerShellOutputStreamService>();
@@ -48,7 +50,5 @@ public static class MauiProgram
         services.AddSingleton<IGitHubService, GitHubService>();
 
         services.AddSingleton<WeatherForecastService>();
-
-        services.AddMudServices();
     }
 }

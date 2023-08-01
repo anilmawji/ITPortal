@@ -14,10 +14,10 @@ public class PSParameter {
         Name = name;
         DesiredType = desiredType;
         Mandatory = mandatory;
-        Value = InitValue();
+        Value = GetDefaultValue();
     }
 
-    private object? InitValue()
+    public object? GetDefaultValue()
     {
         // it's very important to check IsValueType before calling GetUninitializedObject
         // GetUninitializedObject is valid for reference types, but it will not return null
@@ -25,7 +25,7 @@ public class PSParameter {
         {
             if (DesiredType == typeof(DateTime))
             {
-                // The actual default value for DateTime given by C# sucks (1/1/1001)
+                // The default value for DateTime given by C# sucks (1/1/1001)
                 return DateTime.Today;
             }
             else if (DesiredType == typeof(SwitchParameter))
