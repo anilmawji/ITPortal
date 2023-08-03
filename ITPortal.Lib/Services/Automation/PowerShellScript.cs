@@ -15,11 +15,6 @@ public class PowerShellScript
     private readonly IOutputStreamService<PSMessage, PSStream> _outputStreamService;
     private readonly InitialSessionState _initialsessionState;
 
-    public PowerShellScript(IOutputStreamService<PSMessage, PSStream> outputStreamService, string filePath) : this(outputStreamService)
-    {
-        Load(filePath);
-    }
-
     public PowerShellScript(IOutputStreamService<PSMessage, PSStream> outputStreamService)
     {
         _outputStreamService = outputStreamService;
@@ -28,6 +23,11 @@ public class PowerShellScript
         _initialsessionState.ApartmentState = ApartmentState.STA;
         // Set its script-file execution policy (for the current session only).
         _initialsessionState.ExecutionPolicy = Microsoft.PowerShell.ExecutionPolicy.Bypass;
+    }
+
+    public PowerShellScript(IOutputStreamService<PSMessage, PSStream> outputStreamService, string filePath) : this(outputStreamService)
+    {
+        Load(filePath);
     }
 
     public bool Load(string filePath)

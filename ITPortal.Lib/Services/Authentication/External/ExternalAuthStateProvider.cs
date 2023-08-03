@@ -34,8 +34,10 @@ public class ExternalAuthStateProvider : AuthenticationStateProvider
         var authResult = await _authenticationService.AcquireTokenInteractiveAsync();
 
         // Authentication failed, return a logged out user state
-        if (authResult == null) return new AuthenticatedUser();
-
+        if (authResult == null)
+        {
+            return new AuthenticatedUser();
+        }
         AuthenticatedUser authenticatedUser = new(authResult.ClaimsPrincipal);
         // For some reason AAD uses "name" as the claim type instead of ClaimTypes.Name
         // The user context only recognizes ClaimTypes.Name

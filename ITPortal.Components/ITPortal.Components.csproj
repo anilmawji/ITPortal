@@ -22,4 +22,8 @@
     <ProjectReference Include="..\ITPortal.Lib\ITPortal.Lib.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
 </Project>

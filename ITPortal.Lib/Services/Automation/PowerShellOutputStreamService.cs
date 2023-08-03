@@ -26,8 +26,7 @@ public class PowerShellOutputStreamService : IOutputStreamService<PSMessage, PSS
 
     public void AddOutput(PSStream streamType, string? message)
     {
-        if (message.IsNullOrEmpty()) return;
-        if (OutputChanged == null) return;
+        if (message.IsNullOrEmpty() || OutputChanged == null) return;
 
         if (prevMessage.Data == message)
         {

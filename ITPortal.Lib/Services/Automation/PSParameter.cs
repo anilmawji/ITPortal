@@ -32,8 +32,8 @@ public class PSParameter {
             {
                 DesiredType = typeof(bool);
                 return false;
-            }
-            // This is what Microsoft's codebase uses to get default values for types at runtime
+            }           
+            // This is what Microsoft's codebase uses to get default values for value types at runtime
             return FormatterServices.GetUninitializedObject(DesiredType);
         }
         // Prepare default values for reference types

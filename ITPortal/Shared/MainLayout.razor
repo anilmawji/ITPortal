@@ -1,18 +1,36 @@
-﻿@inherits LayoutComponentBase
+﻿@using Microsoft.AspNetCore.Components.Authorization
 
-<div class="page">
-	<div class="sidebar">
-		<NavMenu />
-	</div>
+@inherits LayoutComponentBase
 
-	<main>
-		<div class="top-row px-4">
-			<LoginDisplay />
-			<a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-		</div>
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
-		<article class="content px-4">
-			@Body
-		</article>
-	</main>
-</div>
+<MudLayout>
+    <MudAppBar Elevation="1">
+		<AuthorizeView>
+			<Authorized>
+				<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+			</Authorized>
+		</AuthorizeView>
+        My Application
+        <MudSpacer />
+    </MudAppBar>
+	<AuthorizeView>
+		<Authorized>
+			<MudDrawer @bind-Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+				<NavMenu />
+			</MudDrawer>
+		</Authorized>
+	</AuthorizeView>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    bool _drawerOpen = true;
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+}
