@@ -1,22 +1,32 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
+@using ITPortal.Components.Shared.Login
 
 @inherits LayoutComponentBase
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
+<MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode" Theme="_currentTheme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
 <MudLayout>
-    <MudAppBar Elevation="1">
+    <MudAppBar Elevation="0">
 		<AuthorizeView>
 			<Authorized>
-				<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+				<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@DrawerToggle" />
 			</Authorized>
 		</AuthorizeView>
-        My Application
+        IT Portal
         <MudSpacer />
+        <LogoutDisplay />
+        <MudIconButton Icon="@Icons.Material.Filled.Brightness4"
+                       Color="Color.Inherit"
+                       Class="nav-button"
+                       OnClick="@ThemeToggle" />
     </MudAppBar>
 	<AuthorizeView>
 		<Authorized>
-			<MudDrawer @bind-Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+			<MudDrawer @bind-Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="1">
 				<NavMenu />
 			</MudDrawer>
 		</Authorized>
@@ -27,10 +37,50 @@
 </MudLayout>
 
 @code {
-    bool _drawerOpen = true;
+    private MudThemeProvider _mudThemeProvider;
 
-    void DrawerToggle()
+    private bool _drawerOpen = true;
+    private bool _isDarkMode;
+
+    private readonly MudTheme _currentTheme = new()
     {
-        _drawerOpen = !_drawerOpen;
+        Palette = new PaletteLight
+        {
+            Primary = "#840C16",
+            Secondary = "#4CAF50",
+            Info = "#64a7e2",
+            Success = "#2ECC40",
+            Warning = "#FFC107",
+            Error = "#FF0000",
+            AppbarBackground = "#840C16",
+            TextPrimary = "#0A7BCF",
+            TextSecondary = "#4CAF50",
+            // TODO: add more color properties
+        },
+        PaletteDark = new PaletteDark
+        {
+            Primary = "#6585e0",
+            Secondary = "#607D8B",
+            Info = "#a4c2dd",
+            Success = "#2ECC40",
+            Warning = "#dc2d7e",
+            Error = "#de2000",
+            AppbarBackground = "#121212",
+            TextPrimary = "#E0E0E0",
+            TextSecondary = "#BDBDBD",
+            // TODO: add more color properties
+        }
+    };
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            //_isDarkMode = await _mudThemeProvider.GetSystemPreference();
+            StateHasChanged();
+        }
     }
+
+    void DrawerToggle() => _drawerOpen = !_drawerOpen;
+    void ThemeToggle() => _isDarkMode = !_isDarkMode;
 }

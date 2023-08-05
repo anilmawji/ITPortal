@@ -1,7 +1,48 @@
-﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
+﻿* {
+    font-family: "Segoe UI", Arial, sans-serif;
+    /* Disable dragging/highlighting on all browsers */
+    -webkit-user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
 
-html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+:root {
+    --mud-appbar-height: 50px !important;
+}
+
+html {
+    height: 100%; /* Fallback CSS for IE 4-6 and older browsers. Note: Without this setting, body below cannot achieve 100% height. */
+    height: 100vh; /* Overrides 100% height in modern HTML5 browsers and uses the viewport's height. Only works in modern HTML5 browsers */
+}
+
+.mud-toolbar {
+    box-shadow: 0 3px 8px rgb(0 0 0 / 0.3);
+}
+
+body {
+    width: auto; /* Allows content to grow beyond the page without overflow */
+    height: auto; /* Allows content to grow beyond the page without overflow */
+    min-height: 100%; /* Starts web page with 100% height. Fallback for IE 4-6 and older browsers */
+    min-height: 100vh; /* Starts web page with 100% height. Uses the viewport's height. Only works in modern HTML5 browsers */
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+#app {
+    height: 100vh;
+}
+
+.mud-main-content {
+    height: 100%;
+}
+
+body, ul, li, h1, h2, a {
+    margin: 0;
+    padding: 0;
+    font-family: Arial;
 }
 
 h1:focus {
