@@ -1,4 +1,6 @@
-﻿using ITPortal.Lib.Utils;
+﻿using ITPortal.Lib.Services.Automation.Output;
+using ITPortal.Lib.Services.Automation.Parameter;
+using ITPortal.Lib.Utils;
 using System.Management.Automation;
 using System.Management.Automation.Language;
 using System.Management.Automation.Runspaces;
@@ -9,6 +11,7 @@ public class PowerShellScript
 {
     public string? Content { get; private set; }
     public string? FilePath { get; private set; }
+    public string? Name { get; private set; }
     public bool Loaded { get; private set; }
     public PSParameterList? Parameters { get; private set; }
 
@@ -49,8 +52,10 @@ public class PowerShellScript
 
         if (errors.Length != 0)
         {
+            Content = null;
             return false;
         }
+        Name = Path.GetFileName(filePath);
         Parameters = scriptAst.ParamBlock != null ? new PSParameterList(scriptAst.ParamBlock.Parameters) : new();
         Loaded = true;
 

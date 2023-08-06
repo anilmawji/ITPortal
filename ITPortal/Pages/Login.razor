@@ -8,9 +8,8 @@
 
 @attribute [AllowAnonymous]
 
-<div class="background">
-    <div class="login-container">
-        <img class="company-logo" src="images/arcurve_logo.png" alt="Arcurve logo" />
+<div class="background login-background">
+    <LoginBox LogoPath="images/arcurve_logo.png">
         <button class="login-btn" @onclick="PromptLogin">
             <img src="images/microsoft_logo.png" alt="Microsoft logo">
             Sign in with Microsoft
@@ -18,7 +17,7 @@
         <div class="login-container-bottom">
             <a href="https://github.com/anilmawji/ITPortal">Support</a>
         </div>
-    </div>
+    </LoginBox>
 </div>
 
 @code

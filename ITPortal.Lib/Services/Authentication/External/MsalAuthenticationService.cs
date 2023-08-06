@@ -1,5 +1,4 @@
-﻿using ITPortal.Lib.Utils;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Client;
 using System.Net.Http.Headers;
 

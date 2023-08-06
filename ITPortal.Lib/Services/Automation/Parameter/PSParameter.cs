@@ -1,7 +1,7 @@
 ﻿using System.Management.Automation;
 using System.Runtime.Serialization;
 
-namespace ITPortal.Lib.Services.Automation;
+namespace ITPortal.Lib.Services.Automation.Parameter;
 
 public class PSParameter {
     public string Name { get; }

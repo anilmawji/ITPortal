@@ -1,7 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System.Management.Automation;
 
-namespace ITPortal.Lib.Services.Automation;
+namespace ITPortal.Lib.Services.Automation.Output;
 
 public class PowerShellOutputStreamService : IOutputStreamService<PSMessage, PSStream>
 {

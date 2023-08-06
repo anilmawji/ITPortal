@@ -16,7 +16,7 @@ public class GitHubService : IGitHubService
         _httpClient.Client.BaseAddress = new Uri("https://api.github.com");
 
         // TODO: Retrieve from Key Vault
-        var token = "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";
+        var token = "";
 
         _httpClient.Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Token", token);
     }

@@ -1,6 +1,6 @@
 ﻿using System.Management.Automation;
 
-namespace ITPortal.Lib.Services.Automation;
+namespace ITPortal.Lib.Services.Automation.Output;
 
 public interface IOutputStreamService<T, V>
 {
