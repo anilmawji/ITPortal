@@ -1,4 +1,4 @@
-﻿namespace ITPortal.Lib.Services.Automation;
+﻿namespace ITPortal.Lib.Services.Automation.Output;
 
 public enum PSStream {
     Output,

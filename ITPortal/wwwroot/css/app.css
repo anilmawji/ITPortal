@@ -17,9 +17,9 @@ html {
     height: 100vh; /* Overrides 100% height in modern HTML5 browsers and uses the viewport's height. Only works in modern HTML5 browsers */
 }
 
-.mud-toolbar {
-    box-shadow: 0 3px 8px rgb(0 0 0 / 0.3);
-}
+/*.mud-toolbar {
+    box-shadow: 0 3px 6px rgb(0 0 0 / 0.3);
+}*/
 
 body {
     width: auto; /* Allows content to grow beyond the page without overflow */

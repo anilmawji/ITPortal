@@ -2,7 +2,7 @@
 using System.Management.Automation;
 using System.Management.Automation.Language;
 
-namespace ITPortal.Lib.Services.Automation;
+namespace ITPortal.Lib.Services.Automation.Parameter;
 
 // Extends from IEnumerable instead of List<PSParameter> to force caller to interact with the list through exposed methods only
 public class PSParameterList : IEnumerable<PSParameter>

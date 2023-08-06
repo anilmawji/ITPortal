@@ -1,6 +1,6 @@
 ﻿using System.Management.Automation.Language;
 
-namespace ITPortal.Lib.Services.Automation;
+namespace ITPortal.Lib.Services.Automation.Parameter;
 
 public static class ParameterAstExtensions
 {

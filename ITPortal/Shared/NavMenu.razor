@@ -1,12 +1,11 @@
 ﻿<MudNavMenu>
 	<MudNavLink Href="/" Match="NavLinkMatch.All">Index</MudNavLink>
+	<MudNavGroup Title="PowerShell Executor" Expanded="true">
+		<MudNavLink Href="/jobs" Match="NavLinkMatch.Prefix">Jobs</MudNavLink>
+		<MudNavLink Href="/completed-jobs" Match="NavLinkMatch.Prefix">Completed Jobs</MudNavLink>
+	</MudNavGroup>
 	<MudNavLink Href="/counter" Match="NavLinkMatch.Prefix">Counter</MudNavLink>
-@*	<MudNavGroup Title="Settings" Expanded="true">
-		<MudNavLink Href="/users" Match="NavLinkMatch.Prefix">Users</MudNavLink>
-		<MudNavLink Href="/security" Match="NavLinkMatch.Prefix">Security</MudNavLink>
-	</MudNavGroup>*@
 	<MudNavLink Href="/fetchdata" Match="NavLinkMatch.Prefix">Fetch Data</MudNavLink>
-	<MudNavLink Href="/script-executor" Match="NavLinkMatch.Prefix">Script Executor</MudNavLink>
 </MudNavMenu>
 
 @code {

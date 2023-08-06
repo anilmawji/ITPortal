@@ -25,10 +25,20 @@ public partial class App : Application
 
             WindowId windowId = Microsoft.UI.Win32Interop.GetWindowIdFromWindow(windowHandle);
             AppWindow appWindow = Microsoft.UI.Windowing.AppWindow.GetFromWindowId(windowId);
+
             appWindow.Resize(new SizeInt32(DeviceWindowHandler.WindowWidth, DeviceWindowHandler.WindowHeight));
+
+            if (DeviceWindowHandler.CenterOnScreen)
+            {
+                var displayInfo = Microsoft.Maui.Devices.DeviceDisplay.MainDisplayInfo;
+                int windowX = (int)(displayInfo.Width / 2 - DeviceWindowHandler.WindowWidth / 2);
+                int windowY = (int)(displayInfo.Height / 2 - DeviceWindowHandler.WindowHeight / 2);
+
+                appWindow.Move(new PointInt32(windowX, windowY));
+            }
 #endif
         });
-
-            MainPage = new MainPage();
+        
+        MainPage = new MainPage();
     }
 }

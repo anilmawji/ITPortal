@@ -1,7 +1,7 @@
 ﻿using ITPortal.Data;
 using ITPortal.Lib.Services;
 using ITPortal.Lib.Services.Authentication;
-using ITPortal.Lib.Services.Automation;
+using ITPortal.Lib.Services.Automation.Output;
 using ITPortal.Lib.Services.Core;
 using Microsoft.Extensions.Configuration;
 using MudBlazor.Services;

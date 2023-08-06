@@ -1,0 +1,114 @@
+﻿@page "/jobs"
+
+@using Microsoft.AspNetCore.Authorization;
+
+@inject IOutputStreamService<PSMessage, PSStream> PowerShellService
+
+@attribute [Authorize]
+
+<h1>PowerShell Jobs</h1>
+
+<style>
+    /*Workaround to make MudTable resize with window*/
+    .fixed-size-container {
+        height: calc(100vh - 90px);
+        display: grid;
+        grid-template-columns: minmax(0,1fr);
+        grid-template-rows: minmax(0,1fr);
+    }
+
+    /*Workaround to correct MudTable height*/
+    .mud-table-toolbar {
+        --mud-internal-toolbar-height: 48px;
+    }
+
+    .mud-table-head {
+        --mud-palette-surface: #f5f5f5 !important;
+    }
+</style>
+
+<!-- But instead it just overflows -->
+<div class="fixed-size-container">
+    <MudTable Items="@_jobList" Hover="true" FixedHeader="true" OnRowClick="RowClickEvent"
+        T="PowerShellJob" Filter="new Func<PowerShellJob, bool>(FilterFunc1)" Height="calc(100% - 90px - 10px);">
+        <ToolBarContent>
+            <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+        <ColGroup>
+            <col style="width: 100px;" />
+            <col style="width: 100px;" />
+            <col />
+        </ColGroup>
+        <HeaderContent>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<PowerShellJob, object>(x=>x.Id)">Id</MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<PowerShellJob, object>(x=>x.Script.Name)">Script</MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<PowerShellJob, object>(x=>x.Description)">Description</MudTableSortLabel>
+            </MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTh DataLabel="id">@context.Id</MudTh>
+            <MudTh DataLabel="script">@context.Script.Name</MudTh>
+            <MudTh DataLabel="description">@context.Description</MudTh>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager PageSizeOptions="@_pageSizeOptions" />
+        </PagerContent>
+    </MudTable>
+</div>
+
+@code {
+    private List<PowerShellJob> _jobList = new();
+    private PowerShellScript _testScript;
+    private string _searchString = "";
+
+    private readonly int[] _pageSizeOptions = { 10, 20 };
+
+    protected override async Task OnInitializedAsync()
+    {
+        _testScript = new PowerShellScript(PowerShellService);
+        _testScript.Load("C:\\Users\\mawji\\OneDrive\\Desktop\\block_test.ps1");
+
+        for (int i = 0; i < 20; i++)
+        {
+            _jobList.Add(new PowerShellJob(
+                i.ToString(),
+                _testScript,
+                "This is a test job"
+            ));
+        }
+        _jobList.Add(new PowerShellJob(
+    "1",
+    _testScript,
+    "idk something"
+    ));
+        _jobList.Add(new PowerShellJob(
+        "1",
+        _testScript,
+        "rocket raccoon"
+    ));
+        _jobList.Add(new PowerShellJob(
+        "1",
+        _testScript,
+        "sweatshirt girl"
+    ));
+    }
+
+    private void RowClickEvent(TableRowClickEventArgs<PowerShellJob> tableRowClickEventArgs)
+    {
+        System.Diagnostics.Debug.WriteLine("Clicked list item");
+    }
+
+    private bool FilterFunc1(PowerShellJob job) => FilterFunc(job, _searchString);
+
+    private bool FilterFunc(PowerShellJob job, string searchString)
+    {
+        return string.IsNullOrWhiteSpace(searchString)
+                    || job.Script.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase)
+                    || job.Description.Contains(searchString);
+    }
+}
