@@ -6,20 +6,22 @@
 
 @attribute [Authorize]
 
-<h1>PowerShell Jobs</h1>
+<h1 class="page-title">PowerShell Jobs</h1>
 
 <style>
     /*Workaround to make MudTable resize with window*/
     .fixed-size-container {
-        height: calc(100vh - 90px);
+        margin-left: 20px;
+        margin-right: 20px;
+        height: calc(100vh - 90px - 30px);
         display: grid;
         grid-template-columns: minmax(0,1fr);
         grid-template-rows: minmax(0,1fr);
     }
 
-    /*Workaround to correct MudTable height*/
+    /*Correct MudTable height*/
     .mud-table-toolbar {
-        --mud-internal-toolbar-height: 48px;
+        --mud-internal-toolbar-height: 48px !important;
     }
 
     .mud-table-head {
@@ -29,7 +31,7 @@
 
 <!-- But instead it just overflows -->
 <div class="fixed-size-container">
-    <MudTable Items="@_jobList" Hover="true" FixedHeader="true" OnRowClick="RowClickEvent"
+    <MudTable Items="@_jobList" Dense="true" Hover="true" FixedHeader="true" OnRowClick="RowClickEvent"
         T="PowerShellJob" Filter="new Func<PowerShellJob, bool>(FilterFunc1)" Height="calc(100% - 90px - 10px);">
         <ToolBarContent>
             <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
@@ -37,6 +39,7 @@
         <ColGroup>
             <col style="width: 100px;" />
             <col style="width: 100px;" />
+            <col />
             <col />
         </ColGroup>
         <HeaderContent>
@@ -49,11 +52,17 @@
             <MudTh>
                 <MudTableSortLabel SortBy="new Func<PowerShellJob, object>(x=>x.Description)">Description</MudTableSortLabel>
             </MudTh>
+            <MudTh Style="text-align:right">
+                <MudButton Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">New Job</MudButton>
+            </MudTh>
         </HeaderContent>
         <RowTemplate>
             <MudTh DataLabel="id">@context.Id</MudTh>
             <MudTh DataLabel="script">@context.Script.Name</MudTh>
             <MudTh DataLabel="description">@context.Description</MudTh>
+            <MudTh DataLabel="" Style="text-align:right">
+                <MudButton Style="width:20px !important;">🗙</MudButton>
+            </MudTh>
         </RowTemplate>
         <PagerContent>
             <MudTablePager PageSizeOptions="@_pageSizeOptions" />
@@ -81,21 +90,6 @@
                 "This is a test job"
             ));
         }
-        _jobList.Add(new PowerShellJob(
-    "1",
-    _testScript,
-    "idk something"
-    ));
-        _jobList.Add(new PowerShellJob(
-        "1",
-        _testScript,
-        "rocket raccoon"
-    ));
-        _jobList.Add(new PowerShellJob(
-        "1",
-        _testScript,
-        "sweatshirt girl"
-    ));
     }
 
     private void RowClickEvent(TableRowClickEventArgs<PowerShellJob> tableRowClickEventArgs)
@@ -109,6 +103,6 @@
     {
         return string.IsNullOrWhiteSpace(searchString)
                     || job.Script.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase)
-                    || job.Description.Contains(searchString);
+                    || job.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase);
     }
 }

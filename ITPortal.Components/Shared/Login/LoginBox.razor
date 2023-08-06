@@ -1,0 +1,15 @@
+﻿<div class="login-container centered">
+    @if (LogoPath != null)
+    {
+        <img class="company-logo" src=@LogoPath alt="Company logo" />
+    }
+    @ChildContent
+</div>
+
+@code {
+    [Parameter]
+    public string? LogoPath { get; set; }
+
+    [ParameterAttribute]
+    public RenderFragment? ChildContent { get; set; }
+}

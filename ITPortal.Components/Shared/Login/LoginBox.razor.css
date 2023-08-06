@@ -1,0 +1,20 @@
+﻿.login-container {
+    text-align: center;
+    border: 1px solid;
+    width: 35%;
+    min-width: 300px;
+    max-width: 800px;
+    padding: 40px;
+    border-radius: 12px;
+    border-color: #D2D2D2;
+    box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+    background-color: white;
+}
+
+.company-logo {
+    max-width: 300px;
+    width: 100%;
+    padding: 24px;
+    display: block;
+    margin: 30px auto;
+}
