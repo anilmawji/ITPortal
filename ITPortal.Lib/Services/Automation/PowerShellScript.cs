@@ -21,10 +21,11 @@ public class PowerShellScript
     public PowerShellScript(IOutputStreamService<PSMessage, PSStream> outputStreamService)
     {
         _outputStreamService = outputStreamService;
+        // CreateDefault() only loads the commands necessary to host PowerShell, CreateDefault2() loads all available commands
         _initialsessionState = InitialSessionState.CreateDefault();
         // Limit script execution to one thread
         _initialsessionState.ApartmentState = ApartmentState.STA;
-        // Set its script-file execution policy (for the current session only).
+        // Set execution policy of the PS session
         _initialsessionState.ExecutionPolicy = Microsoft.PowerShell.ExecutionPolicy.Bypass;
     }
 

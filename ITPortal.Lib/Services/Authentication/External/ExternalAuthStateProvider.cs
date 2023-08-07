@@ -33,17 +33,23 @@ public class ExternalAuthStateProvider : AuthenticationStateProvider
     {
         var authResult = await _authenticationService.AcquireTokenInteractiveAsync();
 
-        // Authentication failed, return a logged out user state
         if (authResult == null)
         {
+            // Authentication failed, return a logged out user state
             return new AuthenticatedUser();
         }
-        AuthenticatedUser authenticatedUser = new(authResult.ClaimsPrincipal);
+        AuthenticatedUser user = new(authResult.ClaimsPrincipal);
+
         // For some reason AAD uses "name" as the claim type instead of ClaimTypes.Name
         // The user context only recognizes ClaimTypes.Name
-        authenticatedUser.UpdateClaimType("name", ClaimTypes.Name);
+        var claimTypeReplacements = new Dictionary<string, string>()
+        {
+            { "name", ClaimTypes.Name },
+            { "preferred_username", ClaimTypes.Email }
+        };
+        user.ReplaceClaimTypes(claimTypeReplacements);
 
-        return authenticatedUser;
+        return user;
     }
 
     public void Logout()

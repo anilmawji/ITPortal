@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Authorization;
 
 @inject IOutputStreamService<PSMessage, PSStream> PowerShellService
+@inject NavigationManager NavigationManager
 
 @attribute [Authorize]
 
@@ -53,7 +54,7 @@
                 <MudTableSortLabel SortBy="new Func<PowerShellJob, object>(x=>x.Description)">Description</MudTableSortLabel>
             </MudTh>
             <MudTh Style="text-align:right">
-                <MudButton Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">New Job</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" @onclick="NewJobClickEvent">New Job</MudButton>
             </MudTh>
         </HeaderContent>
         <RowTemplate>
@@ -85,11 +86,32 @@
         for (int i = 0; i < 20; i++)
         {
             _jobList.Add(new PowerShellJob(
-                i.ToString(),
+                Guid.NewGuid().ToString().Substring(0, 5),
                 _testScript,
                 "This is a test job"
             ));
         }
+
+        //List<string> guids = new();
+
+        //for (int i = 0; i < 1000; i++)
+        //{
+        //    string g = Guid.NewGuid().ToString().Substring(0, 5);
+
+        //    for (int y = 0; y < guids.Count(); y++)
+        //    {
+        //        if (guids.ElementAt(y) == g)
+        //        {
+        //            System.Diagnostics.Debug.WriteLine("Found dupe: " + g);
+        //        }
+        //    }
+        //    guids.Add(g);
+        //}
+    }
+
+    private void NewJobClickEvent()
+    {
+        NavigationManager.NavigateTo("/new-job");
     }
 
     private void RowClickEvent(TableRowClickEventArgs<PowerShellJob> tableRowClickEventArgs)
@@ -102,6 +124,7 @@
     private bool FilterFunc(PowerShellJob job, string searchString)
     {
         return string.IsNullOrWhiteSpace(searchString)
+                    || job.Id.Contains(searchString, StringComparison.OrdinalIgnoreCase)
                     || job.Script.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase)
                     || job.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase);
     }

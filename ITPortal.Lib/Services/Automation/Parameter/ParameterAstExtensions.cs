@@ -13,7 +13,7 @@ public static class ParameterAstExtensions
             if (attribute.TypeName.ToString() == "Parameter")
             {
                 // TODO: Find proper way to extract property values from attribute
-                mandatory = attribute.ToString().Contains("Mandatory") && !attribute.ToString().Contains("Mandatory=$false");
+                mandatory = attribute.ToString().Contains("Mandatory") || attribute.ToString().Contains("Mandatory=$true");
                 break;
             }
         }

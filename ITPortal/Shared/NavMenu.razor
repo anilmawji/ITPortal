@@ -1,20 +1,10 @@
 ﻿<MudNavMenu>
-	<MudNavLink Href="/" Match="NavLinkMatch.All">Index</MudNavLink>
 	<MudNavGroup Title="PowerShell Executor" Expanded="true">
-		<MudNavLink Href="/jobs" Match="NavLinkMatch.Prefix">Jobs</MudNavLink>
-		<MudNavLink Href="/completed-jobs" Match="NavLinkMatch.Prefix">Completed Jobs</MudNavLink>
+		<MudNavLink Href="/jobs" Match="NavLinkMatch.All">Jobs</MudNavLink>
+		<MudNavLink Href="/results" Match="NavLinkMatch.All">Job Results</MudNavLink>
 	</MudNavGroup>
-	<MudNavLink Href="/counter" Match="NavLinkMatch.Prefix">Counter</MudNavLink>
-	<MudNavLink Href="/fetchdata" Match="NavLinkMatch.Prefix">Fetch Data</MudNavLink>
+	<MudNavLink Href="/inventory" Match="NavLinkMatch.All">Device Inventory</MudNavLink>
+	<MudNavLink Href="/counter" Match="NavLinkMatch.All">Counter</MudNavLink>
+	<MudNavLink Href="/fetchdata" Match="NavLinkMatch.All">Fetch Data</MudNavLink>
+	<MudNavLink Href="/script-executor" Match="NavLinkMatch.All">Test</MudNavLink>
 </MudNavMenu>
-
-@code {
-	private bool collapseNavMenu = true;
-
-	private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-	private void ToggleNavMenu()
-	{
-		collapseNavMenu = !collapseNavMenu;
-	}
-}

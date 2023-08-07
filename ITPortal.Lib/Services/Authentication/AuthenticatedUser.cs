@@ -31,20 +31,34 @@ public class AuthenticatedUser
     public Claim? GetClaimWithType(string claimType) =>
         Principal.FindFirst(c => c.Type == claimType);
 
-    public bool UpdateClaimType(string oldClaimType, string newClaimType)
+    public bool ReplaceClaimType(List<Claim> claims, string oldClaimType, string newClaimType)
     {
-        Claim? name = GetClaimWithType(oldClaimType);
+        Claim? old = GetClaimWithType(oldClaimType);
 
-        if (name == null) return false;
+        if (old == null) return false;
 
-        // Must recreate principal when adding a new claim
-        List<Claim> claims = Principal.Claims.ToList();
-
-        claims.Add(new Claim(newClaimType, name.Value));
-        claims.Remove(name);
-
-        Initialize(claims);
+        claims.Add(new Claim(newClaimType, old.Value));
+        claims.Remove(old);
 
         return true;
+    }
+
+    public bool ReplaceClaimTypes(Dictionary<string, string> claimTypeReplacements)
+    {
+        bool success = true;
+
+        // If adding a new claim to the principal, the principal must be completely rebuilt
+        List<Claim> claims = Principal.Claims.ToList();
+
+        foreach (var(oldClaimType, newClaimType) in claimTypeReplacements)
+        {
+            if (!ReplaceClaimType(claims, oldClaimType, newClaimType))
+            {
+                success = false;
+            }
+        }
+        Initialize(claims);
+
+        return success;
     }
 }
