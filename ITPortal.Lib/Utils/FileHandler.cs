@@ -9,7 +9,7 @@ public class FileHandler
     {
         string text;
 
-        using (var streamReader = new StreamReader(filePath, Encoding.UTF8))
+        using (StreamReader streamReader = new(filePath, Encoding.UTF8))
         {
             text = streamReader.ReadToEnd();
         }

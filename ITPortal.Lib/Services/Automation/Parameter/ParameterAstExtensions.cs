@@ -8,7 +8,7 @@ public static class ParameterAstExtensions
     {
         bool mandatory = false;
 
-        foreach (var attribute in parameter.Attributes)
+        foreach (AttributeBaseAst attribute in parameter.Attributes)
         {
             if (attribute.TypeName.ToString() == "Parameter")
             {

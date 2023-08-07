@@ -1,4 +1,5 @@
-﻿using Microsoft.Kiota.Abstractions.Authentication;
+﻿using Microsoft.Identity.Client;
+using Microsoft.Kiota.Abstractions.Authentication;
 
 namespace ITPortal.Lib.Services.Authentication;
 
@@ -19,7 +20,7 @@ public class TokenProvider : IAccessTokenProvider
         Dictionary<string, object>? additionalAuthenticationContext = null,
         CancellationToken cancellationToken = default)
     {
-        var authResult = await _authenticationService.AcquireTokenSilentAsync();
+        AuthenticationResult? authResult = await _authenticationService.AcquireTokenSilentAsync();
 
         string? token = authResult?.AccessToken;
 

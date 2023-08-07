@@ -28,7 +28,7 @@ public class MsalAuthenticationService : IAuthenticationService
     // Add access token to HTTP request headers
     public async Task AuthenticateRequestAsync(HttpRequestMessage request)
     {
-        var authResult = await AcquireTokenSilentAsync();
+        AuthenticationResult? authResult = await AcquireTokenSilentAsync();
         string? token = authResult?.AccessToken;
 
         request.Headers.Authorization = new AuthenticationHeaderValue("bearer", token);
@@ -39,7 +39,7 @@ public class MsalAuthenticationService : IAuthenticationService
         ArgumentNullException.ThrowIfNull(_authenticationClient);
 
         // Used by MSAL to search user token cache for a valid accessToken
-        var accounts = await _authenticationClient.GetAccountsAsync();
+        IEnumerable<IAccount> accounts = await _authenticationClient.GetAccountsAsync();
 
         AuthenticationResult? result;
         try

@@ -13,7 +13,7 @@ public class PSParameterList : IEnumerable<PSParameter>
 
     public PSParameterList(IEnumerable<ParameterAst> parameters)
     {
-        foreach (var parameter in parameters)
+        foreach (ParameterAst parameter in parameters)
         {
             Add(parameter);
         }
@@ -35,7 +35,7 @@ public class PSParameterList : IEnumerable<PSParameter>
 
     public void Register(PowerShell shell)
     {
-        foreach (var parameter in _parameters)
+        foreach (PSParameter parameter in _parameters)
         {
             shell.AddParameter(parameter.Name, parameter.Value);
         }

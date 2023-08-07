@@ -10,7 +10,7 @@ public class GraphClientService : IGraphClientService
 
     public GraphClientService(IAccessTokenProvider tokenProvider)
     {
-        var authenticationProvider = new BaseBearerTokenAuthenticationProvider(tokenProvider);
+        BaseBearerTokenAuthenticationProvider authenticationProvider = new(tokenProvider);
         Client = new GraphServiceClient(authenticationProvider);
     }
 

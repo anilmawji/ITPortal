@@ -5,3 +5,7 @@
 .logout-btn {
     margin: 20px;
 }
+
+.logout-btn:hover {
+    text-decoration: underline;
+}

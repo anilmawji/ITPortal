@@ -14,7 +14,7 @@ public class PowerShellOutputStreamService : IOutputStreamService<PSMessage, PSS
     {
         stream.DataAdded += (object? sender, DataAddedEventArgs e) =>
         {
-            var message = stream[e.Index]?.ToString();
+            string? message = stream[e.Index]?.ToString();
             AddOutput(streamType, message);
         };
     }

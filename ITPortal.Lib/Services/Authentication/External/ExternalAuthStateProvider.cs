@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Identity.Client;
 
 namespace ITPortal.Lib.Services.Authentication.External;
 
@@ -31,7 +32,7 @@ public class ExternalAuthStateProvider : AuthenticationStateProvider
 
     private async Task<AuthenticatedUser> LoginWithExternalProviderAsync()
     {
-        var authResult = await _authenticationService.AcquireTokenInteractiveAsync();
+        AuthenticationResult? authResult = await _authenticationService.AcquireTokenInteractiveAsync();
 
         if (authResult == null)
         {
@@ -42,7 +43,7 @@ public class ExternalAuthStateProvider : AuthenticationStateProvider
 
         // For some reason AAD uses "name" as the claim type instead of ClaimTypes.Name
         // The user context only recognizes ClaimTypes.Name
-        var claimTypeReplacements = new Dictionary<string, string>()
+        Dictionary<string, string> claimTypeReplacements = new()
         {
             { "name", ClaimTypes.Name },
             { "preferred_username", ClaimTypes.Email }

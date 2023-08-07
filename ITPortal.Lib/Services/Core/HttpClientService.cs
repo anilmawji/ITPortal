@@ -25,7 +25,7 @@ public class HttpClientService : IHttpClientService
             throw new ArgumentNullException(nameof(url));
         }
 
-        var streamResponse = await Client.GetStreamAsync(url)
+        Stream streamResponse = await Client.GetStreamAsync(url)
             .ConfigureAwait(false);
 
         // Convert JSON stream to object with JSON strings

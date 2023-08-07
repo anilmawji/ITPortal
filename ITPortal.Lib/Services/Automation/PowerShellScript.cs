@@ -74,7 +74,7 @@ public class PowerShellScript
             shell.AddScript(Content);
             Parameters?.Register(shell);
 
-            var outputCollection = new PSDataCollection<PSObject>();
+            PSDataCollection<PSObject> outputCollection = new();
             _outputStreamService.SubscribeToPowerShellStream(outputCollection, PSStream.Output);
             _outputStreamService.SubscribeToPowerShellStream(shell.Streams.Information, PSStream.Information);
             _outputStreamService.SubscribeToPowerShellStream(shell.Streams.Progress, PSStream.Progress);
@@ -83,7 +83,7 @@ public class PowerShellScript
 
             // Use Task.Factory to opt for the newer async/await keywords
             // Moves away from the old IAsyncResult functionality still used by the PowerShell API
-            var shellTask = Task.Factory.FromAsync(
+            Task<PSDataCollection<PSObject>> shellTask = Task.Factory.FromAsync(
                 shell.BeginInvoke<PSObject, PSObject>(null, outputCollection),
                 shell.EndInvoke);
 

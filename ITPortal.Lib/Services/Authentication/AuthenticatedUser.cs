@@ -50,7 +50,7 @@ public class AuthenticatedUser
         // If adding a new claim to the principal, the principal must be completely rebuilt
         List<Claim> claims = Principal.Claims.ToList();
 
-        foreach (var(oldClaimType, newClaimType) in claimTypeReplacements)
+        foreach ((string oldClaimType, string newClaimType) in claimTypeReplacements)
         {
             if (!ReplaceClaimType(claims, oldClaimType, newClaimType))
             {
