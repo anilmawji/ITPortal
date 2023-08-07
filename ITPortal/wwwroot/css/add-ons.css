@@ -1,11 +1,20 @@
-﻿h1.page-title {
+﻿/* Company branding */
+.appbar-logo {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+    margin-left: 20px;
+}
+
+/* Title for a page in the portal */
+h1.page-title {
     margin-top: 20px;
     margin-left: 20px;
     margin-right: 20px;
     margin-bottom: 10px;
 }
 
-/* Center horizontally and vertically */
+/* Center element horizontally and vertically */
 .centered {
     position: absolute;
     top: 50%;

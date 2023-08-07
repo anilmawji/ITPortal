@@ -1,0 +1,14 @@
+﻿.container {
+    margin: 20px;
+    margin-bottom: 40px;
+}
+
+h2 {
+    font-weight: normal;
+    padding-top: 20px;
+}
+
+hr {
+    background-color: #D2D2D2;
+    height: 1px;
+}
