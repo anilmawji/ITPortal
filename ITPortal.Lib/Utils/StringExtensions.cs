@@ -1,4 +1,6 @@
-﻿namespace ITPortal.Lib.Utils;
+﻿using Microsoft.PowerShell.Commands;
+
+namespace ITPortal.Lib.Utils;
 
 public static class StringExtensions
 {
@@ -20,21 +22,5 @@ public static class StringExtensions
         }
         byte[] base64EncodedBytes = Convert.FromBase64String(base64EncodedData);
         return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
-    }
-
-    public static bool IsUnique(this string element, List<string> list)
-    {
-        if (ids.Count == 0)
-        {
-            return true;
-        }
-        foreach (string currentId in ids)
-        {
-            if (id == currentId)
-            {
-                return false;
-            }
-        }
-        return true;
     }
 }
