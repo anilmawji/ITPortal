@@ -1,11 +1,13 @@
 ﻿@page "/jobs"
 
 @using Microsoft.AspNetCore.Authorization;
+@using ITPortal.Lib.Services.Automation.Job;
+@using ITPortal.Lib.Services.Automation.Script;
 
-@inject IOutputStreamService<PSMessage, PSStream> PowerShellService
+@inject PowerShellOutputStreamService PowerShellService
 @inject NavigationManager NavigationManager
 
-@attribute [Authorize]
+@*@attribute [Authorize]*@
 
 <h1 class="page-title">PowerShell Jobs</h1>
 
@@ -33,7 +35,7 @@
 <!-- But instead it just overflows -->
 <div class="fixed-size-container">
     <MudTable Items="@_jobList" Dense="true" Hover="true" FixedHeader="true" OnRowClick="RowClickEvent"
-        T="PowerShellJob" Filter="new Func<PowerShellJob, bool>(FilterFunc1)" Height="calc(100% - 90px - 10px);">
+        T="ScriptJob" Filter="new Func<ScriptJob, bool>(FilterFunc1)" Height="calc(100% - 90px - 10px);">
         <ToolBarContent>
             <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
         </ToolBarContent>
@@ -45,13 +47,13 @@
         </ColGroup>
         <HeaderContent>
             <MudTh>
-                <MudTableSortLabel SortBy="new Func<PowerShellJob, object>(x=>x.Id)">Id</MudTableSortLabel>
+                <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Id)">Id</MudTableSortLabel>
             </MudTh>
             <MudTh>
-                <MudTableSortLabel SortBy="new Func<PowerShellJob, object>(x=>x.Script.Name)">Script</MudTableSortLabel>
+                <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Script.Name)">Script</MudTableSortLabel>
             </MudTh>
             <MudTh>
-                <MudTableSortLabel SortBy="new Func<PowerShellJob, object>(x=>x.Description)">Description</MudTableSortLabel>
+                <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Description)">Description</MudTableSortLabel>
             </MudTh>
             <MudTh Style="text-align:right">
                 <MudButton Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" @onclick="NewJobClickEvent">New Job</MudButton>
@@ -72,7 +74,7 @@
 </div>
 
 @code {
-    private List<PowerShellJob> _jobList = new();
+    private List<ScriptJob> _jobList = new();
     private PowerShellScript _testScript;
     private string _searchString = "";
 
@@ -85,11 +87,11 @@
 
         for (int i = 0; i < 20; i++)
         {
-            _jobList.Add(new PowerShellJob(
-                Guid.NewGuid().ToString().Substring(0, 5),
-                _testScript,
-                "This is a test job"
-            ));
+            //_jobList.Add(new PSJob(
+            //    Guid.NewGuid().ToString().Substring(0, 5),
+            //    _testScript,
+            //    "This is a test job"
+            //));
         }
 
         //List<string> guids = new();
@@ -114,14 +116,14 @@
         NavigationManager.NavigateTo("/new-job");
     }
 
-    private void RowClickEvent(TableRowClickEventArgs<PowerShellJob> tableRowClickEventArgs)
+    private void RowClickEvent(TableRowClickEventArgs<ScriptJob> tableRowClickEventArgs)
     {
         System.Diagnostics.Debug.WriteLine("Clicked list item");
     }
 
-    private bool FilterFunc1(PowerShellJob job) => FilterFunc(job, _searchString);
+    private bool FilterFunc1(ScriptJob job) => FilterFunc(job, _searchString);
 
-    private bool FilterFunc(PowerShellJob job, string searchString)
+    private bool FilterFunc(ScriptJob job, string searchString)
     {
         return string.IsNullOrWhiteSpace(searchString)
                     || job.Id.Contains(searchString, StringComparison.OrdinalIgnoreCase)

@@ -8,8 +8,9 @@
 @using ITPortal.Lib.Services.Core;
 @using ITPortal.Lib.Utils;
 @using System.Management.Automation.Runspaces;
+@using ITPortal.Lib.Services.Automation.Script;
 
-@inject IOutputStreamService<PSMessage, PSStream> PowerShellService
+@inject PowerShellOutputStreamService PowerShellService
 
 @*@attribute [Authorize]*@
 
@@ -148,18 +149,18 @@
         };
         _script = new PowerShellScript(PowerShellService);
 
-        PowerShellService.OutputChanged += (object sender, List<PSMessage> newOutput) =>
+        PowerShellService.OutputChanged += (object sender, List<ScriptOutputMessage> newOutput) =>
         {
             InvokeAsync(() => this.StateHasChanged());
         };
     }
 
-    private void OnDateChanged(DateTime newDate, TimeSpan time, PSParameter parameter)
+    private void OnDateChanged(DateTime newDate, TimeSpan time, ScriptParameter parameter)
     {
         parameter.Value = newDate.Date.Add(time);
     }
 
-    private TimeSpan OnTimeChanged(TimeSpan newTime, DateTime date, PSParameter parameter)
+    private TimeSpan OnTimeChanged(TimeSpan newTime, DateTime date, ScriptParameter parameter)
     {
         parameter.Value = date.Date.Add(newTime);
 

@@ -42,7 +42,7 @@ public static class MauiProgram
 
         services.AddMsalAuthentication();
 
-        services.AddSingleton<IOutputStreamService<PSMessage, PSStream>, PowerShellOutputStreamService>();
+        services.AddSingleton<PowerShellOutputStreamService>();
 
         services.AddSingleton<IGraphClientService, GraphClientService>();
 

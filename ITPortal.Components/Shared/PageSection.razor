@@ -1,0 +1,21 @@
+﻿<div class="container">
+    <hr>
+    @if (Title != null)
+    {
+        <h2>@Title</h2>
+    }
+    <div class=@Class>
+        @ChildContent
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string? Title { get; set; }
+
+    [Parameter]
+    public string? Class { get; set; }
+
+    [ParameterAttribute]
+    public RenderFragment? ChildContent { get; set; }
+}

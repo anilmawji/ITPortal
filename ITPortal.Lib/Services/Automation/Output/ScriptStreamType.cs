@@ -1,15 +1,10 @@
 ﻿namespace ITPortal.Lib.Services.Automation.Output;
 
-public enum PSStream {
+public enum ScriptStreamType
+{
     Output,
     Information,
     Progress,
     Warning,
     Error
-}
-
-public class PSMessage
-{
-    public PSStream Stream;
-    public string? Data;
 }

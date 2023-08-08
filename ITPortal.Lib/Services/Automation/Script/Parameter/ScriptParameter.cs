@@ -1,15 +1,16 @@
 ﻿using System.Management.Automation;
 using System.Runtime.Serialization;
 
-namespace ITPortal.Lib.Services.Automation.Parameter;
+namespace ITPortal.Lib.Services.Automation.Script.Parameter;
 
-public class PSParameter {
+public class ScriptParameter
+{
     public string Name { get; }
     public object? Value { get; set; }
     public bool Mandatory { get; }
     public Type DesiredType { get; private set; }
 
-    public PSParameter(string name, Type desiredType, bool mandatory = false)
+    public ScriptParameter(string name, Type desiredType, bool mandatory = false)
     {
         Name = name;
         DesiredType = desiredType;
@@ -19,7 +20,7 @@ public class PSParameter {
 
     public object? GetDefaultValue()
     {
-        // it's very important to check IsValueType before calling GetUninitializedObject
+        // It's important to check IsValueType before calling GetUninitializedObject
         // GetUninitializedObject is valid for reference types, but it will not return null
         if (DesiredType.IsValueType)
         {
@@ -49,7 +50,7 @@ public class PSParameter {
                 {
                     return null;
                 }
-                // All PowerShell arrays will be treated internally as lists of strings
+                // All arrays will be treated internally as lists of strings
                 return new List<string>();
             }
         }

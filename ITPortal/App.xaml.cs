@@ -2,16 +2,12 @@
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Windows.Graphics;
-using Application = Microsoft.Maui.Controls.Application;
 #endif
 
 namespace ITPortal;
 
 public partial class App : Application
 {
-    private const int minimumWindowWidth = 300;
-    private const int minimumWindowHeight = 20;
-
     public App()
 	{
 		InitializeComponent();
@@ -40,23 +36,9 @@ public partial class App : Application
 
             appWindow.Resize(new SizeInt32(windowWidth, windowHeight));
             appWindow.Move(new PointInt32(centerX, centerY));
-            appWindow.Changed += AppWindowChanged;
 #endif
         });
         
         MainPage = new MainPage();
-    }
-
-    private static void AppWindowChanged(Microsoft.UI.Windowing.AppWindow sender, Microsoft.UI.Windowing.AppWindowChangedEventArgs args)
-    {
-#if WINDOWS
-        var oldWindowHeight = sender.Size.Height;
-        var oldWindowWidth = sender.Size.Width;
-
-        var newWindowHieght = oldWindowHeight > minimumWindowHeight ? oldWindowHeight : minimumWindowHeight;
-        var newWindowWidth = oldWindowWidth > minimumWindowWidth ? oldWindowWidth : minimumWindowWidth;
-
-        sender.Resize(new SizeInt32(newWindowWidth, newWindowHieght));
-#endif
     }
 }

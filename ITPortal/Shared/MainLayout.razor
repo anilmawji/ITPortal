@@ -25,13 +25,13 @@
                        Class="nav-button"
                        OnClick="@ThemeToggle" />
     </MudAppBar>
-	<AuthorizeView>
-		<Authorized>
+@*	<AuthorizeView>
+		<Authorized>*@
 			<MudDrawer @bind-Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="1">
 				<NavMenu />
 			</MudDrawer>
-		</Authorized>
-	</AuthorizeView>
+@*		</Authorized>
+	</AuthorizeView>*@
     <MudMainContent>
         @Body
     </MudMainContent>
@@ -78,6 +78,7 @@
         if (firstRender)
         {
             //_isDarkMode = await _mudThemeProvider.GetSystemPreference();
+            await Task.CompletedTask; // Temp placeholder to get rid of warning
             StateHasChanged();
         }
     }

@@ -2,16 +2,22 @@
 
 @using Microsoft.AspNetCore.Authorization;
 
-@attribute [Authorize]
+@*@attribute [Authorize]*@
+
+<style>
+</style>
 
 <h1 class="page-title">PowerShell Jobs > New Job</h1>
 
 <PageSection Title="Basics">
-
+    <MudSelect @bind-Value="Device" Label="Device" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" Margin="Margin.Dense">
+        <MudSelectItem Value=@("Local Machine") />
+    </MudSelect>
+    <MudTextField @bind-Value="Description" Label="Description" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
 </PageSection>
 
 <PageSection Title="Script">
-
+    <button @onclick="PickAndLoadScript">Choose file</button>
 </PageSection>
 
 <PageSection Title="Parameters">
@@ -23,5 +29,42 @@
 </PageSection>
 
 @code {
+    private string Description { get; set; }
+    private string Device { get; set; }
 
+    private FilePickerFileType _psFileType;
+    private PickOptions _pickOptions;
+    private ScriptJob _psJob;
+
+    protected override void OnInitialized()
+    {
+        _psFileType = new(new Dictionary<DevicePlatform, IEnumerable<string>>
+            {
+                { DevicePlatform.WinUI, new[] { ".ps1" } },
+                { DevicePlatform.macOS, new[] { "ps1" } }
+            }
+        );
+        _pickOptions = new()
+        {
+            // PickerTitle is used by macOS but not Windows - unreliable way of informing user
+            PickerTitle = "Please select a PowerShell _script file",
+            FileTypes = _psFileType,
+        };
+        _psJob = new ScriptJob("");
+    }
+
+    private string GenerateGuid()
+    {
+        return String.Empty;
+    }
+
+    private async void PickAndLoadScript()
+    {
+        var fileResult = await FilePickerHandler.PickFile(_pickOptions);
+
+        if (fileResult != null)
+        {
+            //LoadScript(fileResult.FullPath);
+        }
+    }
 }
