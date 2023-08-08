@@ -5,19 +5,21 @@ namespace ITPortal.Lib.Services.Automation.Script;
 
 public abstract class AutomationScript
 {
-    public IScriptOutputStreamService? OutputStreamService { get; set; }
-    public ScriptParameterList? Parameters { get; protected set; } = new();
+    public IScriptOutputStreamService OutputStreamService { get; set; }
+    public ScriptParameterList Parameters { get; protected set; }
     public string? Content { get; protected set; }
     public string? FilePath { get; protected set; }
     public string? Name { get; protected set; }
     public bool Loaded { get; protected set; }
 
-    public AutomationScript(IScriptOutputStreamService outputStreamService)
+    public AutomationScript(IScriptOutputStreamService outputStreamService, ScriptParameterList parameters)
     {
         OutputStreamService = outputStreamService;
+        Parameters = parameters;
     }
 
-    public AutomationScript(IScriptOutputStreamService outputStreamService, string filePath) : this(outputStreamService)
+    public AutomationScript(IScriptOutputStreamService outputStreamService,
+        ScriptParameterList parameters, string filePath) : this(outputStreamService, parameters)
     {
         Load(filePath);
     }

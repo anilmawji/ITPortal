@@ -9,12 +9,9 @@ namespace ITPortal.Lib.Services.Automation.Script;
 
 public class PowerShellScript : AutomationScript
 {
-    public new PowershellParameterList? Parameters { get; private set; }
-    public new PowerShellOutputStreamService? OutputStreamService { get; set; }
-
     private readonly InitialSessionState _initialsessionState;
 
-    public PowerShellScript(PowerShellOutputStreamService outputStreamService) : base(outputStreamService)
+    public PowerShellScript(PowerShellOutputStreamService outputStreamService) : base(outputStreamService, new PowershellParameterList())
     {
         // CreateDefault() only loads the commands necessary to host PowerShell, CreateDefault2() loads all available commands
         _initialsessionState = InitialSessionState.CreateDefault();
@@ -58,7 +55,7 @@ public class PowerShellScript : AutomationScript
             // "using" relies on compiler to dispose of shell when method is popped from call stack
             using PowerShell shell = PowerShell.Create(_initialsessionState);
             shell.AddScript(Content);
-            Parameters?.Register(shell);
+            ((PowershellParameterList)Parameters)?.Register(shell);
 
             PSDataCollection<PSObject> outputCollection = new();
 
