@@ -2,6 +2,7 @@
 
 namespace ITPortal.Lib.Services.Automation.Script.Parameter;
 
+// Extends from IEnumerable instead of List<PSParameter> to force caller to interact with the list through exposed methods only
 public class ScriptParameterList : IEnumerable<ScriptParameter>
 {
     public List<ScriptParameter> Parameters { get; set; } = new();

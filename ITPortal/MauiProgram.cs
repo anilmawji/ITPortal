@@ -1,6 +1,7 @@
 ﻿using ITPortal.Data;
 using ITPortal.Lib.Services;
 using ITPortal.Lib.Services.Authentication;
+using ITPortal.Lib.Services.Automation.JobTest;
 using ITPortal.Lib.Services.Automation.Output;
 using ITPortal.Lib.Services.Core;
 using Microsoft.Extensions.Configuration;
@@ -42,7 +43,8 @@ public static class MauiProgram
 
         services.AddMsalAuthentication();
 
-        services.AddSingleton<PowerShellOutputStreamService>();
+        services.AddSingleton<IScriptOutputStreamService, PowerShellOutputStreamService>();
+        services.AddSingleton<IScriptJobService, PowerShellJobService>();
 
         services.AddSingleton<IGraphClientService, GraphClientService>();
 

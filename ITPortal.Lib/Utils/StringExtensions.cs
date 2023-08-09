@@ -1,6 +1,4 @@
-﻿using Microsoft.PowerShell.Commands;
-
-namespace ITPortal.Lib.Utils;
+﻿namespace ITPortal.Lib.Utils;
 
 public static class StringExtensions
 {
@@ -11,6 +9,7 @@ public static class StringExtensions
             return string.Empty;
         }
         byte[] plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
+
         return Convert.ToBase64String(plainTextBytes);
     }
 
@@ -21,6 +20,7 @@ public static class StringExtensions
             return string.Empty;
         }
         byte[] base64EncodedBytes = Convert.FromBase64String(base64EncodedData);
+
         return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
     }
 }

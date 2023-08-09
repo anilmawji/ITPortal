@@ -3,11 +3,8 @@ using System.Management.Automation.Language;
 
 namespace ITPortal.Lib.Services.Automation.Script.Parameter;
 
-// Extends from IEnumerable instead of List<PSParameter> to force caller to interact with the list through exposed methods only
 public class PowershellParameterList : ScriptParameterList
 {
-    private readonly List<ScriptParameter> _parameters = new();
-
     public PowershellParameterList() { }
 
     public PowershellParameterList(IEnumerable<ParameterAst> parameters)
@@ -42,7 +39,7 @@ public class PowershellParameterList : ScriptParameterList
 
     public void Register(PowerShell shell)
     {
-        foreach (ScriptParameter parameter in _parameters)
+        foreach (ScriptParameter parameter in Parameters)
         {
             shell.AddParameter(parameter.Name, parameter.Value);
         }

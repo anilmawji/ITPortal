@@ -11,7 +11,9 @@ public class PowerShellScript : AutomationScript
 {
     private readonly InitialSessionState _initialsessionState;
 
-    public PowerShellScript(PowerShellOutputStreamService outputStreamService) : base(outputStreamService, new PowershellParameterList())
+    public PowershellParameterList? Parameters { get; protected set; }
+
+    public PowerShellScript(IScriptOutputStreamService outputStreamService) : base(outputStreamService)
     {
         // CreateDefault() only loads the commands necessary to host PowerShell, CreateDefault2() loads all available commands
         _initialsessionState = InitialSessionState.CreateDefault();
@@ -46,16 +48,25 @@ public class PowerShellScript : AutomationScript
         return true;
     }
 
-    public override async Task<PSDataCollection<PSObject>?> Invoke(CancellationToken cancellationToken)
+    public override async Task InvokeAsync(CancellationToken cancellationToken, string cancellationMessage)
     {
-        if (!Loaded) return null;
+        if (cancellationToken.IsCancellationRequested)
+        {
+            OutputStreamService?.AddOutput(ScriptStreamType.Warning, cancellationMessage);
+            return;
+        }
+
+        if (!Loaded)
+        {
+            throw new InvalidPowerShellStateException("Attempt to invoke a script that was not loaded");
+        }
 
         try
         {
             // "using" relies on compiler to dispose of shell when method is popped from call stack
             using PowerShell shell = PowerShell.Create(_initialsessionState);
             shell.AddScript(Content);
-            ((PowershellParameterList)Parameters)?.Register(shell);
+            Parameters?.Register(shell);
 
             PSDataCollection<PSObject> outputCollection = new();
 
@@ -76,18 +87,14 @@ public class PowerShellScript : AutomationScript
 
             PSDataCollection<PSObject> result = await shellTask.WaitAsync(cancellationToken)
                 .ConfigureAwait(false);
-
-            return result;
         }
         catch (OperationCanceledException)
         {
-            return null;
+            OutputStreamService?.AddOutput(ScriptStreamType.Warning, cancellationMessage);
         }
         catch (Exception e)
         {
             OutputStreamService?.AddOutput(ScriptStreamType.Error, e.Message);
-
-            return null;
         }
     }
 

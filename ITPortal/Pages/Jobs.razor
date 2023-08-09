@@ -1,10 +1,10 @@
 ﻿@page "/jobs"
 
 @using Microsoft.AspNetCore.Authorization;
-@using ITPortal.Lib.Services.Automation.Job;
+@using ITPortal.Lib.Services.Automation.JobTest;
 @using ITPortal.Lib.Services.Automation.Script;
 
-@inject PowerShellOutputStreamService PowerShellService
+@inject IScriptOutputStreamService PowerShellService
 @inject NavigationManager NavigationManager
 
 @*@attribute [Authorize]*@
@@ -35,7 +35,7 @@
 <!-- But instead it just overflows -->
 <div class="fixed-size-container">
     <MudTable Items="@_jobList" Dense="true" Hover="true" FixedHeader="true" OnRowClick="RowClickEvent"
-        T="ScriptJob" Filter="new Func<ScriptJob, bool>(FilterFunc1)" Height="calc(100% - 90px - 10px);">
+              T="ScriptJob" Filter="new Func<ScriptJob, bool>(FilterFunc)" Height="calc(100% - 90px - 10px);">
         <ToolBarContent>
             <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
         </ToolBarContent>
@@ -87,11 +87,10 @@
 
         for (int i = 0; i < 20; i++)
         {
-            //_jobList.Add(new PSJob(
-            //    Guid.NewGuid().ToString().Substring(0, 5),
-            //    _testScript,
-            //    "This is a test job"
-            //));
+            _jobList.Add(new ScriptJob(
+                Guid.NewGuid().ToString().Substring(0, 5),
+                _testScript
+            ));
         }
 
         //List<string> guids = new();
@@ -121,13 +120,13 @@
         System.Diagnostics.Debug.WriteLine("Clicked list item");
     }
 
-    private bool FilterFunc1(ScriptJob job) => FilterFunc(job, _searchString);
+    //private bool FilterFunc1(ScriptJob job) => FilterFunc(job, _searchString);
 
-    private bool FilterFunc(ScriptJob job, string searchString)
+    private bool FilterFunc(ScriptJob job)
     {
-        return string.IsNullOrWhiteSpace(searchString)
-                    || job.Id.Contains(searchString, StringComparison.OrdinalIgnoreCase)
-                    || job.Script.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase)
-                    || job.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase);
+        return string.IsNullOrWhiteSpace(_searchString)
+                    || job.Id.Contains(_searchString, StringComparison.OrdinalIgnoreCase)
+                    || job.Script.Name.Contains(_searchString, StringComparison.OrdinalIgnoreCase)
+                    || job.Description.Contains(_searchString, StringComparison.OrdinalIgnoreCase);
     }
 }

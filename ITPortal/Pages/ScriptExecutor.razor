@@ -10,7 +10,7 @@
 @using System.Management.Automation.Runspaces;
 @using ITPortal.Lib.Services.Automation.Script;
 
-@inject PowerShellOutputStreamService PowerShellService
+@inject IScriptOutputStreamService PowerShellService
 
 @*@attribute [Authorize]*@
 
@@ -210,7 +210,8 @@
         PowerShellService.AddOutput("<b>BEGIN</b><hr width=\"300px\" height=\"1px\">");
 
         _scriptRunning = true;
-        await _script.Invoke(_cancellationTokenSource.Token);
+        await _script.InvokeAsync(_cancellationTokenSource.Token, "Script execution cancelled");
+
         _scriptRunning = false;
 
         if (!_cancellationTokenSource.IsCancellationRequested)

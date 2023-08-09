@@ -1,27 +1,20 @@
 ﻿namespace ITPortal.Lib.Utils;
 
-public class UniqueGuidGenerator
+public static class UniqueGuidGenerator
 {
-    public int GuidLength { get; set; }
-
-    public UniqueGuidGenerator(int guidLength)
+    public static string NewUniqueGuid(List<string> ids, int guidLength)
     {
-        GuidLength = guidLength;
-    }
-
-    public string NewUniqueGuid(List<string> ids)
-    {
-        string newId = NewGuid();
+        string newId = NewGuid(guidLength);
 
         while (ids.Contains(newId))
         {
-            newId = NewGuid();
+            newId = NewGuid(guidLength);
         }
         return newId;
     }
 
-    private string NewGuid()
+    private static string NewGuid(int guidLength)
     {
-        return Guid.NewGuid().ToString()[GuidLength..];
+        return Guid.NewGuid().ToString()[guidLength..];
     }
 }

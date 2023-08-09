@@ -7,7 +7,7 @@
 <style>
 </style>
 
-<h1 class="page-title">PowerShell Jobs > New Job</h1>
+<h1 class="page-title"><a class="jobs-link" href="/jobs">PowerShell Jobs</a> > New Job</h1>
 
 <PageSection Title="Basics">
     <MudSelect @bind-Value="Device" Label="Device" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" Margin="Margin.Dense">
@@ -50,12 +50,6 @@
             PickerTitle = "Please select a PowerShell _script file",
             FileTypes = _psFileType,
         };
-        _psJob = new ScriptJob("");
-    }
-
-    private string GenerateGuid()
-    {
-        return String.Empty;
     }
 
     private async void PickAndLoadScript()
