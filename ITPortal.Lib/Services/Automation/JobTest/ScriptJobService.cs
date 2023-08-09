@@ -6,7 +6,7 @@ namespace ITPortal.Lib.Services.Automation.JobTest;
 public class ScriptJobService
 {
     public int JobIdLength { get; set; }
-    public Dictionary<string, ScriptJob> Jobs { get; set; }
+    public Dictionary<string, ScriptJob> Jobs { get; set; } = new();
 
     public ScriptJob AddNewJob(AutomationScript script, int jobIdLength)
     {
