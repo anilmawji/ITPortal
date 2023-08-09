@@ -3,7 +3,7 @@ using ITPortal.Lib.Utils;
 
 namespace ITPortal.Lib.Services.Automation.JobTest;
 
-public interface IScriptJobService
+public class ScriptJobService
 {
     public int JobIdLength { get; set; }
     public Dictionary<string, ScriptJob> Jobs { get; set; }

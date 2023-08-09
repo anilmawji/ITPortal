@@ -1,9 +1,8 @@
 ﻿using ITPortal.Data;
 using ITPortal.Lib.Services;
 using ITPortal.Lib.Services.Authentication;
-using ITPortal.Lib.Services.Automation.JobTest;
-using ITPortal.Lib.Services.Automation.Output;
 using ITPortal.Lib.Services.Core;
+using ITPortal.Lib.Services.Automation;
 using Microsoft.Extensions.Configuration;
 using MudBlazor.Services;
 
@@ -40,11 +39,8 @@ public static class MauiProgram
     public static void ConfigureServices(IServiceCollection services)
     {
         services.AddMudServices();
-
         services.AddMsalAuthentication();
-
-        services.AddSingleton<IScriptOutputStreamService, PowerShellOutputStreamService>();
-        services.AddSingleton<IScriptJobService, PowerShellJobService>();
+        services.AddPowerShellServices();
 
         services.AddSingleton<IGraphClientService, GraphClientService>();
 
