@@ -41,11 +41,8 @@ public static class MauiProgram
         services.AddMudServices();
         services.AddMsalAuthentication();
         services.AddPowerShellServices();
-
+        services.AddGitHubServices();
         services.AddSingleton<IGraphClientService, GraphClientService>();
-
-        services.AddHttpClient<HttpClientService>("GitHubApi");
-        services.AddSingleton<IGitHubService, GitHubService>();
 
         services.AddSingleton<WeatherForecastService>();
     }

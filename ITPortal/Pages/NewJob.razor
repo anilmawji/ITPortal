@@ -4,37 +4,186 @@
 
 @*@attribute [Authorize]*@
 
-<style>
-</style>
+@inject IScriptOutputStreamService PowerShellService
+@inject IScriptJobService ScriptJobService
 
-<h1 class="page-title"><a class="jobs-link" href="/jobs">PowerShell Jobs</a> > New Job</h1>
+<div class="main-content-container">
+    <h1 class="page-title"><a class="jobs-link" href="/jobs">PowerShell Jobs</a> > New Job</h1>
 
-<PageSection Title="Basics">
-    <MudSelect @bind-Value="Device" Label="Device" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter" Margin="Margin.Dense">
-        <MudSelectItem Value=@("Local Machine") />
-    </MudSelect>
-    <MudTextField @bind-Value="Description" Label="Description" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-</PageSection>
+    <PageSection Title="Script">
+        <div class="choose-file-container">
+            <MudButton Variant="Variant.Filled" Size="Size.Small" @onclick="PickAndLoadScript">
+                <MudText>Choose File</MudText>
+            </MudButton>
+            @if (_psScript != null)
+            {
+                <p class="file-label">
+                    @_psScript.Name
+                </p>
+            }
+            else
+            {
+                <p class="file-label">
+                    No file selected
+                </p>
+            }
+        </div>
+        @if (_psScript != null && _psScript.Content != null)
+        {
+            <p class="scroll script-content">
+                @foreach (string line in _psScript.Content)
+                {
+                    @line
+                    <br>
+                }
+            </p>
+            <MudGrid Spacing="2">
+                <MudItem>
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
+                        <MudText>Edit</MudText>
+                    </MudButton>
+                </MudItem>
+                <MudItem>
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
+                        <MudText>Refresh</MudText>
+                    </MudButton>
+                </MudItem>
+                <MudItem>
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
+                        <MudText>Remove</MudText>
+                    </MudButton>
+                </MudItem>
+            </MudGrid>
+        }
+    </PageSection>
 
-<PageSection Title="Script">
-    <button @onclick="PickAndLoadScript">Choose file</button>
-</PageSection>
+    @if (_psScript != null)
+    {
+        <PageSection Title="Parameters">
+            <div class="input-group">
+                @if (_psScript.Parameters.Count() > 0)
+                {
+                    @foreach (ScriptParameter parameter in _psScript.Parameters)
+                    {
+                        // Cannot use two-way binding for these since parameter.Value is an object and must be casted to the correct type
+                        <div class="input-line">
+                            @if (parameter.DesiredType == typeof(string))
+                            {
+                                <MudTextField T="string" Label="@parameter.Name" Variant="Variant.Filled" Margin="Margin.Dense" Required="@parameter.Mandatory"
+                                Text="@((string)parameter.Value)" TextChanged="(text) => parameter.Value = text" />
+                            }
+                            else if (parameter.DesiredType == typeof(int))
+                            {
+                                <MudNumericField T="int" Label="@parameter.Name" Variant="Variant.Filled" Margin="Margin.Dense" Required="@parameter.Mandatory"
+                                Value="@((int)parameter.Value)" ValueChanged="(num) => parameter.Value = num" />
+                            }
+                            else if (parameter.DesiredType == typeof(bool))
+                            {
+                                <MudSwitch T="bool" Label="@parameter.Name" Required="@parameter.Mandatory" Color="Color.Secondary"
+                                Checked="@((bool)parameter.Value)" CheckedChanged="(checkedValue) => parameter.Value = checkedValue" />
+                            }
+                            else if (parameter.DesiredType == typeof(DateTime))
+                            {
+                                // No need to explicitly update "date" since it references parameter.Value which is being updated every time the date changes
+                                DateTime date = (DateTime)parameter.Value;
+                                TimeSpan time = date.TimeOfDay;
 
-<PageSection Title="Parameters">
+                                <div class="mud-date">
+                                    <MudDatePicker Label="@parameter.Name" Variant="Variant.Filled" Margin="Margin.Dense" Required="@parameter.Mandatory" PickerVariant="PickerVariant.Inline"
+                                    Date="@date" DateChanged="(newDate) => OnDateChanged((DateTime)newDate, time, parameter)" />
+                                </div>
+                                <MudTimePicker Label="@parameter.Name" Variant="Variant.Filled" Margin="Margin.Dense" AmPm="true" Time="@time" TimeChanged="(newTime) => time = OnTimeChanged((TimeSpan)newTime, date, parameter)" />
+                            }
+                            else if (parameter.DesiredType == typeof(string[]))
+                            {
+                                <MudExtensions.MudChipField T="string" Label="@parameter.Name" Margin="Margin.Dense" Required="@parameter.Mandatory" Values="@((List<string>)parameter.Value)"
+                                Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color" ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips"
+                                ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable" Variant="_variant" />
+                            }
+                            else if (parameter.DesiredType == typeof(int[]))
+                            {
+                                <MudExtensions.MudChipField T="int" Label="@parameter.Name" Margin="Margin.Dense" Required="@parameter.Mandatory" Values="@((List<string>)parameter.Value)"
+                                Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color" ChipVariant="_chipVariant" ChipSize="_chipSize"
+                                WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable" Variant="_variant" />
+                            }
+                            else if (parameter.DesiredType == typeof(bool[]))
+                            {
+                                <MudExtensions.MudChipField T="bool" Label="@parameter.Name" Margin="Margin.Dense" Required="@parameter.Mandatory" Values="@((List<string>)parameter.Value)"
+                                Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color" ChipVariant="_chipVariant" ChipSize="_chipSize"
+                                WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable" Variant="_variant" />
+                            }
+                            else
+                            {
+                                <p>Parameter @parameter.Name is not supported</p>
+                            }
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p>This script does not accept parameters</p>
+                }
+            </div>
+        </PageSection>
 
-</PageSection>
+@*        <PageSection Title="Schedule">
 
-<PageSection Title="Schedule">
+        </PageSection>*@
 
-</PageSection>
+        <PageSection Title="Job Details">
+            <div class="input-group">
+                <div class="input-line">
+                    <MudSelect T="string" @bind-Value="Device" Label="Device" Variant="Variant.Filled" Margin="Margin.Dense">
+                        <MudSelectItem Value=@("Local Machine") />
+                    </MudSelect>
+                </div>
+                <div class="input-line">
+                    <MudTextField @bind-Value="Description" Label="Description" Variant="Variant.Filled" Margin="Margin.Dense"></MudTextField>
+                </div>
+            </div>
+            <div class="job-checkbox">
+                <MudCheckBox @bind-Checked="@_goToJob" Color="Color.Secondary">Go to Job</MudCheckBox>
+            </div>
+            <MudGrid Spacing="2">
+                <MudItem>
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
+                        <MudText>Cancel</MudText>
+                    </MudButton>
+                </MudItem>
+                <MudItem>
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
+                        <MudText>Done</MudText>
+                    </MudButton>
+                </MudItem>
+            </MudGrid>
+        <div class="final-section"></div>
+        </PageSection>
+    }
+</div>
 
 @code {
+    private readonly char _delimiter = ' ';
+    private readonly int _chipsMaxWidth = 80;
+    private readonly Color _color = Color.Default;
+    private readonly Variant _chipVariant = Variant.Text;
+    private readonly Variant _variant = Variant.Filled;
+    private readonly Size _chipSize = Size.Medium;
+    private readonly bool _fullWidth = true;
+    private readonly bool _wrapChips = true;
+    private readonly bool _closeable = true;
+
     private string Description { get; set; }
     private string Device { get; set; }
+    private bool ScriptLoadSuccessful { get; set; }
+
+    private const int _jobIdLength = 5;
 
     private FilePickerFileType _psFileType;
     private PickOptions _pickOptions;
     private ScriptJob _psJob;
+    private AutomationScript _psScript;
+
+    private bool _goToJob;
 
     protected override void OnInitialized()
     {
@@ -50,6 +199,22 @@
             PickerTitle = "Please select a PowerShell _script file",
             FileTypes = _psFileType,
         };
+        PowerShellService.OutputChanged += (object sender, List<ScriptOutputMessage> newOutput) =>
+        {
+            InvokeAsync(() => this.StateHasChanged());
+        };
+    }
+
+    private void OnDateChanged(DateTime newDate, TimeSpan time, ScriptParameter parameter)
+    {
+        parameter.Value = newDate.Date.Add(time);
+    }
+
+    private TimeSpan OnTimeChanged(TimeSpan newTime, DateTime date, ScriptParameter parameter)
+    {
+        parameter.Value = date.Date.Add(newTime);
+
+        return newTime;
     }
 
     private async void PickAndLoadScript()
@@ -58,7 +223,15 @@
 
         if (fileResult != null)
         {
-            //LoadScript(fileResult.FullPath);
+            _psScript = new PowerShellScript(PowerShellService);
+            _psJob = ScriptJobService.NewJob(_psScript, _jobIdLength);
+
+            ScriptLoadSuccessful = _psScript.LoadFromFile(fileResult.FullPath);
+
+            if (ScriptLoadSuccessful)
+            {
+                this.StateHasChanged();
+            }
         }
     }
 }

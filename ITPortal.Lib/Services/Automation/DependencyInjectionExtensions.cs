@@ -1,8 +1,5 @@
-﻿using ITPortal.Lib.Services.Authentication.External;
-using ITPortal.Lib.Services.Authentication;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.Extensions.DependencyInjection;
-using ITPortal.Lib.Services.Automation.JobTest;
+﻿using Microsoft.Extensions.DependencyInjection;
+using ITPortal.Lib.Services.Automation.Job;
 using ITPortal.Lib.Services.Automation.Output;
 
 namespace ITPortal.Lib.Services.Automation;
@@ -15,7 +12,7 @@ public static class DependencyInjectionExtensions
     {
         if (!ScriptJobServiceAdded)
         {
-            serviceCollection.AddSingleton<ScriptJobService>();
+            serviceCollection.AddSingleton<IScriptJobService, ScriptJobService>();
             ScriptJobServiceAdded = true;
         }
         return serviceCollection;
@@ -23,7 +20,7 @@ public static class DependencyInjectionExtensions
 
     public static IServiceCollection AddPowerShellServices(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddSingleton<IScriptOutputStreamService, PowerShellOutputStreamService>();
+        serviceCollection.AddTransient<IScriptOutputStreamService, PowerShellOutputStreamService>();
         serviceCollection.TryAddScriptJobService();
 
         return serviceCollection;

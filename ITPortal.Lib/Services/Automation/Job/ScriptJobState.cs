@@ -1,4 +1,4 @@
-﻿namespace ITPortal.Lib.Services.Automation.JobTest;
+﻿namespace ITPortal.Lib.Services.Automation.Job;
 
 public enum ScriptJobState
 {

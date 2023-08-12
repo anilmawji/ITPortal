@@ -1,3 +1,45 @@
 ﻿.jobs-link {
     text-decoration: underline;
 }
+
+.choose-file-container {
+    display: flex;
+    margin-bottom: 30px;
+}
+
+.file-label {
+    padding-left: 10px;
+    padding-top: 4px;
+}
+
+.script-content {
+    min-height: 200px;
+    max-height: 400px;
+    height: 50%;
+    width: 90%;
+    min-width: 200px;
+    overflow-wrap: break-word;
+    border-radius: 8px;
+    padding: 20px;
+    padding: 24px;
+    border: solid 1px #D2D2D2;
+    margin-bottom: 40px;
+}
+
+.input-group {
+    width: 100%;
+}
+
+.input-line {
+    width: 60%;
+    max-width: 1500px;
+    margin-bottom: 20px;
+}
+
+.mud-date {
+    margin-bottom: 16px;
+}
+
+.job-checkbox {
+    margin-bottom: 20px;
+}

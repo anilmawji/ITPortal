@@ -1,7 +1,7 @@
 ﻿@page "/jobs"
 
 @using Microsoft.AspNetCore.Authorization;
-@using ITPortal.Lib.Services.Automation.JobTest;
+@using ITPortal.Lib.Services.Automation.Job;
 @using ITPortal.Lib.Services.Automation.Script;
 
 @inject IScriptOutputStreamService PowerShellService
@@ -9,68 +9,77 @@
 
 @*@attribute [Authorize]*@
 
-<h1 class="page-title">PowerShell Jobs</h1>
+<div class="main-content-container">
+    <h1 class="page-title">PowerShell Jobs</h1>
 
-<style>
-    /*Workaround to make MudTable resize with window*/
-    .fixed-size-container {
-        margin-left: 20px;
-        margin-right: 20px;
-        height: calc(100vh - 90px - 30px);
-        display: grid;
-        grid-template-columns: minmax(0,1fr);
-        grid-template-rows: minmax(0,1fr);
-    }
+    <style>
+        /*Workaround to make MudTable resize with window*/
+        .fixed-size-container {
+            height: calc(100vh - 90px - 80px);
+            display: grid;
+            grid-template-columns: minmax(0,1fr);
+            grid-template-rows: minmax(0,1fr);
+        }
 
-    /*Correct MudTable height*/
-    .mud-table-toolbar {
-        --mud-internal-toolbar-height: 48px !important;
-    }
+        .mud-table {
+            border-radius: 8px;
+            border: solid 1px #D2D2D2;
+        }
 
-    .mud-table-head {
-        --mud-palette-surface: #f5f5f5 !important;
-    }
-</style>
+        /*Correct MudTable height*/
+        .mud-table-toolbar {
+            --mud-internal-toolbar-height: 48px !important;
+        }
 
-<!-- But instead it just overflows -->
-<div class="fixed-size-container">
-    <MudTable Items="@_jobList" Dense="true" Hover="true" FixedHeader="true" OnRowClick="RowClickEvent"
-              T="ScriptJob" Filter="new Func<ScriptJob, bool>(FilterFunc)" Height="calc(100% - 90px - 10px);">
-        <ToolBarContent>
-            <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-        </ToolBarContent>
-        <ColGroup>
-            <col style="width: 100px;" />
-            <col style="width: 100px;" />
-            <col />
-            <col />
-        </ColGroup>
-        <HeaderContent>
-            <MudTh>
-                <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Id)">Id</MudTableSortLabel>
-            </MudTh>
-            <MudTh>
-                <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Script.Name)">Script</MudTableSortLabel>
-            </MudTh>
-            <MudTh>
-                <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Description)">Description</MudTableSortLabel>
-            </MudTh>
-            <MudTh Style="text-align:right">
-                <MudButton Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" @onclick="NewJobClickEvent">New Job</MudButton>
-            </MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTh DataLabel="id">@context.Id</MudTh>
-            <MudTh DataLabel="script">@context.Script.Name</MudTh>
-            <MudTh DataLabel="description">@context.Description</MudTh>
-            <MudTh DataLabel="" Style="text-align:right">
-                <MudButton Style="width:20px !important;">🗙</MudButton>
-            </MudTh>
-        </RowTemplate>
-        <PagerContent>
-            <MudTablePager PageSizeOptions="@_pageSizeOptions" />
-        </PagerContent>
-    </MudTable>
+        .mud-table-head {
+            --mud-palette-surface: #f5f5f5 !important;
+        }
+    </style>
+
+    <div class="fixed-size-container">
+        <MudTable Items="@_jobList" Dense="true" Hover="true" FixedHeader="true" OnRowClick="RowClickEvent"
+                  T="ScriptJob" Filter="new Func<ScriptJob, bool>(FilterFunc)" Height="calc(100% - 90px - 10px);">
+            <ToolBarContent>
+                <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+            </ToolBarContent>
+            <ColGroup>
+                <col style="width: 100px;" />
+                <col style="width: 100px;" />
+                <col />
+                <col />
+            </ColGroup>
+            <HeaderContent>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Id)">Id</MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Script.Name)">Script</MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.DeviceName)">Device</MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Description)">Description</MudTableSortLabel>
+                </MudTh>
+                <MudTh Style="text-align:right">
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" @onclick="NewJobClickEvent">
+                        <MudText>New Job</MudText>
+                    </MudButton>
+                </MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTh DataLabel="id">@context.Id</MudTh>
+                <MudTh DataLabel="script">@context.Script.Name</MudTh>
+                <MudTh DataLabel="description">@context.Description</MudTh>
+                <MudTh DataLabel="" Style="text-align:right">
+                    <MudButton Style="width:20px !important;">🗙</MudButton>
+                </MudTh>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="@_pageSizeOptions" />
+            </PagerContent>
+        </MudTable>
+    </div>
 </div>
 
 @code {
@@ -92,22 +101,6 @@
                 _testScript
             ));
         }
-
-        //List<string> guids = new();
-
-        //for (int i = 0; i < 1000; i++)
-        //{
-        //    string g = Guid.NewGuid().ToString().Substring(0, 5);
-
-        //    for (int y = 0; y < guids.Count(); y++)
-        //    {
-        //        if (guids.ElementAt(y) == g)
-        //        {
-        //            System.Diagnostics.Debug.WriteLine("Found dupe: " + g);
-        //        }
-        //    }
-        //    guids.Add(g);
-        //}
     }
 
     private void NewJobClickEvent()
@@ -120,13 +113,13 @@
         System.Diagnostics.Debug.WriteLine("Clicked list item");
     }
 
-    //private bool FilterFunc1(ScriptJob job) => FilterFunc(job, _searchString);
+    private bool FilterFunc(ScriptJob job) => DoFilterFunc(job, _searchString);
 
-    private bool FilterFunc(ScriptJob job)
+    private bool DoFilterFunc(ScriptJob job, string searchString)
     {
-        return string.IsNullOrWhiteSpace(_searchString)
-                    || job.Id.Contains(_searchString, StringComparison.OrdinalIgnoreCase)
-                    || job.Script.Name.Contains(_searchString, StringComparison.OrdinalIgnoreCase)
-                    || job.Description.Contains(_searchString, StringComparison.OrdinalIgnoreCase);
+        return string.IsNullOrWhiteSpace(searchString)
+                    || job.Id.Contains(searchString, StringComparison.OrdinalIgnoreCase)
+                    || job.Script.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase)
+                    || job.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase);
     }
 }

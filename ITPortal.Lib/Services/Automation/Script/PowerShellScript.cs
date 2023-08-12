@@ -1,6 +1,5 @@
 ﻿using ITPortal.Lib.Services.Automation.Output;
 using ITPortal.Lib.Services.Automation.Script.Parameter;
-using ITPortal.Lib.Utils;
 using System.Management.Automation;
 using System.Management.Automation.Language;
 using System.Management.Automation.Runspaces;
@@ -11,22 +10,32 @@ public class PowerShellScript : AutomationScript
 {
     private readonly InitialSessionState _initialsessionState;
 
-    public PowershellParameterList? Parameters { get; protected set; }
-
     public PowerShellScript(IScriptOutputStreamService outputStreamService) : base(outputStreamService)
     {
-        // CreateDefault() only loads the commands necessary to host PowerShell, CreateDefault2() loads all available commands
-        _initialsessionState = InitialSessionState.CreateDefault();
-        // Limit script execution to one thread
-        _initialsessionState.ApartmentState = ApartmentState.STA;
-        // Set execution policy of the PS session
-        _initialsessionState.ExecutionPolicy = Microsoft.PowerShell.ExecutionPolicy.Bypass;
+        _initialsessionState = NewInitialSessionState();
     }
 
-    public override bool LoadScript(string filePath)
+    public PowerShellScript(IScriptOutputStreamService outputStreamService, string filePath) : base(outputStreamService, filePath)
     {
-        Content = FileHandler.GetFileContent(filePath);
-        ScriptBlockAst scriptAst = Parser.ParseInput(Content, out _, out ParseError[] errors);
+        _initialsessionState = NewInitialSessionState();
+    }
+
+    private static InitialSessionState NewInitialSessionState()
+    {
+        // CreateDefault() only loads the commands necessary to host PowerShell, CreateDefault2() loads all available commands
+        InitialSessionState initialsessionState = InitialSessionState.CreateDefault();
+        // Limit script execution to one thread
+        initialsessionState.ApartmentState = ApartmentState.STA;
+        // Set execution policy of the PS session
+        initialsessionState.ExecutionPolicy = Microsoft.PowerShell.ExecutionPolicy.Bypass;
+
+        return initialsessionState;
+    }
+
+    public override bool LoadFromFile(string filePath)
+    {
+        Content = File.ReadAllLines(filePath);
+        ScriptBlockAst scriptAst = Parser.ParseInput(GetContentAsString(), out _, out ParseError[] errors);
 
         if (errors.Length != 0)
         {
@@ -65,8 +74,8 @@ public class PowerShellScript : AutomationScript
         {
             // "using" relies on compiler to dispose of shell when method is popped from call stack
             using PowerShell shell = PowerShell.Create(_initialsessionState);
-            shell.AddScript(Content);
-            Parameters?.Register(shell);
+            shell.AddScript(GetContentAsString());
+            ((PowershellParameterList?)Parameters)?.Register(shell);
 
             PSDataCollection<PSObject> outputCollection = new();
 
@@ -96,10 +105,5 @@ public class PowerShellScript : AutomationScript
         {
             OutputStreamService?.AddOutput(ScriptStreamType.Error, e.Message);
         }
-    }
-
-    public override string? ToString()
-    {
-        return Content;
     }
 }
