@@ -27,12 +27,12 @@ body {
 
 #app {
     height: 100vh;
-    bottom: 0;
-    overflow-y: scroll;
 }
 
 .mud-main-content {
     height: 100%;
+    bottom: 0;
+    overflow-y: scroll;
 }
 
 /*Add shadow below appbar*/

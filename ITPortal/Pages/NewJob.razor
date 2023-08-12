@@ -133,7 +133,7 @@
         <PageSection Title="Job Details">
             <div class="input-group">
                 <div class="input-line">
-                    <MudSelect T="string" @bind-Value="Device" Label="Device" Variant="Variant.Filled" Margin="Margin.Dense">
+                    <MudSelect T="string" @bind-Value="Device" Label="Device" Variant="Variant.Filled" Margin="Margin.Dense" Required="true">
                         <MudSelectItem Value=@("Local Machine") />
                     </MudSelect>
                 </div>
@@ -142,7 +142,7 @@
                 </div>
             </div>
             <div class="job-checkbox">
-                <MudCheckBox @bind-Checked="@_goToJob" Color="Color.Secondary">Go to Job</MudCheckBox>
+                <MudCheckBox @bind-Checked="@_goToJob" Color="Color.Secondary" Required="true">Go to Job</MudCheckBox>
             </div>
             <MudGrid Spacing="2">
                 <MudItem>
@@ -156,7 +156,6 @@
                     </MudButton>
                 </MudItem>
             </MudGrid>
-        <div class="final-section"></div>
         </PageSection>
     }
 </div>

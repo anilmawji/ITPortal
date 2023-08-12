@@ -12,7 +12,7 @@ h1.page-title {
 }
 
 .main-content-container {
-    margin: 40px;
+    margin: 30px;
 }
 
 /* Center element horizontally and vertically */
@@ -50,8 +50,4 @@ p {
     border: 1px solid;
     border-color: #D2D2D2;
     box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
-}
-
-.final-section {
-    height: 80px;
 }

@@ -15,7 +15,7 @@
     <style>
         /*Workaround to make MudTable resize with window*/
         .fixed-size-container {
-            height: calc(100vh - 90px - 80px);
+            height: calc(100vh - 90px - 110px);
             display: grid;
             grid-template-columns: minmax(0,1fr);
             grid-template-rows: minmax(0,1fr);
@@ -42,12 +42,6 @@
             <ToolBarContent>
                 <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
             </ToolBarContent>
-            <ColGroup>
-                <col style="width: 100px;" />
-                <col style="width: 100px;" />
-                <col />
-                <col />
-            </ColGroup>
             <HeaderContent>
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Id)">Id</MudTableSortLabel>
@@ -70,6 +64,7 @@
             <RowTemplate>
                 <MudTh DataLabel="id">@context.Id</MudTh>
                 <MudTh DataLabel="script">@context.Script.Name</MudTh>
+                <MudTh DataLabel="description">@context.DeviceName</MudTh>
                 <MudTh DataLabel="description">@context.Description</MudTh>
                 <MudTh DataLabel="" Style="text-align:right">
                     <MudButton Style="width:20px !important;">🗙</MudButton>
