@@ -65,29 +65,31 @@
 
     @if (_psScript.IsLoaded())
     {
-        <MudForm @ref="_jobForm" @bind-IsValid="@_canCreateJob">
+        <MudForm @ref="_jobForm" @bind-IsValid="@_canCreateJob" @bind-Errors="@_errors">
             <PageSection Title="Parameters">
                 <div class="input-group">
                     @if (_psScript.Parameters.Count() > 0)
                     {
                         @foreach (ScriptParameter parameter in _psScript.Parameters)
                         {
+                            string requiredError = "The " + parameter.Name + " field is required.";
+
                             // Cannot use two-way binding for these since parameter.Value is an object and must be casted to the correct type
                             <div class="input-line">
                                 @if (parameter.DesiredType == typeof(string))
                                 {
                                     <MudTextField T="string" Label="@parameter.Name" Variant="Variant.Filled" Margin="Margin.Dense" Required="@parameter.Mandatory"
-                                    Text="@((string)parameter.Value)" TextChanged="(text) => parameter.Value = text" />
+                                                  Text="@((string)parameter.Value)" TextChanged="(text) => parameter.Value = text" RequiredError="@requiredError" />
                                 }
                                 else if (parameter.DesiredType == typeof(int))
                                 {
                                     <MudNumericField T="int" Label="@parameter.Name" Variant="Variant.Filled" Margin="Margin.Dense" Required="@parameter.Mandatory"
-                                    Value="@((int)parameter.Value)" ValueChanged="(num) => parameter.Value = num" />
+                                    Value="@((int)parameter.Value)" ValueChanged="(num) => parameter.Value = num" RequiredError="@requiredError" />
                                 }
                                 else if (parameter.DesiredType == typeof(bool))
                                 {
                                     <MudSwitch T="bool" Label="@parameter.Name" Required="@parameter.Mandatory" Color="Color.Secondary"
-                                    Checked="@((bool)parameter.Value)" CheckedChanged="(checkedValue) => parameter.Value = checkedValue" />
+                                    Checked="@((bool)parameter.Value)" CheckedChanged="(checkedValue) => parameter.Value = checkedValue" RequiredError="@requiredError" />
                                 }
                                 else if (parameter.DesiredType == typeof(DateTime))
                                 {
@@ -96,28 +98,33 @@
                                     TimeSpan time = date.TimeOfDay;
 
                                     <div class="mud-date">
-                                        <MudDatePicker Label="@parameter.Name" Variant="Variant.Filled" Margin="Margin.Dense" Required="@parameter.Mandatory" PickerVariant="PickerVariant.Inline"
-                                        Date="@date" DateChanged="(newDate) => OnDateChanged((DateTime)newDate, time, parameter)" />
+                                        <MudDatePicker Label="@parameter.Name" Variant="Variant.Filled" Margin="Margin.Dense" Required="@parameter.Mandatory"
+                                            PickerVariant="PickerVariant.Inline" Date="@date" DateChanged="(newDate) => OnDateChanged((DateTime)newDate, time, parameter)"
+                                            RequiredError="@requiredError" />
                                     </div>
-                                    <MudTimePicker Label="@parameter.Name" Variant="Variant.Filled" Margin="Margin.Dense" AmPm="true" Time="@time" TimeChanged="(newTime) => time = OnTimeChanged((TimeSpan)newTime, date, parameter)" />
+                                    <MudTimePicker Label="@parameter.Name" Variant="Variant.Filled" Margin="Margin.Dense" AmPm="true" Time="@time"
+                                        TimeChanged="(newTime) => time = OnTimeChanged((TimeSpan)newTime, date, parameter)" RequiredError="@requiredError" />
                                 }
                                 else if (parameter.DesiredType == typeof(string[]))
                                 {
-                                    <MudExtensions.MudChipField T="string" Label="@parameter.Name" Margin="Margin.Dense" Required="@parameter.Mandatory" Values="@((List<string>)parameter.Value)"
-                                    Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color" ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips"
-                                    ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable" Variant="_variant" />
+                                    <MudExtensions.MudChipField T="string" Label="@parameter.Name" Margin="Margin.Dense" Required="@parameter.Mandatory"
+                                        Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color"
+                                        ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable"
+                                        Variant="_variant" RequiredError="@requiredError" />
                                 }
                                 else if (parameter.DesiredType == typeof(int[]))
                                 {
-                                    <MudExtensions.MudChipField T="int" Label="@parameter.Name" Margin="Margin.Dense" Required="@parameter.Mandatory" Values="@((List<string>)parameter.Value)"
-                                    Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color" ChipVariant="_chipVariant" ChipSize="_chipSize"
-                                    WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable" Variant="_variant" />
+                                    <MudExtensions.MudChipField T="int" Label="@parameter.Name" Margin="Margin.Dense" Required="@parameter.Mandatory"
+                                        Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color"
+                                        ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable"
+                                        Variant="_variant" RequiredError="@requiredError" />
                                 }
                                 else if (parameter.DesiredType == typeof(bool[]))
                                 {
-                                    <MudExtensions.MudChipField T="bool" Label="@parameter.Name" Margin="Margin.Dense" Required="@parameter.Mandatory" Values="@((List<string>)parameter.Value)"
-                                    Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color" ChipVariant="_chipVariant" ChipSize="_chipSize"
-                                    WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable" Variant="_variant" />
+                                    <MudExtensions.MudChipField T="bool" Label="@parameter.Name" Margin="Margin.Dense" Required="@parameter.Mandatory"
+                                        Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color"
+                                        ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable"
+                                        Variant="_variant" RequiredError="@requiredError" />
                                 }
                                 else
                                 {
@@ -141,7 +148,7 @@
                 <div class="input-group">
                     <div class="input-line">
                         <MudSelect T="string" @bind-Value="_psJob.DeviceName" Label="Device" Variant="Variant.Filled" Margin="Margin.Dense" Required="true">
-                            <MudSelectItem Value=@("Localhost") />
+                            <MudSelectItem Value=@_localhostDevice RequiredError="Device name field is required." />
                         </MudSelect>
                     </div>
                     <div class="input-line">
@@ -151,18 +158,28 @@
                 <div class="job-checkbox">
                     <MudCheckBox @bind-Checked="@_shouldViewJob" Color="Color.Secondary">View Job</MudCheckBox>
                 </div>
-                <MudGrid Spacing="2">
-                    <MudItem>
-                        <MudButton @onclick="CancelJobCreation" Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
-                            <MudText>Cancel</MudText>
-                        </MudButton>
-                    </MudItem>
-                    <MudItem>
-                        <MudButton @onclick="SaveJob" Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
-                            <MudText>Done</MudText>
-                        </MudButton>
-                    </MudItem>
-                </MudGrid>
+                <div class="input-line">
+                    <MudGrid Spacing="2">
+                        <MudItem>
+                            <MudButton @onclick="CancelJobCreation" Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
+                                <MudText>Cancel</MudText>
+                            </MudButton>
+                        </MudItem>
+                        <MudItem>
+                            <MudButton @onclick="SaveJob" Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
+                                <MudText>Done</MudText>
+                            </MudButton>
+                        </MudItem>
+                    </MudGrid>
+                </div>
+                @if (_errors.Count() > 0)
+                {
+                    <MudText Typo="Typo.subtitle2">@($"Errors ({_errors.Length})")</MudText>
+                    @foreach (var error in _errors)
+                    {
+                        <MudText Color="@Color.Error">@error</MudText>
+                    }
+                }
             </PageSection>
         </MudForm>
     }
@@ -180,12 +197,15 @@
     private readonly bool _closeable = true;
 
     private MudForm _jobForm;
+    string[] _errors = { };
+
     private FilePickerFileType _psFileType;
     private PickOptions _filePickOptions;
     private AutomationScript _psScript;
     private ScriptJob _psJob;
 
-    private readonly int _jobIdLength = 5;
+    private const string _localhostDevice = "Localhost";
+    private const int _jobIdLength = 5;
     private bool _shouldViewJob;
     private bool _canCreateJob;
 
@@ -204,7 +224,7 @@
             FileTypes = _psFileType,
         };
         _psScript = new PowerShellScript(PowerShellService);
-        _psJob = ScriptJobService.NewJob(_psScript, "Localhost", string.Empty, _jobIdLength);
+        _psJob = ScriptJobService.NewJob(_psScript, _localhostDevice, string.Empty, _jobIdLength);
 
         PowerShellService.OutputChanged += (object sender, List<ScriptOutputMessage> newOutput) =>
         {
@@ -226,7 +246,7 @@
 
     private async void PickAndLoadScript()
     {
-        var fileResult = await FilePickerHandler.PickFile(_filePickOptions);
+        FileResult fileResult = await FilePickerHandler.PickFile(_filePickOptions);
 
         if (fileResult != null)
         {
