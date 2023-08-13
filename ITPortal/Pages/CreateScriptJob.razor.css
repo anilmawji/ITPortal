@@ -30,8 +30,16 @@
     width: 100%;
 }
 
+.small-input-line {
+    width: 50%;
+    min-width: 320px;
+    max-width: 500px;
+    margin-bottom: 20px;
+}
+
 .input-line {
-    width: 60%;
+    width: 70%;
+    min-width: 320px;
     max-width: 1500px;
     margin-bottom: 20px;
 }

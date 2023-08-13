@@ -75,62 +75,82 @@
                             string requiredError = "The " + parameter.Name + " field is required.";
 
                             // Cannot use two-way binding for these since parameter.Value is an object and must be casted to the correct type
-                            <div class="input-line">
-                                @if (parameter.DesiredType == typeof(string))
+                            @if (parameter.DesiredType == typeof(string))
+                            {
+                                int numLines = 1;
+
+                                foreach (string trigger in _extendedInputFieldTriggers)
                                 {
-                                    <MudTextField T="string" Label="@parameter.Name" Variant="Variant.Filled" Margin="Margin.Dense" Required="@parameter.Mandatory"
-                                        Text="@((string)parameter.Value)" TextChanged="(text) => parameter.Value = text" RequiredError="@requiredError" />
+                                    if (parameter.Name.Equals(trigger, StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        numLines = 10;
+                                        break;
+                                    }
                                 }
-                                else if (parameter.DesiredType == typeof(int))
-                                {
+                                <div class="input-line">
+                                    <MudTextField T="string" Label="@parameter.Name" Lines="@numLines" Variant="Variant.Filled" Margin="Margin.Dense" Required="@parameter.Mandatory"
+                                        Text="@((string)parameter.Value)" TextChanged="(text) => parameter.Value = text" RequiredError="@requiredError" />
+                                </div>
+                            }
+                            else if (parameter.DesiredType == typeof(int))
+                            {
+                                <div class="small-input-line">
                                     <MudNumericField T="int" Label="@parameter.Name" Variant="Variant.Filled" Margin="Margin.Dense" Required="@parameter.Mandatory"
                                         Value="@((int)parameter.Value)" ValueChanged="(num) => parameter.Value = num" RequiredError="@requiredError" />
-                                }
-                                else if (parameter.DesiredType == typeof(bool))
-                                {
+                                </div>
+                            }
+                            else if (parameter.DesiredType == typeof(bool))
+                            {
+                                <div class="small-input-line">
                                     <MudSwitch T="bool" Label="@parameter.Name" Required="@parameter.Mandatory" Color="Color.Secondary"
                                         Checked="@((bool)parameter.Value)" CheckedChanged="(checkedValue) => parameter.Value = checkedValue" RequiredError="@requiredError" />
-                                }
-                                else if (parameter.DesiredType == typeof(DateTime))
-                                {
-                                    // No need to explicitly update "date" since it references parameter.Value which is being updated every time the date changes
-                                    DateTime date = (DateTime)parameter.Value;
-                                    TimeSpan time = date.TimeOfDay;
+                                </div>
+                            }
+                            else if (parameter.DesiredType == typeof(DateTime))
+                            {
+                                // No need to explicitly update "date" since it references parameter.Value which is being updated every time the date changes
+                                DateTime date = (DateTime)parameter.Value;
+                                TimeSpan time = date.TimeOfDay;
 
-                                    <div class="mud-date">
-                                        <MudDatePicker Label="@parameter.Name" Variant="Variant.Filled" Margin="Margin.Dense" Required="@parameter.Mandatory"
-                                            PickerVariant="PickerVariant.Inline" Date="@date" DateChanged="(newDate) => OnDateChanged((DateTime)newDate, time, parameter)"
-                                            RequiredError="@requiredError" />
-                                        <MudTimePicker Label="@parameter.Name" Variant="Variant.Filled" Margin="Margin.Dense" AmPm="true" Time="@time"
-                                            TimeChanged="(newTime) => time = OnTimeChanged((TimeSpan)newTime, date, parameter)" RequiredError="@requiredError" />
-                                    </div>
-                                }
-                                else if (parameter.DesiredType == typeof(string[]))
-                                {
-                                    <MudExtensions.MudChipField T="string" Label="@parameter.Name" Margin="Margin.Dense" Required="@parameter.Mandatory"
-                                        Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color"
-                                        ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable"
-                                        Variant="_variant" RequiredError="@requiredError" />
-                                }
-                                else if (parameter.DesiredType == typeof(int[]))
-                                {
-                                    <MudExtensions.MudChipField T="int" Label="@parameter.Name" Margin="Margin.Dense" Required="@parameter.Mandatory"
-                                        Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color"
-                                        ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable"
-                                        Variant="_variant" RequiredError="@requiredError" />
-                                }
-                                else if (parameter.DesiredType == typeof(bool[]))
-                                {
-                                    <MudExtensions.MudChipField T="bool" Label="@parameter.Name" Margin="Margin.Dense" Required="@parameter.Mandatory"
-                                        Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color"
-                                        ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable"
-                                        Variant="_variant" RequiredError="@requiredError" />
-                                }
-                                else
-                                {
-                                    <p>Parameter @parameter.Name is not supported</p>
-                                }
-                            </div>
+                                <div class="small-input-line mud-date">
+                                    <MudDatePicker Label="@parameter.Name" Variant="Variant.Filled" Margin="Margin.Dense" Required="@parameter.Mandatory"
+                                        PickerVariant="PickerVariant.Inline" Date="@date" DateChanged="(newDate) => OnDateChanged((DateTime)newDate, time, parameter)"
+                                        RequiredError="@requiredError" />
+                                    <MudTimePicker Label="@parameter.Name" Variant="Variant.Filled" Margin="Margin.Dense" AmPm="true" Time="@time"
+                                        TimeChanged="(newTime) => time = OnTimeChanged((TimeSpan)newTime, date, parameter)" RequiredError="@requiredError" />
+                                </div>
+                            }
+                            else if (parameter.DesiredType == typeof(string[]))
+                            {
+                                <div class="input-line">
+                                <MudExtensions.MudChipField T="string" Label="@parameter.Name" Margin="Margin.Dense" Required="@parameter.Mandatory"
+                                    Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color"
+                                    ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable"
+                                    Variant="_variant" RequiredError="@requiredError" />
+                                </div>
+                            }
+                            else if (parameter.DesiredType == typeof(int[]))
+                            {
+                                <div class="input-line">
+                                <MudExtensions.MudChipField T="int" Label="@parameter.Name" Margin="Margin.Dense" Required="@parameter.Mandatory"
+                                    Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color"
+                                    ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable"
+                                    Variant="_variant" RequiredError="@requiredError" />
+                                </div>
+                            }
+                            else if (parameter.DesiredType == typeof(bool[]))
+                            {
+                                <div class="input-line">
+                                <MudExtensions.MudChipField T="bool" Label="@parameter.Name" Margin="Margin.Dense" Required="@parameter.Mandatory"
+                                    Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color"
+                                    ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable"
+                                    Variant="_variant" RequiredError="@requiredError" />
+                                </div>
+                            }
+                            else
+                            {
+                                <p>Parameter @parameter.Name is not supported</p>
+                            }
                         }
                     }
                     else
@@ -170,7 +190,9 @@
             </div>
             @if (_errors.Count() > 0)
             {
-                <MudText Typo="Typo.subtitle2">@($"Errors ({_errors.Length})")</MudText>
+                <MudText Typo="Typo.subtitle2">
+                    @($"Errors ({_errors.Length})")
+                </MudText>
                 @foreach (var error in _errors)
                 {
                     <MudText Color="@Color.Error">@error</MudText>
@@ -192,7 +214,8 @@
     private readonly bool _closeable = true;
 
     private MudForm _jobForm;
-    string[] _errors = { };
+    private string[] _errors = { };
+    private string[] _extendedInputFieldTriggers = { "body", "description", "message" };
 
     private FilePickerFileType _psFileType;
     private PickOptions _filePickOptions;
