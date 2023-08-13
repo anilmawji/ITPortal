@@ -8,41 +8,44 @@ namespace ITPortal.Lib.Services.Automation.Script;
 
 public class PowerShellScript : AutomationScript
 {
-    private readonly InitialSessionState _initialsessionState;
+    private readonly InitialSessionState _initialPowerShellState;
 
     public PowerShellScript(IScriptOutputStreamService outputStreamService) : base(outputStreamService)
     {
-        _initialsessionState = NewInitialSessionState();
+        _initialPowerShellState = NewInitialSessionState();
     }
 
     public PowerShellScript(IScriptOutputStreamService outputStreamService, string filePath) : base(outputStreamService, filePath)
     {
-        _initialsessionState = NewInitialSessionState();
+        _initialPowerShellState = NewInitialSessionState();
     }
 
     private static InitialSessionState NewInitialSessionState()
     {
         // CreateDefault() only loads the commands necessary to host PowerShell, CreateDefault2() loads all available commands
-        InitialSessionState initialsessionState = InitialSessionState.CreateDefault();
+        InitialSessionState initialPowerShellState = InitialSessionState.CreateDefault();
         // Limit script execution to one thread
-        initialsessionState.ApartmentState = ApartmentState.STA;
+        initialPowerShellState.ApartmentState = ApartmentState.STA;
         // Set execution policy of the PS session
-        initialsessionState.ExecutionPolicy = Microsoft.PowerShell.ExecutionPolicy.Bypass;
+        initialPowerShellState.ExecutionPolicy = Microsoft.PowerShell.ExecutionPolicy.Bypass;
 
-        return initialsessionState;
+        return initialPowerShellState;
     }
 
     public override bool LoadFromFile(string filePath)
     {
-        Content = File.ReadAllLines(filePath);
+        if (!base.LoadFromFile(filePath))
+        {
+            return false;
+        }
+
         ScriptBlockAst scriptAst = Parser.ParseInput(GetContentAsString(), out _, out ParseError[] errors);
 
         if (errors.Length != 0)
         {
-            Content = null;
+            LoadState = ScriptLoadState.Failed;
             return false;
         }
-        Name = Path.GetFileName(filePath);
 
         if (scriptAst.ParamBlock != null)
         {
@@ -52,12 +55,11 @@ public class PowerShellScript : AutomationScript
         {
             Parameters = new PowershellParameterList();
         }
-        Loaded = true;
 
         return true;
     }
 
-    public override async Task InvokeAsync(CancellationToken cancellationToken, string cancellationMessage)
+    public override async Task InvokeAsync(string cancellationMessage, CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
         {
@@ -65,7 +67,7 @@ public class PowerShellScript : AutomationScript
             return;
         }
 
-        if (!Loaded)
+        if (!IsLoaded())
         {
             throw new InvalidPowerShellStateException("Attempt to invoke a script that was not loaded");
         }
@@ -73,7 +75,7 @@ public class PowerShellScript : AutomationScript
         try
         {
             // "using" relies on compiler to dispose of shell when method is popped from call stack
-            using PowerShell shell = PowerShell.Create(_initialsessionState);
+            using PowerShell shell = PowerShell.Create(_initialPowerShellState);
             shell.AddScript(GetContentAsString());
             ((PowershellParameterList?)Parameters)?.Register(shell);
 

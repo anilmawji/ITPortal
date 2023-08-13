@@ -1,5 +1,6 @@
 ﻿@page "/new-job"
 
+@using ITPortal.Lib.Utils;
 @using Microsoft.AspNetCore.Authorization;
 
 @*@attribute [Authorize]*@
@@ -15,20 +16,20 @@
             <MudButton Variant="Variant.Filled" Size="Size.Small" @onclick="PickAndLoadScript">
                 <MudText>Choose File</MudText>
             </MudButton>
-            @if (_psScript != null)
+            @if (_psScript.IsLoaded())
             {
                 <p class="file-label">
-                    @_psScript.Name
+                    @_psScript.FileName
                 </p>
             }
-            else
+            else if (_psScript.IsUnloaded())
             {
                 <p class="file-label">
                     No file selected
                 </p>
             }
         </div>
-        @if (_psScript != null && _psScript.Content != null)
+        @if (_psScript.IsLoaded())
         {
             <p class="scroll script-content">
                 @foreach (string line in _psScript.Content)
@@ -55,9 +56,13 @@
                 </MudItem>
             </MudGrid>
         }
+        else if (_psScript.LoadFailed())
+        {
+            <p>Script failed to load</p>
+        }
     </PageSection>
 
-    @if (_psScript != null)
+    @if (_psScript.IsLoaded())
     {
         <PageSection Title="Parameters">
             <div class="input-group">
@@ -121,7 +126,7 @@
                 }
                 else
                 {
-                    <p>This script does not accept parameters</p>
+                    <p>This script does not accept any parameters</p>
                 }
             </div>
         </PageSection>
@@ -142,7 +147,7 @@
                 </div>
             </div>
             <div class="job-checkbox">
-                <MudCheckBox @bind-Checked="@_goToJob" Color="Color.Secondary" Required="true">Go to Job</MudCheckBox>
+                <MudCheckBox @bind-Checked="@_goToJob" Color="Color.Secondary">Go to Job</MudCheckBox>
             </div>
             <MudGrid Spacing="2">
                 <MudItem>
@@ -173,9 +178,8 @@
 
     private string Description { get; set; }
     private string Device { get; set; }
-    private bool ScriptLoadSuccessful { get; set; }
 
-    private const int _jobIdLength = 5;
+    private readonly int _jobIdLength = 5;
 
     private FilePickerFileType _psFileType;
     private PickOptions _pickOptions;
@@ -198,6 +202,8 @@
             PickerTitle = "Please select a PowerShell _script file",
             FileTypes = _psFileType,
         };
+        _psScript = new PowerShellScript(PowerShellService);
+
         PowerShellService.OutputChanged += (object sender, List<ScriptOutputMessage> newOutput) =>
         {
             InvokeAsync(() => this.StateHasChanged());
@@ -222,15 +228,36 @@
 
         if (fileResult != null)
         {
-            _psScript = new PowerShellScript(PowerShellService);
-            _psJob = ScriptJobService.NewJob(_psScript, _jobIdLength);
+            _psScript.LoadFromFile(fileResult.FullPath);
 
-            ScriptLoadSuccessful = _psScript.LoadFromFile(fileResult.FullPath);
-
-            if (ScriptLoadSuccessful)
-            {
-                this.StateHasChanged();
-            }
+            this.StateHasChanged();
         }
+    }
+
+    private void RefreshScript()
+    {
+        if (_psScript.Refresh())
+        {
+            this.StateHasChanged();
+        }
+    }
+
+    private void EditScript()
+    {
+        if (!_psScript.IsLoaded()) return;
+
+        FileHandler.OpenFileWithDefaultProgram(_psScript.FilePath);
+    }
+
+    private void RemoveScript()
+    {
+        _psScript = new PowerShellScript(PowerShellService);
+
+        this.StateHasChanged();
+    }
+
+    private void CreateJob()
+    {
+        _psJob = ScriptJobService.NewJob(_psScript, _jobIdLength);
     }
 }

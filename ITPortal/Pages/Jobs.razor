@@ -47,7 +47,7 @@
                     <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Id)">Id</MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Script.Name)">Script</MudTableSortLabel>
+                    <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Script.FileName)">Script</MudTableSortLabel>
                 </MudTh>
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.DeviceName)">Device</MudTableSortLabel>
@@ -63,7 +63,7 @@
             </HeaderContent>
             <RowTemplate>
                 <MudTh DataLabel="id">@context.Id</MudTh>
-                <MudTh DataLabel="script">@context.Script.Name</MudTh>
+                <MudTh DataLabel="script">@context.Script.FileName</MudTh>
                 <MudTh DataLabel="description">@context.DeviceName</MudTh>
                 <MudTh DataLabel="description">@context.Description</MudTh>
                 <MudTh DataLabel="" Style="text-align:right">
@@ -84,10 +84,11 @@
 
     private readonly int[] _pageSizeOptions = { 10, 20 };
 
+    // Temp - for testing only
     protected override async Task OnInitializedAsync()
     {
         _testScript = new PowerShellScript(PowerShellService);
-        _testScript.Load("C:\\Users\\mawji\\OneDrive\\Desktop\\block_test.ps1");
+        _testScript.LoadFromFile("C:\\Users\\mawji\\OneDrive\\Desktop\\block_test.ps1");
 
         for (int i = 0; i < 20; i++)
         {
@@ -114,7 +115,7 @@
     {
         return string.IsNullOrWhiteSpace(searchString)
                     || job.Id.Contains(searchString, StringComparison.OrdinalIgnoreCase)
-                    || job.Script.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase)
+                    || job.Script.FileName.Contains(searchString, StringComparison.OrdinalIgnoreCase)
                     || job.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase);
     }
 }

@@ -28,8 +28,7 @@ public class AuthenticatedUser
         Principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "Basic"));
     }
 
-    public Claim? GetClaimWithType(string claimType) =>
-        Principal.FindFirst(c => c.Type == claimType);
+    public Claim? GetClaimWithType(string claimType) => Principal.FindFirst(c => c.Type == claimType);
 
     public bool ReplaceClaimType(List<Claim> claims, string oldClaimType, string newClaimType)
     {

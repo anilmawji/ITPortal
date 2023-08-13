@@ -14,7 +14,7 @@
 
 @*@attribute [Authorize]*@
 
-<button @onclick="PickAndLoadScript">Choose file</button>
+@*<button @onclick="PickAndLoadScript">Choose file</button>
 
 @if (_script != null)
 {
@@ -116,130 +116,130 @@
 }
 
 @code {
-    // MudChipField settings
-    private readonly char _delimiter = ' ';
-    private readonly int _chipsMaxWidth = 80;
-    private readonly Color _color = Color.Default;
-    private readonly Variant _chipVariant = Variant.Filled;
-    private readonly Variant _variant = Variant.Text;
-    private readonly Size _chipSize = Size.Medium;
-    private readonly bool _fullWidth = true;
-    private readonly bool _wrapChips = true;
-    private readonly bool _closeable = true;
+    //// MudChipField settings
+    //private readonly char _delimiter = ' ';
+    //private readonly int _chipsMaxWidth = 80;
+    //private readonly Color _color = Color.Default;
+    //private readonly Variant _chipVariant = Variant.Filled;
+    //private readonly Variant _variant = Variant.Text;
+    //private readonly Size _chipSize = Size.Medium;
+    //private readonly bool _fullWidth = true;
+    //private readonly bool _wrapChips = true;
+    //private readonly bool _closeable = true;
 
-    private FilePickerFileType _psFileType;
-    private PickOptions _pickOptions;
-    private PowerShellScript _script;
-    private CancellationTokenSource _cancellationTokenSource;
-    private bool _scriptRunning;
+    //private FilePickerFileType _psFileType;
+    //private PickOptions _pickOptions;
+    //private PowerShellScript _script;
+    //private CancellationTokenSource _cancellationTokenSource;
+    //private bool _scriptRunning;
 
-    protected override void OnInitialized()
-    {
-        _psFileType = new(new Dictionary<DevicePlatform, IEnumerable<string>>
-            {
-                { DevicePlatform.WinUI, new[] { ".ps1" } },
-                { DevicePlatform.macOS, new[] { "ps1" } }
-            }
-        );
-        _pickOptions = new()
-        {
-            // PickerTitle is used by macOS but not Windows - unreliable way of informing user
-            PickerTitle = "Please select a PowerShell _script file",
-            FileTypes = _psFileType,
-        };
-        _script = new PowerShellScript(PowerShellService);
+    //protected override void OnInitialized()
+    //{
+    //    _psFileType = new(new Dictionary<DevicePlatform, IEnumerable<string>>
+    //        {
+    //            { DevicePlatform.WinUI, new[] { ".ps1" } },
+    //            { DevicePlatform.macOS, new[] { "ps1" } }
+    //        }
+    //    );
+    //    _pickOptions = new()
+    //    {
+    //        // PickerTitle is used by macOS but not Windows - unreliable way of informing user
+    //        PickerTitle = "Please select a PowerShell _script file",
+    //        FileTypes = _psFileType,
+    //    };
+    //    _script = new PowerShellScript(PowerShellService);
 
-        PowerShellService.OutputChanged += (object sender, List<ScriptOutputMessage> newOutput) =>
-        {
-            InvokeAsync(() => this.StateHasChanged());
-        };
-    }
+    //    PowerShellService.OutputChanged += (object sender, List<ScriptOutputMessage> newOutput) =>
+    //    {
+    //        InvokeAsync(() => this.StateHasChanged());
+    //    };
+    //}
 
-    private void OnDateChanged(DateTime newDate, TimeSpan time, ScriptParameter parameter)
-    {
-        parameter.Value = newDate.Date.Add(time);
-    }
+    //private void OnDateChanged(DateTime newDate, TimeSpan time, ScriptParameter parameter)
+    //{
+    //    parameter.Value = newDate.Date.Add(time);
+    //}
 
-    private TimeSpan OnTimeChanged(TimeSpan newTime, DateTime date, ScriptParameter parameter)
-    {
-        parameter.Value = date.Date.Add(newTime);
+    //private TimeSpan OnTimeChanged(TimeSpan newTime, DateTime date, ScriptParameter parameter)
+    //{
+    //    parameter.Value = date.Date.Add(newTime);
 
-        return newTime;
-    }
+    //    return newTime;
+    //}
 
-    private async void PickAndLoadScript()
-    {
-        var fileResult = await FilePickerHandler.PickFile(_pickOptions);
+    //private async void PickAndLoadScript()
+    //{
+    //    var fileResult = await FilePickerHandler.PickFile(_pickOptions);
 
-        if (fileResult != null)
-        {
-            LoadScript(fileResult.FullPath);
-        }
-    }
+    //    if (fileResult != null)
+    //    {
+    //        LoadScript(fileResult.FullPath);
+    //    }
+    //}
 
-    private void LoadScript(string filePath = null)
-    {
-        if (_scriptRunning) CancelRunScript();
-        PowerShellService.Output.Clear();
+    //private void LoadScript(string filePath = null)
+    //{
+    //    if (_scriptRunning) CancelRunScript();
+    //    PowerShellService.Output.Clear();
 
-        var loaded = filePath != null ? _script.Load(filePath) : _script.Refresh();
+    //    var loaded = filePath != null ? _script.Load(filePath) : _script.Refresh();
 
-        if (loaded)
-        {
-            this.StateHasChanged();
-        }
-        else
-        {
-            PowerShellService.AddOutput("Error loading _script");
-            PowerShellService.AddOutput("<hr width=\"300px\" height=\"1px\"><b>EXECUTION FAILED</b>");
-        }
-    }
+    //    if (loaded)
+    //    {
+    //        this.StateHasChanged();
+    //    }
+    //    else
+    //    {
+    //        PowerShellService.AddOutput("Error loading _script");
+    //        PowerShellService.AddOutput("<hr width=\"300px\" height=\"1px\"><b>EXECUTION FAILED</b>");
+    //    }
+    //}
 
-    private async void RunScript()
-    {
-        if (_scriptRunning) CancelRunScript();
-        PowerShellService.Output.Clear();
+    //private async void RunScript()
+    //{
+    //    if (_scriptRunning) CancelRunScript();
+    //    PowerShellService.Output.Clear();
 
-        _cancellationTokenSource = new();
-        _cancellationTokenSource.Token.Register(() =>
-        {
-            _scriptRunning = false;
-            PowerShellService.AddOutput("<hr width=\"300px\" height=\"1px\"><b>EXECUTION CANCELLED</b>");
-        });
+    //    _cancellationTokenSource = new();
+    //    _cancellationTokenSource.Token.Register(() =>
+    //    {
+    //        _scriptRunning = false;
+    //        PowerShellService.AddOutput("<hr width=\"300px\" height=\"1px\"><b>EXECUTION CANCELLED</b>");
+    //    });
 
-        PowerShellService.AddOutput("<b>BEGIN</b><hr width=\"300px\" height=\"1px\">");
+    //    PowerShellService.AddOutput("<b>BEGIN</b><hr width=\"300px\" height=\"1px\">");
 
-        _scriptRunning = true;
-        await _script.InvokeAsync(_cancellationTokenSource.Token, "Script execution cancelled");
+    //    _scriptRunning = true;
+    //    await _script.InvokeAsync(_cancellationTokenSource.Token, "Script execution cancelled");
 
-        _scriptRunning = false;
+    //    _scriptRunning = false;
 
-        if (!_cancellationTokenSource.IsCancellationRequested)
-        {
-            PowerShellService.AddOutput("<hr width=\"300px\" height=\"1px\"><b>EXECUTION COMPLETE</b>");
-        }
-    }
+    //    if (!_cancellationTokenSource.IsCancellationRequested)
+    //    {
+    //        PowerShellService.AddOutput("<hr width=\"300px\" height=\"1px\"><b>EXECUTION COMPLETE</b>");
+    //    }
+    //}
 
-    private void CancelRunScript()
-    {
-        _scriptRunning = false;
-        _cancellationTokenSource.Cancel();
-    }
+    //private void CancelRunScript()
+    //{
+    //    _scriptRunning = false;
+    //    _cancellationTokenSource.Cancel();
+    //}
 
-    private void RemoveScript()
-    {
-        if (_scriptRunning) CancelRunScript();
-        PowerShellService.Output.Clear();
+    //private void RemoveScript()
+    //{
+    //    if (_scriptRunning) CancelRunScript();
+    //    PowerShellService.Output.Clear();
 
-        _script = new PowerShellScript(PowerShellService);
+    //    _script = new PowerShellScript(PowerShellService);
 
-        this.StateHasChanged();
-    }
+    //    this.StateHasChanged();
+    //}
 
-    private void EditScript()
-    {
-        if (!_script.Loaded || _script.FilePath == null) return;
+    //private void EditScript()
+    //{
+    //    if (!_script.Loaded || _script.FilePath == null) return;
         
-        FileHandler.OpenFileWithDefaultProgram(_script.FilePath);
-    }
+    //    FileHandler.OpenFileWithDefaultProgram(_script.FilePath);
+    //}
 }
