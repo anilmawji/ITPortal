@@ -8,13 +8,16 @@ public class ScriptJobService : IScriptJobService
     public int JobIdLength { get; set; }
     public Dictionary<string, ScriptJob> Jobs { get; set; } = new();
 
-    public ScriptJob NewJob(AutomationScript script, int jobIdLength)
+    public ScriptJob NewJob(AutomationScript script, string deviceName, string jobDescription, int jobIdLength)
     {
-        string jobId = UniqueGuidGenerator.NewUniqueGuid(Jobs.Keys.ToList(), jobIdLength);
-        ScriptJob job = new(jobId, script);
+        List<string> currentJobIds = Jobs.Keys.ToList();
+        string jobId = UniqueGuidGenerator.NewUniqueGuid(currentJobIds, jobIdLength);
 
-        Jobs.Add(jobId, job);
+        return new ScriptJob(jobId, script, deviceName, jobDescription);
+    }
 
-        return job;
+    public void RegisterJob(ScriptJob job)
+    {
+        Jobs.Add(job.Id, job);
     }
 }

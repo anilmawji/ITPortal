@@ -1,4 +1,4 @@
-﻿@page "/jobs"
+﻿@attribute [Route(PageRoutes.Jobs)]
 
 @using Microsoft.AspNetCore.Authorization;
 @using ITPortal.Lib.Services.Automation.Job;
@@ -64,9 +64,9 @@
             <RowTemplate>
                 <MudTh DataLabel="id">@context.Id</MudTh>
                 <MudTh DataLabel="script">@context.Script.FileName</MudTh>
-                <MudTh DataLabel="description">@context.DeviceName</MudTh>
+                <MudTh DataLabel="device">@context.DeviceName</MudTh>
                 <MudTh DataLabel="description">@context.Description</MudTh>
-                <MudTh DataLabel="" Style="text-align:right">
+                <MudTh Style="text-align:right">
                     <MudButton Style="width:20px !important;">🗙</MudButton>
                 </MudTh>
             </RowTemplate>
@@ -94,14 +94,16 @@
         {
             _jobList.Add(new ScriptJob(
                 Guid.NewGuid().ToString().Substring(0, 5),
-                _testScript
+                _testScript,
+                "Localhost",
+                "Test job"
             ));
         }
     }
 
     private void NewJobClickEvent()
     {
-        NavigationManager.NavigateTo("/new-job");
+        NavigationManager.NavigateTo("/create-job");
     }
 
     private void RowClickEvent(TableRowClickEventArgs<ScriptJob> tableRowClickEventArgs)

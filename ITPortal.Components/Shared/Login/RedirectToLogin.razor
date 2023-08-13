@@ -1,10 +1,12 @@
 ﻿@inject NavigationManager NavigationManager
 
+@using ITPortal.Components
+
 <div class="loader loader-bouncing"><span>Redirecting...</span></div>
 
 @code {
     protected override void OnInitialized()
     {
-        NavigationManager.NavigateTo("/login");
+        NavigationManager.NavigateTo(PageRoutes.Login);
     }
 }

@@ -7,19 +7,16 @@ public class ScriptJob
 {
     public string Id { get; set; }
     public AutomationScript Script { get; set; }
-    public string? DeviceName { get; set; }
-    public string? Description { get; set; }
+    public string DeviceName { get; set; }
+    public string Description { get; set; }
     public ScriptJobState State { get; private set; }
     public DateTime? ExecutionTime { get; private set; }
 
-    public ScriptJob(string id, AutomationScript script)
+    public ScriptJob(string id, AutomationScript script, string deviceName, string description)
     {
         Id = id;
         Script = script;
-    }
-
-    public ScriptJob(string id, AutomationScript script, string description) : this(id, script)
-    {
+        DeviceName = deviceName;
         Description = description;
     }
 }
