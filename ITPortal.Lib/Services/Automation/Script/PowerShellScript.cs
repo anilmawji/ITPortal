@@ -38,7 +38,20 @@ public class PowerShellScript : AutomationScript
         {
             return false;
         }
+        return LoadParameters();
+    }
 
+    public override bool Refresh()
+    {
+        if (!base.Refresh())
+        {
+            return false;
+        }
+        return LoadParameters();
+    }
+
+    public bool LoadParameters()
+    {
         ScriptBlockAst scriptAst = Parser.ParseInput(GetContentAsString(), out _, out ParseError[] errors);
 
         if (errors.Length != 0)

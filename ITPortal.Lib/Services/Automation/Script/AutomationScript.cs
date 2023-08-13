@@ -61,7 +61,7 @@ public abstract class AutomationScript
         }
     }
 
-    public bool Refresh()
+    public virtual bool Refresh()
     {
         if (FilePath != null && LoadState == ScriptLoadState.Succeeded)
         {

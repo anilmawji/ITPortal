@@ -1,4 +1,4 @@
-﻿@attribute [Route(PageRoutes.CreateJob)]
+﻿@attribute [Route(PageRoutes.CreateScriptJob)]
 
 @using ITPortal.Lib.Utils;
 @using Microsoft.AspNetCore.Authorization;
@@ -65,7 +65,7 @@
 
     @if (_psScript.IsLoaded())
     {
-        <MudForm @bind-IsValid="@_canCreateJob">
+        <MudForm @ref="_jobForm" @bind-IsValid="@_canCreateJob">
             <PageSection Title="Parameters">
                 <div class="input-group">
                     @if (_psScript.Parameters.Count() > 0)
@@ -158,7 +158,7 @@
                         </MudButton>
                     </MudItem>
                     <MudItem>
-                        <MudButton @onclick="SaveJob" Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" Disabled="_canCreateJob">
+                        <MudButton @onclick="SaveJob" Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
                             <MudText>Done</MudText>
                         </MudButton>
                     </MudItem>
@@ -179,10 +179,11 @@
     private readonly bool _wrapChips = true;
     private readonly bool _closeable = true;
 
+    private MudForm _jobForm;
     private FilePickerFileType _psFileType;
-    private PickOptions _pickOptions;
-    private ScriptJob _psJob;
+    private PickOptions _filePickOptions;
     private AutomationScript _psScript;
+    private ScriptJob _psJob;
 
     private readonly int _jobIdLength = 5;
     private bool _shouldViewJob;
@@ -196,10 +197,10 @@
                 { DevicePlatform.macOS, new[] { "ps1" } }
             }
         );
-        _pickOptions = new()
+        _filePickOptions = new()
         {
-            // PickerTitle is used by macOS but not Windows - unreliable way of informing user
-            PickerTitle = "Please select a PowerShell _script file",
+            // PickerTitle is used by macOS but not Windows - unreliable for providing information to user
+            PickerTitle = "Please select a PowerShell script file",
             FileTypes = _psFileType,
         };
         _psScript = new PowerShellScript(PowerShellService);
@@ -225,7 +226,7 @@
 
     private async void PickAndLoadScript()
     {
-        var fileResult = await FilePickerHandler.PickFile(_pickOptions);
+        var fileResult = await FilePickerHandler.PickFile(_filePickOptions);
 
         if (fileResult != null)
         {
@@ -259,16 +260,17 @@
 
     private void CancelJobCreation()
     {
-        NavigationManager.NavigateTo("/jobs");
+        NavigationManager.NavigateTo(PageRoutes.ScriptJobs);
     }
 
     private void SaveJob()
     {
-        if (_shouldViewJob)
-        {
-            // TODO: Open job dialog on jobs page
-        }
+        _jobForm.Validate();
 
-        NavigationManager.NavigateTo("/jobs");
+        if (_canCreateJob)
+        {
+            ScriptJobService.RegisterJob(_psJob);
+            NavigationManager.NavigateTo(PageRoutes.ScriptJobs);
+        }
     }
 }
