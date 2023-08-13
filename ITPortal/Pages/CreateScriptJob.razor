@@ -79,17 +79,17 @@
                                 @if (parameter.DesiredType == typeof(string))
                                 {
                                     <MudTextField T="string" Label="@parameter.Name" Variant="Variant.Filled" Margin="Margin.Dense" Required="@parameter.Mandatory"
-                                                  Text="@((string)parameter.Value)" TextChanged="(text) => parameter.Value = text" RequiredError="@requiredError" />
+                                        Text="@((string)parameter.Value)" TextChanged="(text) => parameter.Value = text" RequiredError="@requiredError" />
                                 }
                                 else if (parameter.DesiredType == typeof(int))
                                 {
                                     <MudNumericField T="int" Label="@parameter.Name" Variant="Variant.Filled" Margin="Margin.Dense" Required="@parameter.Mandatory"
-                                    Value="@((int)parameter.Value)" ValueChanged="(num) => parameter.Value = num" RequiredError="@requiredError" />
+                                        Value="@((int)parameter.Value)" ValueChanged="(num) => parameter.Value = num" RequiredError="@requiredError" />
                                 }
                                 else if (parameter.DesiredType == typeof(bool))
                                 {
                                     <MudSwitch T="bool" Label="@parameter.Name" Required="@parameter.Mandatory" Color="Color.Secondary"
-                                    Checked="@((bool)parameter.Value)" CheckedChanged="(checkedValue) => parameter.Value = checkedValue" RequiredError="@requiredError" />
+                                        Checked="@((bool)parameter.Value)" CheckedChanged="(checkedValue) => parameter.Value = checkedValue" RequiredError="@requiredError" />
                                 }
                                 else if (parameter.DesiredType == typeof(DateTime))
                                 {
