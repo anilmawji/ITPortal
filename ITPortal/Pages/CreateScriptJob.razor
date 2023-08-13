@@ -63,9 +63,9 @@
         }
     </PageSection>
 
-    @if (_psScript.IsLoaded())
-    {
-        <MudForm @ref="_jobForm" @bind-IsValid="@_canCreateJob" @bind-Errors="@_errors">
+    <MudForm @ref="_jobForm" @bind-IsValid="@_canCreateJob" @bind-Errors="@_errors">
+        @if (_psScript.IsLoaded())
+        {
             <PageSection Title="Parameters">
                 <div class="input-group">
                     @if (_psScript.Parameters.Count() > 0)
@@ -139,50 +139,45 @@
                     }
                 </div>
             </PageSection>
-
-    @*        <PageSection Title="Schedule">
-
-            </PageSection>*@
-
-            <PageSection Title="Job Details">
-                <div class="input-group">
-                    <div class="input-line">
-                        <MudSelect T="string" @bind-Value="_psJob.DeviceName" Label="Device" Variant="Variant.Filled" Margin="Margin.Dense" Required="true">
-                            <MudSelectItem Value=@_localhostDevice RequiredError="Device name field is required." />
-                        </MudSelect>
-                    </div>
-                    <div class="input-line">
-                        <MudTextField @bind-Value="_psJob.Description" Label="Description" Variant="Variant.Filled" Margin="Margin.Dense"></MudTextField>
-                    </div>
-                </div>
-                <div class="job-checkbox">
-                    <MudCheckBox @bind-Checked="@_shouldViewJob" Color="Color.Secondary">View Job</MudCheckBox>
+        }
+        <PageSection Title="Job Details">
+            <div class="input-group">
+                <div class="input-line">
+                    <MudSelect T="string" @bind-Value="_psJob.DeviceName" Label="Device" Variant="Variant.Filled" Margin="Margin.Dense" Required="true">
+                        <MudSelectItem Value=@_localhostDevice RequiredError="Device name field is required." />
+                    </MudSelect>
                 </div>
                 <div class="input-line">
-                    <MudGrid Spacing="2">
-                        <MudItem>
-                            <MudButton @onclick="CancelJobCreation" Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
-                                <MudText>Cancel</MudText>
-                            </MudButton>
-                        </MudItem>
-                        <MudItem>
-                            <MudButton @onclick="SaveJob" Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
-                                <MudText>Done</MudText>
-                            </MudButton>
-                        </MudItem>
-                    </MudGrid>
+                    <MudTextField @bind-Value="_psJob.Description" Label="Description" Variant="Variant.Filled" Margin="Margin.Dense"></MudTextField>
                 </div>
-                @if (_errors.Count() > 0)
+            </div>
+            <div class="job-checkbox">
+                <MudCheckBox @bind-Checked="@_shouldViewJob" Color="Color.Secondary">View Job</MudCheckBox>
+            </div>
+            <div class="input-line">
+                <MudGrid Spacing="2">
+                    <MudItem>
+                        <MudButton @onclick="CancelJobCreation" Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
+                            <MudText>Cancel</MudText>
+                        </MudButton>
+                    </MudItem>
+                    <MudItem>
+                        <MudButton @onclick="SaveJob" Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" Disabled="!_psScript.IsLoaded()">
+                            <MudText>Done</MudText>
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+            </div>
+            @if (_errors.Count() > 0)
+            {
+                <MudText Typo="Typo.subtitle2">@($"Errors ({_errors.Length})")</MudText>
+                @foreach (var error in _errors)
                 {
-                    <MudText Typo="Typo.subtitle2">@($"Errors ({_errors.Length})")</MudText>
-                    @foreach (var error in _errors)
-                    {
-                        <MudText Color="@Color.Error">@error</MudText>
-                    }
+                    <MudText Color="@Color.Error">@error</MudText>
                 }
-            </PageSection>
-        </MudForm>
-    }
+            }
+        </PageSection>
+    </MudForm>
 </div>
 
 @code {
