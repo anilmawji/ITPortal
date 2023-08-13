@@ -1,6 +1,18 @@
-﻿.appbar-background {
+﻿.appbar-logo-container {
+    display: flex;
+    z-index: 2;
+}
+
+.appbar-logo {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+    margin-left: 20px;
+}
+
+.appbar-background {
     position: absolute;
-    width: 100%;
+    width: calc(100% + 24px);
     height: 50px;
     background-color: #840C16;
     overflow: hidden;
@@ -18,4 +30,12 @@
     background-repeat: repeat;
     background-color: #840C16;
     background-size: contain;
+}
+
+/* Adjust background to match the mobile-sized appbar automatically resized by MudBlazor */
+@media (max-width: 599px)
+{
+    .appbar-background {
+        height: calc(var(--mud-appbar-height) - var(--mud-appbar-height)/8);
+    }
 }

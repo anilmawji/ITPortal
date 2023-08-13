@@ -1,12 +1,4 @@
-﻿/* Company branding */
-.appbar-logo {
-    width: 24px;
-    height: 24px;
-    margin-right: 10px;
-    margin-left: 20px;
-}
-
-/* Title for a page in the portal */
+﻿/* Title for a page in the portal */
 h1.page-title {
     margin-bottom: 40px;
 }
