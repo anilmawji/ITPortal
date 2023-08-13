@@ -1,0 +1,21 @@
+﻿.appbar-background {
+    position: absolute;
+    width: 100%;
+    height: 50px;
+    background-color: #840C16;
+    overflow: hidden;
+    transform: translateX(-24px);
+    opacity: 0.5;
+}
+
+.appbar-background div {
+    background-image: url("images/geometric_backdrop.jpg");
+    width: 100%;
+    height: 500px;
+    filter: grayscale(100%);
+    mix-blend-mode: color-burn;
+    transform: translateY(-30px);
+    background-repeat: repeat;
+    background-color: #840C16;
+    background-size: contain;
+}

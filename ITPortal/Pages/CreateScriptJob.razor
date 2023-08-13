@@ -101,9 +101,9 @@
                                         <MudDatePicker Label="@parameter.Name" Variant="Variant.Filled" Margin="Margin.Dense" Required="@parameter.Mandatory"
                                             PickerVariant="PickerVariant.Inline" Date="@date" DateChanged="(newDate) => OnDateChanged((DateTime)newDate, time, parameter)"
                                             RequiredError="@requiredError" />
+                                        <MudTimePicker Label="@parameter.Name" Variant="Variant.Filled" Margin="Margin.Dense" AmPm="true" Time="@time"
+                                            TimeChanged="(newTime) => time = OnTimeChanged((TimeSpan)newTime, date, parameter)" RequiredError="@requiredError" />
                                     </div>
-                                    <MudTimePicker Label="@parameter.Name" Variant="Variant.Filled" Margin="Margin.Dense" AmPm="true" Time="@time"
-                                        TimeChanged="(newTime) => time = OnTimeChanged((TimeSpan)newTime, date, parameter)" RequiredError="@requiredError" />
                                 }
                                 else if (parameter.DesiredType == typeof(string[]))
                                 {

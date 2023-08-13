@@ -11,13 +11,16 @@
 
 <MudLayout>
     <MudAppBar Elevation="0">
+        <div class="appbar-background">
+            <div/>
+        </div>
 		<AuthorizeView>
 			<Authorized>
 				<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@DrawerToggle" />
 			</Authorized>
 		</AuthorizeView>
-        <img src="images/arcurve_it_portal_logo.png" class="appbar-logo"/>
-        <b>IT Portal</b>
+        <img style="z-index: 2" src="images/arcurve_it_portal_logo.png" class="appbar-logo" />
+        <p style="z-index: 2">IT Portal</p>
         <MudSpacer />
         <LogoutDisplay />
         <MudIconButton Icon="@Icons.Material.Filled.Brightness4"
