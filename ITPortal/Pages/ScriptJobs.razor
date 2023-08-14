@@ -15,7 +15,7 @@
     <style>
         /*Workaround to make MudTable resize with window*/
         .fixed-size-container {
-            height: calc(100vh - 90px - 110px);
+            height: calc(100vh - 90px - 100px);
             display: grid;
             grid-template-columns: minmax(0,1fr);
             grid-template-rows: minmax(0,1fr);
@@ -26,13 +26,9 @@
             border: solid 1px #D2D2D2;
         }
 
-        /*Correct MudTable height*/
+        /*Correct MudTable height and color */
         .mud-table-toolbar {
             --mud-internal-toolbar-height: 48px !important;
-        }
-
-        .mud-table-head {
-            --mud-palette-surface: #f5f5f5 !important;
         }
     </style>
 
@@ -81,6 +77,7 @@
     private List<ScriptJob> _jobList = new();
     private PowerShellScript _testScript;
     private string _searchString = "";
+    private string _tableHeaderStyle = "";
 
     private readonly int[] _pageSizeOptions = { 10, 20 };
 

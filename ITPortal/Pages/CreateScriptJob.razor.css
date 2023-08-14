@@ -2,6 +2,10 @@
     text-decoration: underline;
 }
 
+.create-job-container {
+    margin-bottom: 80px;
+}
+
 .choose-file-container {
     display: flex;
     margin-bottom: 30px;

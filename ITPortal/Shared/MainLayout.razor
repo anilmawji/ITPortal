@@ -5,7 +5,7 @@
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode" Theme="_currentTheme" />
+<MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@IsDarkMode" Theme="_currentTheme" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
@@ -32,7 +32,7 @@
     </MudAppBar>
 @*	<AuthorizeView>
 		<Authorized>*@
-			<MudDrawer @bind-Open="@_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="1">
+    <MudDrawer @bind-Open="@IsDrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="1">
 				<NavMenu />
 			</MudDrawer>
 @*		</Authorized>
@@ -43,10 +43,10 @@
 </MudLayout>
 
 @code {
-    private MudThemeProvider _mudThemeProvider;
+    public static bool IsDrawerOpen { get; private set; } = true;
+    public static bool IsDarkMode { get; private set; }
 
-    private bool _drawerOpen = true;
-    private bool _isDarkMode;
+    private MudThemeProvider _mudThemeProvider;
 
     private readonly MudTheme _currentTheme = new()
     {
@@ -65,8 +65,8 @@
         },
         PaletteDark = new PaletteDark
         {
-                Primary = "#6585e0",
-                Secondary = "#607D8B",
+                Primary = "#0078D4",
+                Secondary = "#0078D4",
                 Info = "#a4c2dd",
                 Success = "#2ECC40",
                 Warning = "#dc2d7e",
@@ -80,7 +80,7 @@
 
     private string AppbarBackgroundStyle()
     {
-        return _isDarkMode ? "background-color: rgba(0,0,0,.8);" : "background-color: #840C16;";
+        return IsDarkMode ? "background-color: rgba(0,0,0,.8);" : "background-color: #840C16;";
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -93,6 +93,6 @@
         }
     }
 
-    void DrawerToggle() => _drawerOpen = !_drawerOpen;
-    void ThemeToggle() => _isDarkMode = !_isDarkMode;
+    void DrawerToggle() => IsDrawerOpen = !IsDrawerOpen;
+    void ThemeToggle() => IsDarkMode = !IsDarkMode;
 }
