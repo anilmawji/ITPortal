@@ -88,8 +88,9 @@
                                     }
                                 }
                                 <div class="input-line">
-                                    <MudTextField T="string" Label="@parameter.Name" Lines="@numLines" Variant="Variant.Filled" Margin="Margin.Dense" Required="@parameter.Mandatory"
-                                        Text="@((string)parameter.Value)" TextChanged="(text) => parameter.Value = text" RequiredError="@requiredError" />
+                                    <MudTextField T="string" Label="@parameter.Name" Lines="@numLines" Variant="Variant.Filled" Margin="Margin.Dense"
+                                        Required="@parameter.Mandatory" Text="@((string)parameter.Value)" TextChanged="(text) => parameter.Value = text"
+                                        RequiredError="@requiredError" />
                                 </div>
                             }
                             else if (parameter.DesiredType == typeof(int))
@@ -123,28 +124,28 @@
                             else if (parameter.DesiredType == typeof(string[]))
                             {
                                 <div class="input-line">
-                                <MudExtensions.MudChipField T="string" Label="@parameter.Name" Margin="Margin.Dense" Required="@parameter.Mandatory"
-                                    Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color"
-                                    ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable"
-                                    Variant="_variant" RequiredError="@requiredError" />
+                                    <MudExtensions.MudChipField T="string" Label="@parameter.Name" Margin="Margin.Dense" Required="@parameter.Mandatory"
+                                        Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color"
+                                        ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable"
+                                        Variant="_variant" RequiredError="@requiredError" />
                                 </div>
                             }
                             else if (parameter.DesiredType == typeof(int[]))
                             {
                                 <div class="input-line">
-                                <MudExtensions.MudChipField T="int" Label="@parameter.Name" Margin="Margin.Dense" Required="@parameter.Mandatory"
-                                    Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color"
-                                    ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable"
-                                    Variant="_variant" RequiredError="@requiredError" />
+                                    <MudExtensions.MudChipField T="int" Label="@parameter.Name" Margin="Margin.Dense" Required="@parameter.Mandatory"
+                                        Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color"
+                                        ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable"
+                                        Variant="_variant" RequiredError="@requiredError" />
                                 </div>
                             }
                             else if (parameter.DesiredType == typeof(bool[]))
                             {
                                 <div class="input-line">
-                                <MudExtensions.MudChipField T="bool" Label="@parameter.Name" Margin="Margin.Dense" Required="@parameter.Mandatory"
-                                    Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color"
-                                    ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable"
-                                    Variant="_variant" RequiredError="@requiredError" />
+                                    <MudExtensions.MudChipField T="bool" Label="@parameter.Name" Margin="Margin.Dense" Required="@parameter.Mandatory"
+                                        Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color"
+                                        ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable"
+                                        Variant="_variant" RequiredError="@requiredError" />
                                 </div>
                             }
                             else

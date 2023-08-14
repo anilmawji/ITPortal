@@ -14,7 +14,6 @@
     position: absolute;
     width: calc(100% + 24px);
     height: 50px;
-    background-color: #840C16;
     overflow: hidden;
     transform: translateX(-24px);
     opacity: 0.5;

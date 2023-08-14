@@ -11,7 +11,7 @@
 
 <MudLayout>
     <MudAppBar Elevation="0">
-        <div class="appbar-background">
+        <div class="appbar-background" style="@AppbarBackgroundStyle()">
             <div/>
         </div>
 		<AuthorizeView>
@@ -77,6 +77,11 @@
                 // TODO: add more color properties
         }
     };
+
+    private string AppbarBackgroundStyle()
+    {
+        return _isDarkMode ? "background-color: rgba(0,0,0,.8);" : "background-color: #840C16;";
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
