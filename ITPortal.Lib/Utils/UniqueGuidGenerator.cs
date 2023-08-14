@@ -15,6 +15,6 @@ public static class UniqueGuidGenerator
 
     private static string NewGuid(int guidLength)
     {
-        return Guid.NewGuid().ToString()[guidLength..];
+        return Guid.NewGuid().ToString()[0..guidLength];
     }
 }

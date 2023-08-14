@@ -1,5 +1,6 @@
 ﻿.welcome {
     margin: 20px;
+    z-index: 2;
 }
 
 .logout-btn {

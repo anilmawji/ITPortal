@@ -5,6 +5,7 @@
 @using ITPortal.Lib.Services.Automation.Script;
 
 @inject IScriptOutputStreamService PowerShellService
+@inject IScriptJobService ScriptJobService
 @inject NavigationManager NavigationManager
 
 @*@attribute [Authorize]*@
@@ -33,7 +34,7 @@
     </style>
 
     <div class="fixed-size-container">
-        <MudTable Items="@_jobList" Dense="true" Hover="true" FixedHeader="true" OnRowClick="RowClickEvent"
+        <MudTable Items="@ScriptJobService.Jobs.Values" Dense="true" Hover="true" FixedHeader="true" OnRowClick="RowClickEvent"
                   T="ScriptJob" Filter="new Func<ScriptJob, bool>(FilterFunc)" Height="calc(100% - 90px - 10px);">
             <ToolBarContent>
                 <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
@@ -74,29 +75,29 @@
 </div>
 
 @code {
-    private List<ScriptJob> _jobList = new();
-    private PowerShellScript _testScript;
     private string _searchString = "";
-    private string _tableHeaderStyle = "";
 
-    private readonly int[] _pageSizeOptions = { 10, 20 };
+    private readonly int[] _pageSizeOptions = { 10, 20, 30 };
+
+    //private List<ScriptJob> _jobList = new();
+    //private PowerShellScript _testScript;
 
     // Temp - for testing only
-    protected override async Task OnInitializedAsync()
-    {
-        _testScript = new PowerShellScript(PowerShellService);
-        _testScript.LoadFromFile("C:\\Users\\mawji\\OneDrive\\Desktop\\block_test.ps1");
+    //protected override async Task OnInitializedAsync()
+    //{
+    //    _testScript = new PowerShellScript(PowerShellService);
+    //    _testScript.LoadFromFile("C:\\Users\\mawji\\OneDrive\\Desktop\\block_test.ps1");
 
-        for (int i = 0; i < 20; i++)
-        {
-            _jobList.Add(new ScriptJob(
-                Guid.NewGuid().ToString().Substring(0, 5),
-                _testScript,
-                "Localhost",
-                "Test job"
-            ));
-        }
-    }
+    //    for (int i = 0; i < 20; i++)
+    //    {
+    //        _jobList.Add(new ScriptJob(
+    //            Guid.NewGuid().ToString().Substring(0, 5),
+    //            _testScript,
+    //            "Localhost",
+    //            "Test job"
+    //        ));
+    //    }
+    //}
 
     private void NewJobClickEvent()
     {
