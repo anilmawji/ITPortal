@@ -30,7 +30,7 @@
         <MudTable Items="@ScriptJobService.Jobs.Values" Dense="true" Hover="true" FixedHeader="true" OnRowClick="GoToViewJob"
                   T="ScriptJob" Filter="new Func<ScriptJob, bool>(FilterFunc)" Height="calc(100% - 90px - 10px);">
             <ToolBarContent>
-                <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start"
+                <MudTextField @bind-Value="_searchString" Placeholder="@($"Search {ScriptJobService.Jobs.Values.Count} items...")" Adornment="Adornment.Start"
                               AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
             </ToolBarContent>
             <HeaderContent>
@@ -53,9 +53,21 @@
                 </MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTh DataLabel="id" Style="padding-left: 30px">@context.Id</MudTh>
+                <MudTh DataLabel="id" Style="padding-left: 30px">
+                    <div class="chip">
+                        <div class="chip-text blue-chip">
+                            @context.Id
+                        </div>
+                    </div>
+                 </MudTh>
                 <MudTh DataLabel="script">@context.Script.FileName</MudTh>
-                <MudTh DataLabel="status">@context.Status</MudTh>
+                <MudTh DataLabel="status">
+                    <div class="chip">
+                        <div class="chip-text @(GetJobChipClass(context.Status))">
+                            @context.Status
+                        </div>
+                    </div>
+                </MudTh>
                 <MudTh DataLabel="device">@context.DeviceName</MudTh>
                 <MudTh Style="text-align:right">
                     <MudIconButton Icon="@Icons.Material.Filled.Edit" aria-label="edit" Style="margin-right: 10px"
@@ -114,6 +126,14 @@
             ScriptJobService.DeleteJob(id);
             this.StateHasChanged();
         }
+    }
+
+    private string GetJobChipClass(ScriptJobState status)
+    {
+        return status == ScriptJobState.Idle || status == ScriptJobState.Running ? "grey-chip"
+             : status == ScriptJobState.Succeeded ? "green-chip"
+             : status == ScriptJobState.Failed ? "red-chip"
+             : "grey-chip";
     }
 
     private bool FilterFunc(ScriptJob job) => DoFilterFunc(job, _searchString);

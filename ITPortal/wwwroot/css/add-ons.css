@@ -43,3 +43,48 @@ p {
     border-color: #D2D2D2;
     box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
 }
+
+.chip {
+    display: inline-block;
+    height: 24px;
+    width: auto;
+}
+
+.chip-text {
+    float: left;
+    height: 24px;
+    border-radius: 4px;
+    text-align: center;
+    padding-left: 6px;
+    padding-right: 6px;
+    line-height: 22px;
+    border: 1px solid black;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.blue-chip {
+    background-color: #0094FF20;
+    color: #0094FF;
+    border-color: #0094FF;
+}
+
+.green-chip {
+    background-color: #00C70820;
+    color: #00C708;
+    border-color: #00C708;
+}
+
+.grey-chip {
+    background-color: #74747420;
+    color: #747474;
+    border-color: #747474;
+}
+
+.red-chip {
+    background-color: #BF000020;
+    color: #BF0000;
+    border-color: #BF0000;
+}
+
+

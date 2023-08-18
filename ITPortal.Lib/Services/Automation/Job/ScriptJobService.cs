@@ -8,6 +8,7 @@ public class ScriptJobService : IScriptJobService
 
     private int _nextJobId = 0;
 
+    // Creating a job MUST be followed by registering the job before creating a new one
     public ScriptJob NewJob(AutomationScript script, string deviceName)
     {
         return new ScriptJob(_nextJobId, script, deviceName);
