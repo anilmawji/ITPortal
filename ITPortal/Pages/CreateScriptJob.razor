@@ -32,15 +32,15 @@
                 </MudButton>
                 @if (_job.Script.IsLoaded())
                 {
-                    <p class="file-label">
+                    <span class="file-label">
                         @_job.Script.FileName
-                    </p>
+                    </span>
                 }
                 else if (_job.Script.IsUnloaded())
                 {
-                    <p class="file-label">
+                    <span class="file-label">
                         No file selected
-                    </p>
+                    </span>
                 }
             </div>
             @if (_job.Script.IsLoaded())
@@ -232,11 +232,22 @@
     private readonly bool _closeable = true;
 
     private MudForm _jobForm;
-    private string[] _errors = { };
-    private string[] _extendedInputFieldTriggers = { "body", "description", "message" };
+    private string[] _errors = { }; 
+    private static readonly string[] _extendedInputFieldTriggers = { "body", "description", "message" };
 
-    private FilePickerFileType _allowedFileTypes;
-    private PickOptions _filePickOptions;
+    private static FilePickerFileType _allowedFileTypes = new(new Dictionary<DevicePlatform, IEnumerable<string>>
+        {
+            { DevicePlatform.WinUI, new[] { ".ps1" } },
+            { DevicePlatform.macOS, new[] { "ps1" } }
+        }
+    );
+    private static PickOptions _filePickOptions = new()
+    {
+        // PickerTitle is used by macOS but not Windows - unreliable for providing information to user
+        PickerTitle = "Please select a PowerShell script file",
+        FileTypes = _allowedFileTypes,
+    };
+
     private ScriptJob _job;
 
     private const string _localhostDevice = "Localhost";
@@ -247,19 +258,16 @@
 
     protected override void OnInitialized()
     {
-        _allowedFileTypes = new(new Dictionary<DevicePlatform, IEnumerable<string>>
-            {
-                { DevicePlatform.WinUI, new[] { ".ps1" } },
-                { DevicePlatform.macOS, new[] { "ps1" } }
-            }
-        );
-        _filePickOptions = new()
-        {
-            // PickerTitle is used by macOS but not Windows - unreliable for providing information to user
-            PickerTitle = "Please select a PowerShell script file",
-            FileTypes = _allowedFileTypes,
-        };
+        InitJob();
 
+        PowerShellService.OutputChanged += (object sender, List<ScriptOutputMessage> newOutput) =>
+        {
+            InvokeAsync(() => this.StateHasChanged());
+        };
+    }
+
+    private void InitJob()
+    {
         if (Id == null)
         {
             _creatingNewJob = true;
@@ -270,11 +278,6 @@
         {
             _job = ScriptJobService.GetJobOrDefault((int)Id);
         }
-
-        PowerShellService.OutputChanged += (object sender, List<ScriptOutputMessage> newOutput) =>
-        {
-            InvokeAsync(() => this.StateHasChanged());
-        };
     }
 
     private void OnDateChanged(DateTime newDate, TimeSpan time, ScriptParameter parameter)

@@ -6,6 +6,7 @@
 
 @inject IScriptOutputStreamService PowerShellService
 @inject IScriptJobService ScriptJobService
+@inject IDialogService DialogService
 @inject NavigationManager NavigationManager
 
 @*@attribute [Authorize]*@
@@ -60,7 +61,7 @@
                     <MudIconButton Icon="@Icons.Material.Filled.Edit" aria-label="edit" Style="margin-right: 10px"
                                    OnClick="() => GoToEditJob(context.Id)"></MudIconButton>
                     <MudIconButton Icon="@Icons.Material.Filled.Delete" aria-label="delete"
-                                   OnClick="() => ScriptJobService.DeleteJob(context.Id)"></MudIconButton>
+                                   OnClick="() => OpenDeleteJobDialog(context.Id)"></MudIconButton>
                 </MudTh>
             </RowTemplate>
             <PagerContent>
@@ -73,6 +74,20 @@
 @code {
     private string _searchString = "";
     private readonly int[] _pageSizeOptions = { 10, 20, 30 };
+
+    private readonly DialogOptions _dialogOptions = new() {
+        CloseButton = true,
+        DisableBackdropClick = true,
+        MaxWidth = MaxWidth.ExtraSmall
+    };
+    private DialogParameters<Dialog> _deleteDialogParameters = new();
+
+    protected override void OnInitialized()
+    {
+        _deleteDialogParameters.Add(dialog => dialog.ContentText, "Are you sure you want to delete this script job? This action cannot be undone.");
+        _deleteDialogParameters.Add(dialog => dialog.ButtonText, "Delete");
+        _deleteDialogParameters.Add(dialog => dialog.Color, Color.Error);
+    }
 
     private void GoToNewJob()
     {
@@ -87,6 +102,18 @@
     private void GoToViewJob(TableRowClickEventArgs<ScriptJob> eventArgs)
     {
         NavigationManager.NavigateTo($"job-results/{eventArgs.Item.Id}");
+    }
+
+    private async void OpenDeleteJobDialog(int id)
+    {
+        IDialogReference dialog = DialogService.Show<Dialog>("Confirm Job Deletion", _deleteDialogParameters, _dialogOptions);
+        DialogResult result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            ScriptJobService.DeleteJob(id);
+            this.StateHasChanged();
+        }
     }
 
     private bool FilterFunc(ScriptJob job) => DoFilterFunc(job, _searchString);
