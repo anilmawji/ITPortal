@@ -5,19 +5,18 @@ namespace ITPortal.Lib.Services.Automation.Job;
 public class ScriptJobService : IScriptJobService
 {
     public Dictionary<int, ScriptJob> Jobs { get; set; } = new();
+
     private int _nextJobId = 0;
 
     public ScriptJob NewJob(AutomationScript script, string deviceName)
     {
-        ScriptJob newJob = new(_nextJobId, script, deviceName);
-        _nextJobId = GetNextJobId();
-
-        return newJob;
+        return new ScriptJob(_nextJobId, script, deviceName);
     }
 
     public void RegisterJob(ScriptJob job)
     {
         Jobs.Add(job.Id, job);
+        _nextJobId = GetNextJobId();
     }
 
     private int GetNextJobId()
