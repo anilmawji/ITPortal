@@ -90,7 +90,7 @@ public class PowerShellScript : AutomationScript
             // "using" relies on compiler to dispose of shell when method is popped from call stack
             using PowerShell shell = PowerShell.Create(_initialPowerShellState);
             shell.AddScript(GetContentAsString());
-            ((PowershellParameterList?)Parameters)?.Register(shell);
+            ((PowershellParameterList?)Parameters)?.RegisterShell(shell);
 
             PSDataCollection<PSObject> outputCollection = new();
 

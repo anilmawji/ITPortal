@@ -8,4 +8,6 @@ public interface IScriptJobService
     public ScriptJob NewJob(AutomationScript script, string deviceName);
     public void RegisterJob(ScriptJob job);
     public bool DeleteJob(int jobId);
+    public ScriptJob? GetJobOrDefault(int jobId);
+    public bool HasJob(int jobId);
 }

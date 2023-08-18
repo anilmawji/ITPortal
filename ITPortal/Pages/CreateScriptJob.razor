@@ -1,4 +1,5 @@
-﻿@attribute [Route(PageRoutes.CreateScriptJob)]
+﻿@page "/create-job"
+@page "/create-job/{Id:int}"
 
 @using ITPortal.Lib.Utils;
 @using Microsoft.AspNetCore.Authorization;
@@ -10,31 +11,42 @@
 @inject NavigationManager NavigationManager
 
 <div class="main-content-container create-job-container">
-    <h1 class="page-title"><a class="jobs-link" href="/jobs">PowerShell Jobs</a> > New Job</h1>
+    <h1 class="page-title">
+        <a class="jobs-link" href="/jobs">PowerShell Jobs</a>
+        <span> > </span>
+        @if (_creatingNewJob)
+        {
+            <span>New Job</span>
+        }
+        else
+        {
+            <span>Edit Job @Id</span>
+        }
+    </h1>
 
-    <MudForm @ref="_jobForm" @bind-IsValid="@_canCreateJob" @bind-Errors="@_errors">
+    <MudForm @ref="_jobForm" @bind-IsValid="@_canSaveJob" @bind-Errors="@_errors">
         <PageSection Title="Script">
             <div class="choose-file-container">
                 <MudButton @onclick="PickAndLoadScript" Variant="Variant.Filled" Size="Size.Small">
                     <MudText>Choose File</MudText>
                 </MudButton>
-                @if (_psScript.IsLoaded())
+                @if (_job.Script.IsLoaded())
                 {
                     <p class="file-label">
-                        @_psScript.FileName
+                        @_job.Script.FileName
                     </p>
                 }
-                else if (_psScript.IsUnloaded())
+                else if (_job.Script.IsUnloaded())
                 {
                     <p class="file-label">
                         No file selected
                     </p>
                 }
             </div>
-            @if (_psScript.IsLoaded())
+            @if (_job.Script.IsLoaded())
             {
                 <p class="scroll script-content">
-                    @foreach (string line in _psScript.Content)
+                    @foreach (string line in _job.Script.Content)
                     {
                         @line
                         <br>
@@ -58,27 +70,27 @@
                     </MudItem>
                 </MudGrid>
             }
-            else if (_psScript.LoadFailed())
+            else if (_job.Script.LoadFailed())
             {
                 <p>Script failed to load</p>
             }
         </PageSection>
 
-        @if (_psScript.IsLoaded())
+        @if (_job.Script.IsLoaded())
         {
             <PageSection Title="Parameters">
                 <div class="input-group">
-                    @if (_psScript.Parameters.Count() > 0)
+                    @if (_job.Script.Parameters.Count() > 0)
                     {
-                        @foreach (ScriptParameter parameter in _psScript.Parameters)
+                        @foreach (ScriptParameter parameter in _job.Script.Parameters)
                         {
                             string requiredError = "The " + parameter.Name + " field is required.";
 
                             // Cannot use two-way binding for these since parameter.Value is an object and must be casted to the correct type
                             @if (parameter.DesiredType == typeof(string))
                             {
+                                // Provide a larger input field depending on the parameter name
                                 int numLines = 1;
-
                                 foreach (string trigger in _extendedInputFieldTriggers)
                                 {
                                     if (parameter.Name.Equals(trigger, StringComparison.OrdinalIgnoreCase))
@@ -169,7 +181,7 @@
         <PageSection>
             <div class="input-group job-details">
                 <div class="input-line">
-                    <MudSelect T="string" @bind-Value="_psJob.DeviceName" Label="Device" Variant="Variant.Filled" Margin="Margin.Dense" Required="true">
+                    <MudSelect T="string" @bind-Value="_job.DeviceName" Label="Device" Variant="Variant.Filled" Margin="Margin.Dense" Required="true">
                         <MudSelectItem Value=@_localhostDevice RequiredError="Device name field is required." />
                     </MudSelect>
                 </div>
@@ -180,12 +192,12 @@
             <div class="create-job-buttons">
                 <MudGrid Spacing="2">
                     <MudItem>
-                        <MudButton @onclick="CancelJobCreation" Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
+                        <MudButton @onclick="GoToJobs" Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
                             <MudText>Cancel</MudText>
                         </MudButton>
                     </MudItem>
                     <MudItem>
-                        <MudButton @onclick="SaveJob" Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" Disabled="!_psScript.IsLoaded()">
+                        <MudButton @onclick="TrySaveJob" Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" Disabled="!_job.Script.IsLoaded()">
                             <MudText>Done</MudText>
                         </MudButton>
                     </MudItem>
@@ -206,6 +218,9 @@
 </div>
 
 @code {
+    [Parameter]
+    public int? Id { get; set; }
+
     private readonly char _delimiter = ' ';
     private readonly int _chipsMaxWidth = 80;
     private readonly Color _color = Color.Default;
@@ -220,19 +235,19 @@
     private string[] _errors = { };
     private string[] _extendedInputFieldTriggers = { "body", "description", "message" };
 
-    private FilePickerFileType _psFileType;
+    private FilePickerFileType _allowedFileTypes;
     private PickOptions _filePickOptions;
-    private AutomationScript _psScript;
-    private ScriptJob _psJob;
+    private ScriptJob _job;
 
     private const string _localhostDevice = "Localhost";
     private const int _jobIdLength = 5;
+    private bool _creatingNewJob;
     private bool _shouldViewJob;
-    private bool _canCreateJob;
+    private bool _canSaveJob;
 
     protected override void OnInitialized()
     {
-        _psFileType = new(new Dictionary<DevicePlatform, IEnumerable<string>>
+        _allowedFileTypes = new(new Dictionary<DevicePlatform, IEnumerable<string>>
             {
                 { DevicePlatform.WinUI, new[] { ".ps1" } },
                 { DevicePlatform.macOS, new[] { "ps1" } }
@@ -242,10 +257,19 @@
         {
             // PickerTitle is used by macOS but not Windows - unreliable for providing information to user
             PickerTitle = "Please select a PowerShell script file",
-            FileTypes = _psFileType,
+            FileTypes = _allowedFileTypes,
         };
-        _psScript = new PowerShellScript(PowerShellService);
-        _psJob = ScriptJobService.NewJob(_psScript, _localhostDevice);
+
+        if (Id == null)
+        {
+            _creatingNewJob = true;
+            _job = ScriptJobService.NewJob(new PowerShellScript(PowerShellService), _localhostDevice);
+            Id = _job.Id;
+        }
+        else
+        {
+            _job = ScriptJobService.GetJobOrDefault((int)Id);
+        }
 
         PowerShellService.OutputChanged += (object sender, List<ScriptOutputMessage> newOutput) =>
         {
@@ -271,7 +295,7 @@
 
         if (fileResult != null)
         {
-            _psScript.LoadFromFile(fileResult.FullPath);
+            _job.Script.LoadFromFile(fileResult.FullPath);
 
             this.StateHasChanged();
         }
@@ -279,14 +303,14 @@
 
     private void EditScript()
     {
-        if (!_psScript.IsLoaded()) return;
+        if (!_job.Script.IsLoaded()) return;
 
-        FileHandler.OpenFileWithDefaultProgram(_psScript.FilePath);
+        FileHandler.OpenFileWithDefaultProgram(_job.Script.FilePath);
     }
 
     private void RefreshScript()
     {
-        if (_psScript.Refresh())
+        if (_job.Script.Refresh())
         {
             this.StateHasChanged();
         }
@@ -294,24 +318,27 @@
 
     private void RemoveScript()
     {
-        _psScript.Unload();
+        _job.Script.Unload();
 
         this.StateHasChanged();
     }
 
-    private void CancelJobCreation()
+    private void GoToJobs()
     {
-        NavigationManager.NavigateTo(PageRoutes.ScriptJobs);
+        NavigationManager.NavigateTo("/jobs");
     }
 
-    private void SaveJob()
+    private void TrySaveJob()
     {
         _jobForm.Validate();
 
-        if (_canCreateJob)
+        if (_canSaveJob)
         {
-            ScriptJobService.RegisterJob(_psJob);
-            NavigationManager.NavigateTo(PageRoutes.ScriptJobs);
+            if (_creatingNewJob)
+            {
+                ScriptJobService.RegisterJob(_job);
+            }
+            NavigationManager.NavigateTo(_shouldViewJob ? $"job-results/{_job.Id}" : "/jobs");
         }
     }
 }

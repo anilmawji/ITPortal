@@ -5,24 +5,26 @@ namespace ITPortal.Lib.Services.Automation.Job;
 public class ScriptJobService : IScriptJobService
 {
     public Dictionary<int, ScriptJob> Jobs { get; set; } = new();
-    private int nextJobId = 0;
+    private int _nextJobId = 0;
 
     public ScriptJob NewJob(AutomationScript script, string deviceName)
     {
-        return new ScriptJob(nextJobId, script, deviceName);
+        ScriptJob newJob = new(_nextJobId, script, deviceName);
+        _nextJobId = GetNextJobId();
+
+        return newJob;
     }
 
     public void RegisterJob(ScriptJob job)
     {
         Jobs.Add(job.Id, job);
-        nextJobId = GetNextJobId();
     }
 
     private int GetNextJobId()
     {
         for (int i = 0; i < Jobs.Count; i++)
         {
-            if (!Jobs.ContainsKey(i))
+            if (!HasJob(i))
             {
                 return i;
             }
@@ -34,10 +36,20 @@ public class ScriptJobService : IScriptJobService
     {
         bool removed = Jobs.Remove(jobId);
 
-        if (jobId < nextJobId)
+        if (jobId < _nextJobId)
         {
-            nextJobId = jobId;
+            _nextJobId = jobId;
         }
         return removed;
+    }
+
+    public ScriptJob? GetJobOrDefault(int jobId)
+    {
+        return Jobs.GetValueOrDefault(jobId);
+    }
+
+    public bool HasJob(int jobId)
+    {
+        return Jobs.GetValueOrDefault(jobId) != default(ScriptJob);
     }
 }

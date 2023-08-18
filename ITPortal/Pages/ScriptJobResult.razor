@@ -1,6 +1,10 @@
-﻿@attribute [Route(PageRoutes.ScriptJobResult)]
+﻿@page "/job-results/{Id:int}"
+@inherits ScriptJobDetailsBase
 
 <h1 class="page-title">Job Results</h1>
+
+<p>Job Id: @Job.Id</p>
+<p>Script: @Job.Script.FileName</p>
 
 @code {
 

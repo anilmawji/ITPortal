@@ -1,4 +1,4 @@
-﻿@attribute [Route(PageRoutes.ScriptJobs)]
+﻿@page "/jobs"
 
 @using Microsoft.AspNetCore.Authorization;
 @using ITPortal.Lib.Services.Automation.Job;
@@ -14,14 +14,6 @@
     <h1 class="page-title">PowerShell Jobs</h1>
 
     <style>
-        /*Workaround to make MudTable resize with window*/
-        .fixed-size-container {
-            height: calc(100vh - 90px - 100px);
-            display: grid;
-            grid-template-columns: minmax(0,1fr);
-            grid-template-rows: minmax(0,1fr);
-        }
-
         .mud-table {
             border-radius: 8px;
             border: solid 1px #D2D2D2;
@@ -34,15 +26,16 @@
     </style>
 
     <div class="fixed-size-container">
-        <MudTable Items="@ScriptJobService.Jobs.Values" Dense="true" Hover="true" FixedHeader="true" OnRowClick="RowClickEvent"
+        <MudTable Items="@ScriptJobService.Jobs.Values" Dense="true" Hover="true" FixedHeader="true" OnRowClick="GoToViewJob"
                   T="ScriptJob" Filter="new Func<ScriptJob, bool>(FilterFunc)" Height="calc(100% - 90px - 10px);">
             <ToolBarContent>
-                <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                <MudTextField @bind-Value="_searchString" Placeholder="Search" Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
             </ToolBarContent>
             <HeaderContent>
-                <MudTh>
-                    <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Id)">Id</MudTableSortLabel>
-                </MudTh>
+                    <MudTh Style="padding-left: 30px">
+                        <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Id)">Id</MudTableSortLabel>
+                    </MudTh>
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Script.FileName)">Script</MudTableSortLabel>
                 </MudTh>
@@ -52,19 +45,22 @@
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.DeviceName)">Device</MudTableSortLabel>
                 </MudTh>
-                <MudTh Style="text-align:right">
-                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" @onclick="NewJobClickEvent">
+                <MudTh Style="text-align:right; margin-right: 50px">
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" @onclick="GoToNewJob">
                         <MudText>New Job</MudText>
                     </MudButton>
                 </MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTh DataLabel="id">@context.Id</MudTh>
+                <MudTh DataLabel="id" Style="padding-left: 30px">@context.Id</MudTh>
                 <MudTh DataLabel="script">@context.Script.FileName</MudTh>
                 <MudTh DataLabel="status">@context.Status</MudTh>
                 <MudTh DataLabel="device">@context.DeviceName</MudTh>
                 <MudTh Style="text-align:right">
-                    <MudButton Style="width:20px !important" OnClick="() => ScriptJobService.DeleteJob(context.Id)">🗙</MudButton>
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" aria-label="edit" Style="margin-right: 10px"
+                                   OnClick="() => GoToEditJob(context.Id)"></MudIconButton>
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" aria-label="delete"
+                                   OnClick="() => ScriptJobService.DeleteJob(context.Id)"></MudIconButton>
                 </MudTh>
             </RowTemplate>
             <PagerContent>
@@ -76,37 +72,21 @@
 
 @code {
     private string _searchString = "";
-
     private readonly int[] _pageSizeOptions = { 10, 20, 30 };
 
-    //private List<ScriptJob> _jobList = new();
-    //private PowerShellScript _testScript;
-
-    // Temp - for testing only
-    //protected override async Task OnInitializedAsync()
-    //{
-    //    _testScript = new PowerShellScript(PowerShellService);
-    //    _testScript.LoadFromFile("C:\\Users\\mawji\\OneDrive\\Desktop\\block_test.ps1");
-
-    //    for (int i = 0; i < 20; i++)
-    //    {
-    //        _jobList.Add(new ScriptJob(
-    //            Guid.NewGuid().ToString().Substring(0, 5),
-    //            _testScript,
-    //            "Localhost",
-    //            "Test job"
-    //        ));
-    //    }
-    //}
-
-    private void NewJobClickEvent()
+    private void GoToNewJob()
     {
         NavigationManager.NavigateTo("/create-job");
     }
 
-    private void RowClickEvent(TableRowClickEventArgs<ScriptJob> tableRowClickEventArgs)
+    private void GoToEditJob(int jobId)
     {
-        System.Diagnostics.Debug.WriteLine("Clicked list item");
+        NavigationManager.NavigateTo($"create-job/{jobId}");
+    }
+
+    private void GoToViewJob(TableRowClickEventArgs<ScriptJob> eventArgs)
+    {
+        NavigationManager.NavigateTo($"job-results/{eventArgs.Item.Id}");
     }
 
     private bool FilterFunc(ScriptJob job) => DoFilterFunc(job, _searchString);
