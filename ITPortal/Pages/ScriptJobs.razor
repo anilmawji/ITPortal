@@ -47,10 +47,10 @@
                     <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Script.FileName)">Script</MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.DeviceName)">Device</MudTableSortLabel>
+                    <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Status)">Status</MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Description)">Description</MudTableSortLabel>
+                    <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.DeviceName)">Device</MudTableSortLabel>
                 </MudTh>
                 <MudTh Style="text-align:right">
                     <MudButton Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" @onclick="NewJobClickEvent">
@@ -61,10 +61,10 @@
             <RowTemplate>
                 <MudTh DataLabel="id">@context.Id</MudTh>
                 <MudTh DataLabel="script">@context.Script.FileName</MudTh>
+                <MudTh DataLabel="status">@context.Status</MudTh>
                 <MudTh DataLabel="device">@context.DeviceName</MudTh>
-                <MudTh DataLabel="description">@context.Description</MudTh>
                 <MudTh Style="text-align:right">
-                    <MudButton Style="width:20px !important;">🗙</MudButton>
+                    <MudButton Style="width:20px !important" OnClick="() => ScriptJobService.DeleteJob(context.Id)">🗙</MudButton>
                 </MudTh>
             </RowTemplate>
             <PagerContent>
@@ -114,8 +114,9 @@
     private bool DoFilterFunc(ScriptJob job, string searchString)
     {
         return string.IsNullOrWhiteSpace(searchString)
-                    || job.Id.Contains(searchString, StringComparison.OrdinalIgnoreCase)
+                    || job.Id.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase)
                     || job.Script.FileName.Contains(searchString, StringComparison.OrdinalIgnoreCase)
-                    || job.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase);
+                    || job.Status.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase)
+                    || job.DeviceName.Contains(searchString, StringComparison.OrdinalIgnoreCase);
     }
 }

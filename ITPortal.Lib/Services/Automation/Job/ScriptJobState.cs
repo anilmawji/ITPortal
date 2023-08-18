@@ -2,6 +2,7 @@
 
 public enum ScriptJobState
 {
+    Idle,
     Running,
     Succeeded,
     Failed

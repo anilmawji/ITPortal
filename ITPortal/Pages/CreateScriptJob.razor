@@ -12,58 +12,58 @@
 <div class="main-content-container create-job-container">
     <h1 class="page-title"><a class="jobs-link" href="/jobs">PowerShell Jobs</a> > New Job</h1>
 
-    <PageSection Title="Script">
-        <div class="choose-file-container">
-            <MudButton @onclick="PickAndLoadScript" Variant="Variant.Filled" Size="Size.Small">
-                <MudText>Choose File</MudText>
-            </MudButton>
+    <MudForm @ref="_jobForm" @bind-IsValid="@_canCreateJob" @bind-Errors="@_errors">
+        <PageSection Title="Script">
+            <div class="choose-file-container">
+                <MudButton @onclick="PickAndLoadScript" Variant="Variant.Filled" Size="Size.Small">
+                    <MudText>Choose File</MudText>
+                </MudButton>
+                @if (_psScript.IsLoaded())
+                {
+                    <p class="file-label">
+                        @_psScript.FileName
+                    </p>
+                }
+                else if (_psScript.IsUnloaded())
+                {
+                    <p class="file-label">
+                        No file selected
+                    </p>
+                }
+            </div>
             @if (_psScript.IsLoaded())
             {
-                <p class="file-label">
-                    @_psScript.FileName
+                <p class="scroll script-content">
+                    @foreach (string line in _psScript.Content)
+                    {
+                        @line
+                        <br>
+                    }
                 </p>
+                <MudGrid Spacing="2">
+                    <MudItem>
+                        <MudButton @onclick="EditScript" Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
+                            <MudText>Edit</MudText>
+                        </MudButton>
+                    </MudItem>
+                    <MudItem>
+                        <MudButton @onclick="RefreshScript" Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
+                            <MudText>Refresh</MudText>
+                        </MudButton>
+                    </MudItem>
+                    <MudItem>
+                        <MudButton @onclick="RemoveScript" Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
+                            <MudText>Remove</MudText>
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
             }
-            else if (_psScript.IsUnloaded())
+            else if (_psScript.LoadFailed())
             {
-                <p class="file-label">
-                    No file selected
-                </p>
+                <p>Script failed to load</p>
             }
-        </div>
-        @if (_psScript.IsLoaded())
-        {
-            <p class="scroll script-content">
-                @foreach (string line in _psScript.Content)
-                {
-                    @line
-                    <br>
-                }
-            </p>
-            <MudGrid Spacing="2">
-                <MudItem>
-                    <MudButton @onclick="EditScript" Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
-                        <MudText>Edit</MudText>
-                    </MudButton>
-                </MudItem>
-                <MudItem>
-                    <MudButton @onclick="RefreshScript" Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
-                        <MudText>Refresh</MudText>
-                    </MudButton>
-                </MudItem>
-                <MudItem>
-                    <MudButton @onclick="RemoveScript" Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
-                        <MudText>Remove</MudText>
-                    </MudButton>
-                </MudItem>
-            </MudGrid>
-        }
-        else if (_psScript.LoadFailed())
-        {
-            <p>Script failed to load</p>
-        }
-    </PageSection>
+        </PageSection>
 
-    <MudForm @ref="_jobForm" @bind-IsValid="@_canCreateJob" @bind-Errors="@_errors">
         @if (_psScript.IsLoaded())
         {
             <PageSection Title="Parameters">
@@ -161,21 +161,23 @@
                 </div>
             </PageSection>
         }
-        <PageSection Title="Job Details">
-            <div class="input-group">
+
+        <PageSection Title="Schedule">
+
+        </PageSection>
+
+        <PageSection>
+            <div class="input-group job-details">
                 <div class="input-line">
                     <MudSelect T="string" @bind-Value="_psJob.DeviceName" Label="Device" Variant="Variant.Filled" Margin="Margin.Dense" Required="true">
                         <MudSelectItem Value=@_localhostDevice RequiredError="Device name field is required." />
                     </MudSelect>
                 </div>
                 <div class="input-line">
-                    <MudTextField @bind-Value="_psJob.Description" Label="Description" Variant="Variant.Filled" Margin="Margin.Dense"></MudTextField>
+                    <MudCheckBox @bind-Checked="@_shouldViewJob" Color="Color.Secondary">View Job</MudCheckBox>
                 </div>
             </div>
-            <div class="job-checkbox">
-                <MudCheckBox @bind-Checked="@_shouldViewJob" Color="Color.Secondary">View Job</MudCheckBox>
-            </div>
-            <div class="input-line">
+            <div class="create-job-buttons">
                 <MudGrid Spacing="2">
                     <MudItem>
                         <MudButton @onclick="CancelJobCreation" Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
@@ -243,7 +245,7 @@
             FileTypes = _psFileType,
         };
         _psScript = new PowerShellScript(PowerShellService);
-        _psJob = ScriptJobService.NewJob(_psScript, _localhostDevice, string.Empty, _jobIdLength);
+        _psJob = ScriptJobService.NewJob(_psScript, _localhostDevice);
 
         PowerShellService.OutputChanged += (object sender, List<ScriptOutputMessage> newOutput) =>
         {

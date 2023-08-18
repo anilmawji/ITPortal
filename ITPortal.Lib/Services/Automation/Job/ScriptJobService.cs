@@ -1,23 +1,43 @@
 ﻿using ITPortal.Lib.Services.Automation.Script;
-using ITPortal.Lib.Utils;
 
 namespace ITPortal.Lib.Services.Automation.Job;
 
 public class ScriptJobService : IScriptJobService
 {
-    public int JobIdLength { get; set; }
-    public Dictionary<string, ScriptJob> Jobs { get; set; } = new();
+    public Dictionary<int, ScriptJob> Jobs { get; set; } = new();
+    private int nextJobId = 0;
 
-    public ScriptJob NewJob(AutomationScript script, string deviceName, string jobDescription, int jobIdLength)
+    public ScriptJob NewJob(AutomationScript script, string deviceName)
     {
-        List<string> currentJobIds = Jobs.Keys.ToList();
-        string jobId = UniqueGuidGenerator.NewUniqueGuid(currentJobIds, jobIdLength);
-
-        return new ScriptJob(jobId, script, deviceName, jobDescription);
+        return new ScriptJob(nextJobId, script, deviceName);
     }
 
     public void RegisterJob(ScriptJob job)
     {
         Jobs.Add(job.Id, job);
+        nextJobId = GetNextJobId();
+    }
+
+    private int GetNextJobId()
+    {
+        for (int i = 0; i < Jobs.Count; i++)
+        {
+            if (!Jobs.ContainsKey(i))
+            {
+                return i;
+            }
+        }
+        return Jobs.Count;
+    }
+
+    public bool DeleteJob(int jobId)
+    {
+        bool removed = Jobs.Remove(jobId);
+
+        if (jobId < nextJobId)
+        {
+            nextJobId = jobId;
+        }
+        return removed;
     }
 }
