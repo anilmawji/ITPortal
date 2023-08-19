@@ -162,7 +162,26 @@
         }
 
         <PageSection Title="Schedule">
-            TODO: Implement me
+                <div class="input-line">
+                    <MudCheckBox @bind-Checked="@_runNow" Color="Color.Secondary">Run Now</MudCheckBox>
+                </div>
+                @if (!_runNow)
+                {
+                    TimeSpan time = _runDate.TimeOfDay;
+
+                    <div class="small-input-line mud-date">
+                        <MudDatePicker Label="Run Date" Variant="Variant.Filled" Margin="Margin.Dense" Required="true"
+                                       PickerVariant="PickerVariant.Inline" Date="@_runDate" DateChanged="(newDate) => {
+                                        _runDate = ((DateTime)newDate).Date.Add(time);
+}"
+                                       RequiredError="The Run Date field is required." />
+                    <MudTimePicker Label="Run Time" Variant="Variant.Filled" Margin="Margin.Dense" AmPm="true" Time="time"
+                                       TimeChanged="(newTime) => {
+time = (TimeSpan)newTime;
+_runDate = _runDate.Date.Add((TimeSpan)newTime);
+}" RequiredError="The Run Time field is required." />
+                    </div>
+                }
         </PageSection>
 
         <PageSection>
@@ -190,16 +209,7 @@
                     </MudItem>
                 </MudGrid>
             </div>
-            @if (_errors.Count() > 0)
-            {
-                <MudText Typo="Typo.subtitle2">
-                    @($"Errors ({_errors.Length})")
-                </MudText>
-                @foreach (var error in _errors)
-                {
-                    <MudText Color="@Color.Error">@error</MudText>
-                }
-            }
+            <ErrorList Errors="@_errors" />
         </PageSection>
     </MudForm>
 </PageContainer>
@@ -218,6 +228,9 @@
     private readonly bool _wrapChips = true;
     private readonly bool _closeable = true;
 
+    private readonly string _dateFormat = System.Globalization.CultureInfo.CurrentUICulture.DateTimeFormat.ShortDatePattern;
+    private DateTime _runDate;
+
     private MudForm _jobForm;
     private string[] _errors = { }; 
     private static readonly string[] _extendedInputFieldTriggers = { "body", "description", "message" };
@@ -230,6 +243,7 @@
     private const int _jobIdLength = 5;
     private bool _creatingNewJob;
     private bool _shouldViewJob;
+    private bool _runNow;
     private bool _canSaveJob;
     private string _headerTitle;
 

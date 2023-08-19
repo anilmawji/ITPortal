@@ -7,16 +7,18 @@ public class FilePickerHandler
         try
         {
             // Prompt user to pick file
-            var result = await FilePicker.PickAsync(options);
+            FileResult result = await FilePicker.PickAsync(options);
 
-            if (result != null)
+            if (result == null)
             {
-                foreach (var fileType in options.FileTypes.Value)
+                return null;
+            }
+
+            foreach (string fileType in options.FileTypes.Value)
+            {
+                if (IsFileOfType(result, fileType))
                 {
-                    if (result.FileName.EndsWith(fileType, StringComparison.OrdinalIgnoreCase))
-                    {
-                        return result;
-                    }
+                    return result;
                 }
             }
             return null;
@@ -25,5 +27,10 @@ public class FilePickerHandler
         {
             return null;
         }
+    }
+
+    private static bool IsFileOfType(FileResult result, string fileType)
+    {
+        return result.FileName.EndsWith(fileType, StringComparison.OrdinalIgnoreCase);
     }
 }
