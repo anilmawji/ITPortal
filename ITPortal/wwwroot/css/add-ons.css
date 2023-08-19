@@ -1,13 +1,4 @@
-﻿/* Title for a page in the portal */
-h1.page-title {
-    margin-bottom: 40px;
-}
-
-.main-content-container {
-    margin: 30px;
-}
-
-/* Center element horizontally and vertically */
+﻿/* Center element horizontally and vertically */
 .centered {
     position: absolute;
     top: 50%;

@@ -1,10 +1,10 @@
 ﻿@page "/job-results/{Id:int}"
 @inherits ScriptJobDetailsBase
 
-<h1 class="page-title">Job Results</h1>
-
-<p>Job Id: @Job.Id</p>
-<p>Script: @Job.Script.FileName</p>
+<PageContainer Title="PowerShell Jobs" NestedTitle="Result" PreviousPage="/jobs">
+    <p>Job Id: @Job.Id</p>
+    <p>Script: @Job.Script.FileName</p>
+</PageContainer>
 
 @code {
 

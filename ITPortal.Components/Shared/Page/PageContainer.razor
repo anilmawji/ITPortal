@@ -1,0 +1,29 @@
+﻿<div class="main-content-container">
+    <h1 class="title-container">
+        @if (NestedTitle != null)
+        {
+            <a class="underlined" href="@PreviousPage">@Title</a>
+            <span> > @NestedTitle</span>
+        }
+        else
+        {
+            <span>@Title</span>
+        }
+    </h1>
+    @ChildContent
+</div>
+
+
+@code {
+    [Parameter]
+    public string? Title { get; set; }
+
+    [Parameter]
+    public string? PreviousPage { get; set; }
+
+    [Parameter]
+    public string? NestedTitle { get; set; }
+
+    [ParameterAttribute]
+    public RenderFragment? ChildContent { get; set; }
+}

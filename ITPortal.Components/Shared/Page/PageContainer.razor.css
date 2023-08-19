@@ -1,0 +1,12 @@
+﻿/* Title for a page in the portal */
+h1.title-container {
+    margin-bottom: 40px;
+}
+
+.main-content-container {
+    margin: 30px;
+}
+
+.underlined {
+    text-decoration: underline;
+}
