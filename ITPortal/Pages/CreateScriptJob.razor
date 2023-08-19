@@ -88,22 +88,24 @@
                                 }
                                 <div class="input-line">
                                     <MudTextField T="string" Label="@parameter.Name" Lines="@numLines" Variant="Variant.Filled" Margin="Margin.Dense"
-                                        Required="@parameter.Mandatory" Text="@((string)parameter.Value)" TextChanged="(text) => parameter.Value = text"
-                                        RequiredError="@requiredError" />
+                                                  Required="@parameter.Mandatory" Text="@((string)parameter.Value)" TextChanged="(text) => parameter.Value = text"
+                                                  RequiredError="@requiredError" />
                                 </div>
                             }
                             else if (parameter.DesiredType == typeof(int))
                             {
                                 <div class="small-input-line">
                                     <MudNumericField T="int" Label="@parameter.Name" Variant="Variant.Filled" Margin="Margin.Dense" Required="@parameter.Mandatory"
-                                        Value="@((int)parameter.Value)" ValueChanged="(num) => parameter.Value = num" RequiredError="@requiredError" />
+                                                     Value="@((int)parameter.Value)" ValueChanged="(num) => parameter.Value = num"
+                                                     RequiredError="@requiredError" />
                                 </div>
                             }
                             else if (parameter.DesiredType == typeof(bool))
                             {
                                 <div class="small-input-line">
                                     <MudSwitch T="bool" Label="@parameter.Name" Required="@parameter.Mandatory" Color="Color.Secondary"
-                                        Checked="@((bool)parameter.Value)" CheckedChanged="(checkedValue) => parameter.Value = checkedValue" RequiredError="@requiredError" />
+                                               Checked="@((bool)parameter.Value)" CheckedChanged="(checkedValue) => parameter.Value = checkedValue"
+                                               RequiredError="@requiredError" />
                                 </div>
                             }
                             else if (parameter.DesiredType == typeof(DateTime))
@@ -114,10 +116,15 @@
 
                                 <div class="small-input-line mud-date">
                                     <MudDatePicker Label="@parameter.Name" Variant="Variant.Filled" Margin="Margin.Dense" Required="@parameter.Mandatory"
-                                        PickerVariant="PickerVariant.Inline" Date="@date" DateChanged="(newDate) => OnDateChanged((DateTime)newDate, time, parameter)"
-                                        RequiredError="@requiredError" />
+                                                   PickerVariant="PickerVariant.Inline" Date="@date" DateChanged="(newDate) => parameter.Value = ((DateTime)newDate).Date.Add(time)"
+                                                   RequiredError="@requiredError" />
+
                                     <MudTimePicker Label="@parameter.Name" Variant="Variant.Filled" Margin="Margin.Dense" AmPm="true" Time="@time"
-                                        TimeChanged="(newTime) => time = OnTimeChanged((TimeSpan)newTime, date, parameter)" RequiredError="@requiredError" />
+                                                   TimeChanged="(newTime) => {
+                                                        time = (TimeSpan)newTime;
+                                                        parameter.Value = date.Date.Add(time);
+                                                    }"
+                                                    RequiredError="@requiredError" />
                                 </div>
                             }
                             else if (parameter.DesiredType == typeof(string[]))
@@ -135,7 +142,7 @@
                                     <MudExtensions.MudChipField T="int" Label="@parameter.Name" Margin="Margin.Dense" Required="@parameter.Mandatory"
                                                                 Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="true" ChipColor="Color.Default"
                                                                 ChipVariant="Variant.Text" ChipSize="Size.Medium" WrapChips="true" ChipsMaxWidth="_chipsMaxWidth" Closeable="true"
-                                        Variant="Variant.Filled" RequiredError="@requiredError" />
+                                                                Variant="Variant.Filled" RequiredError="@requiredError" />
                                 </div>
                             }
                             else if (parameter.DesiredType == typeof(bool[]))
@@ -144,7 +151,7 @@
                                     <MudExtensions.MudChipField T="bool" Label="@parameter.Name" Margin="Margin.Dense" Required="@parameter.Mandatory"
                                                                 Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="true" ChipColor="Color.Default"
                                                                 ChipVariant="Variant.Text" ChipSize="Size.Medium" WrapChips="true" ChipsMaxWidth="_chipsMaxWidth" Closeable="true"
-                                        Variant="Variant.Filled" RequiredError="@requiredError" />
+                                                                Variant="Variant.Filled" RequiredError="@requiredError" />
                                 </div>
                             }
                             else
@@ -171,15 +178,15 @@
 
                     <div class="small-input-line mud-date">
                         <MudDatePicker Label="Run Date" Variant="Variant.Filled" Margin="Margin.Dense" Required="true"
-                                       PickerVariant="PickerVariant.Inline" Date="@_runDate" DateChanged="(newDate) => {
-                                        _runDate = ((DateTime)newDate).Date.Add(time);
-}"
+                                       PickerVariant="PickerVariant.Inline" Date="@_runDate" DateChanged="(newDate) => _runDate = ((DateTime)newDate).Date.Add(time)"
                                        RequiredError="The Run Date field is required." />
-                    <MudTimePicker Label="Run Time" Variant="Variant.Filled" Margin="Margin.Dense" AmPm="true" Time="time"
+
+                        <MudTimePicker Label="Run Time" Variant="Variant.Filled" Margin="Margin.Dense" AmPm="true" Time="time"
                                        TimeChanged="(newTime) => {
-time = (TimeSpan)newTime;
-_runDate = _runDate.Date.Add((TimeSpan)newTime);
-}" RequiredError="The Run Time field is required." />
+                                            time = (TimeSpan)newTime;
+                                            _runDate = _runDate.Date.Add((TimeSpan)newTime);
+                                       }"
+                                       RequiredError="The Run Time field is required." />
                     </div>
                 }
         </PageSection>
@@ -218,8 +225,9 @@ _runDate = _runDate.Date.Add((TimeSpan)newTime);
     [Parameter]
     public int? Id { get; set; }
 
-    private readonly char _delimiter = ' ';
-    private readonly int _chipsMaxWidth = 80;
+    private const string _localhostDevice = "Localhost";
+    private const char _delimiter = ' ';
+    private const int _chipsMaxWidth = 80;
 
     private MudForm _jobForm;
     private DateTime _runDate;
@@ -230,13 +238,11 @@ _runDate = _runDate.Date.Add((TimeSpan)newTime);
     private PickOptions _filePickOptions;
     private ScriptJob _job;
 
-    private const string _localhostDevice = "Localhost";
-    private const int _jobIdLength = 5;
+    private string _headerTitle;
     private bool _creatingNewJob;
     private bool _shouldViewJob;
-    private bool _runNow;
     private bool _canSaveJob;
-    private string _headerTitle;
+    private bool _runNow = true;
 
     protected override void OnInitialized()
     {
@@ -275,18 +281,6 @@ _runDate = _runDate.Date.Add((TimeSpan)newTime);
             _job = ScriptJobService.GetJobOrDefault((int)Id);
             _headerTitle = $"Edit Job {Id}";
         }
-    }
-
-    private void OnDateChanged(DateTime newDate, TimeSpan time, ScriptParameter parameter)
-    {
-        parameter.Value = newDate.Date.Add(time);
-    }
-
-    private TimeSpan OnTimeChanged(TimeSpan newTime, DateTime date, ScriptParameter parameter)
-    {
-        parameter.Value = date.Date.Add(newTime);
-
-        return newTime;
     }
 
     private async void PickAndLoadScript()
