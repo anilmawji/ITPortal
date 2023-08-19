@@ -124,27 +124,27 @@
                             {
                                 <div class="input-line">
                                     <MudExtensions.MudChipField T="string" Label="@parameter.Name" Margin="Margin.Dense" Required="@parameter.Mandatory"
-                                        Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color"
-                                        ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable"
-                                        Variant="_variant" RequiredError="@requiredError" />
+                                                                Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="true" ChipColor="Color.Default"
+                                                                ChipVariant="Variant.Text" ChipSize="Size.Medium" WrapChips="true" ChipsMaxWidth="_chipsMaxWidth" Closeable="true"
+                                                                Variant="Variant.Filled" RequiredError="@requiredError" />
                                 </div>
                             }
                             else if (parameter.DesiredType == typeof(int[]))
                             {
                                 <div class="input-line">
                                     <MudExtensions.MudChipField T="int" Label="@parameter.Name" Margin="Margin.Dense" Required="@parameter.Mandatory"
-                                        Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color"
-                                        ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable"
-                                        Variant="_variant" RequiredError="@requiredError" />
+                                                                Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="true" ChipColor="Color.Default"
+                                                                ChipVariant="Variant.Text" ChipSize="Size.Medium" WrapChips="true" ChipsMaxWidth="_chipsMaxWidth" Closeable="true"
+                                        Variant="Variant.Filled" RequiredError="@requiredError" />
                                 </div>
                             }
                             else if (parameter.DesiredType == typeof(bool[]))
                             {
                                 <div class="input-line">
                                     <MudExtensions.MudChipField T="bool" Label="@parameter.Name" Margin="Margin.Dense" Required="@parameter.Mandatory"
-                                        Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="_fullWidth" ChipColor="_color"
-                                        ChipVariant="_chipVariant" ChipSize="_chipSize" WrapChips="_wrapChips" ChipsMaxWidth="_chipsMaxWidth" Closeable="_closeable"
-                                        Variant="_variant" RequiredError="@requiredError" />
+                                                                Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="true" ChipColor="Color.Default"
+                                                                ChipVariant="Variant.Text" ChipSize="Size.Medium" WrapChips="true" ChipsMaxWidth="_chipsMaxWidth" Closeable="true"
+                                        Variant="Variant.Filled" RequiredError="@requiredError" />
                                 </div>
                             }
                             else
@@ -220,18 +220,9 @@ _runDate = _runDate.Date.Add((TimeSpan)newTime);
 
     private readonly char _delimiter = ' ';
     private readonly int _chipsMaxWidth = 80;
-    private readonly Color _color = Color.Default;
-    private readonly Variant _chipVariant = Variant.Text;
-    private readonly Variant _variant = Variant.Filled;
-    private readonly Size _chipSize = Size.Medium;
-    private readonly bool _fullWidth = true;
-    private readonly bool _wrapChips = true;
-    private readonly bool _closeable = true;
-
-    private readonly string _dateFormat = System.Globalization.CultureInfo.CurrentUICulture.DateTimeFormat.ShortDatePattern;
-    private DateTime _runDate;
 
     private MudForm _jobForm;
+    private DateTime _runDate;
     private string[] _errors = { }; 
     private static readonly string[] _extendedInputFieldTriggers = { "body", "description", "message" };
 
