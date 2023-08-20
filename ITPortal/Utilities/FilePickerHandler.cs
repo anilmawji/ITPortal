@@ -1,4 +1,4 @@
-﻿namespace ITPortal.Utils;
+﻿namespace ITPortal.Utilities;
 
 public class FilePickerHandler
 {

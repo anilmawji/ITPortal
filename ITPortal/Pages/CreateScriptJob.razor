@@ -1,7 +1,6 @@
 ﻿@page "/create-job"
 @page "/create-job/{Id:int}"
 
-@using ITPortal.Lib.Utils;
 @using Microsoft.AspNetCore.Authorization;
 
 @*@attribute [Authorize]*@
@@ -71,6 +70,7 @@
                     {
                         @foreach (ScriptParameter parameter in _job.Script.Parameters)
                         {
+                            string parameterName = parameter.Name.FirstCharToUpper();
                             string requiredError = "The " + parameter.Name + " field is required.";
 
                             // Cannot use two-way binding for these since parameter.Value is an object and must be casted to the correct type
@@ -87,7 +87,7 @@
                                     }
                                 }
                                 <div class="input-line">
-                                    <MudTextField T="string" Label="@parameter.Name" Lines="@numLines" Variant="Variant.Filled" Margin="Margin.Dense"
+                                    <MudTextField T="string" Label="@parameterName" Lines="@numLines" Variant="Variant.Filled" Margin="Margin.Dense"
                                                   Required="@parameter.Mandatory" Text="@((string)parameter.Value)" TextChanged="(text) => parameter.Value = text"
                                                   RequiredError="@requiredError" />
                                 </div>
@@ -95,7 +95,7 @@
                             else if (parameter.DesiredType == typeof(int))
                             {
                                 <div class="small-input-line">
-                                    <MudNumericField T="int" Label="@parameter.Name" Variant="Variant.Filled" Margin="Margin.Dense" Required="@parameter.Mandatory"
+                                    <MudNumericField T="int" Label="@parameterName" Variant="Variant.Filled" Margin="Margin.Dense" Required="@parameter.Mandatory"
                                                      Value="@((int)parameter.Value)" ValueChanged="(num) => parameter.Value = num"
                                                      RequiredError="@requiredError" />
                                 </div>
@@ -103,7 +103,7 @@
                             else if (parameter.DesiredType == typeof(bool))
                             {
                                 <div class="small-input-line">
-                                    <MudSwitch T="bool" Label="@parameter.Name" Required="@parameter.Mandatory" Color="Color.Secondary"
+                                    <MudSwitch T="bool" Label="@parameterName" Required="@parameter.Mandatory" Color="Color.Secondary"
                                                Checked="@((bool)parameter.Value)" CheckedChanged="(checkedValue) => parameter.Value = checkedValue"
                                                RequiredError="@requiredError" />
                                 </div>
@@ -115,11 +115,11 @@
                                 TimeSpan time = date.TimeOfDay;
 
                                 <div class="small-input-line mud-date">
-                                    <MudDatePicker Label="@parameter.Name" Variant="Variant.Filled" Margin="Margin.Dense" Required="@parameter.Mandatory"
+                                    <MudDatePicker Label="@parameterName" Variant="Variant.Filled" Margin="Margin.Dense" Required="@parameter.Mandatory"
                                                    PickerVariant="PickerVariant.Inline" Date="@date" DateChanged="(newDate) => parameter.Value = ((DateTime)newDate).Date.Add(time)"
                                                    RequiredError="@requiredError" />
 
-                                    <MudTimePicker Label="@parameter.Name" Variant="Variant.Filled" Margin="Margin.Dense" AmPm="true" Time="@time"
+                                    <MudTimePicker Label="@parameterName" Variant="Variant.Filled" Margin="Margin.Dense" AmPm="true" Time="@time"
                                                    TimeChanged="(newTime) => {
                                                         time = (TimeSpan)newTime;
                                                         parameter.Value = date.Date.Add(time);
@@ -130,7 +130,7 @@
                             else if (parameter.DesiredType == typeof(string[]))
                             {
                                 <div class="input-line">
-                                    <MudExtensions.MudChipField T="string" Label="@parameter.Name" Margin="Margin.Dense" Required="@parameter.Mandatory"
+                                    <MudExtensions.MudChipField T="string" Label="@parameterName" Margin="Margin.Dense" Required="@parameter.Mandatory"
                                                                 Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="true" ChipColor="Color.Default"
                                                                 ChipVariant="Variant.Text" ChipSize="Size.Medium" WrapChips="true" ChipsMaxWidth="_chipsMaxWidth" Closeable="true"
                                                                 Variant="Variant.Filled" RequiredError="@requiredError" />
@@ -139,7 +139,7 @@
                             else if (parameter.DesiredType == typeof(int[]))
                             {
                                 <div class="input-line">
-                                    <MudExtensions.MudChipField T="int" Label="@parameter.Name" Margin="Margin.Dense" Required="@parameter.Mandatory"
+                                    <MudExtensions.MudChipField T="int" Label="@parameterName" Margin="Margin.Dense" Required="@parameter.Mandatory"
                                                                 Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="true" ChipColor="Color.Default"
                                                                 ChipVariant="Variant.Text" ChipSize="Size.Medium" WrapChips="true" ChipsMaxWidth="_chipsMaxWidth" Closeable="true"
                                                                 Variant="Variant.Filled" RequiredError="@requiredError" />
@@ -148,7 +148,7 @@
                             else if (parameter.DesiredType == typeof(bool[]))
                             {
                                 <div class="input-line">
-                                    <MudExtensions.MudChipField T="bool" Label="@parameter.Name" Margin="Margin.Dense" Required="@parameter.Mandatory"
+                                    <MudExtensions.MudChipField T="bool" Label="@parameterName" Margin="Margin.Dense" Required="@parameter.Mandatory"
                                                                 Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="true" ChipColor="Color.Default"
                                                                 ChipVariant="Variant.Text" ChipSize="Size.Medium" WrapChips="true" ChipsMaxWidth="_chipsMaxWidth" Closeable="true"
                                                                 Variant="Variant.Filled" RequiredError="@requiredError" />
@@ -156,7 +156,7 @@
                             }
                             else
                             {
-                                <p>Parameter @parameter.Name is not supported</p>
+                                <p>Parameter @parameterName is not supported</p>
                             }
                         }
                     }

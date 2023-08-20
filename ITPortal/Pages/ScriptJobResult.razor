@@ -1,9 +1,19 @@
 ﻿@page "/job-results/{Id:int}"
 @inherits ScriptJobDetailsBase
 
-<PageContainer Title="PowerShell Jobs" NestedTitle="Result" PreviousPage="/jobs">
-    <p>Job Id: @Job.Id</p>
+@inject IScriptOutputStreamService OutputStreamService
+
+<PageContainer Title="PowerShell Jobs" NestedTitle=@($"Job {Job.Id}") PreviousPage="/jobs">
     <p>Script: @Job.Script.FileName</p>
+
+    @for (int i = 0; i < OutputStreamService.Output.Count(); i++)
+    {
+        ScriptOutputMessage psMessage = OutputStreamService.Output[i];
+
+        <div class="@psMessage.Stream">
+            @((MarkupString)psMessage.Data)
+        </div>
+    }
 </PageContainer>
 
 @code {

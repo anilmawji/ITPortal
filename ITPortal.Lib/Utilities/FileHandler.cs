@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace ITPortal.Lib.Utils;
+namespace ITPortal.Lib.Utilities;
 
 public class FileHandler
 {

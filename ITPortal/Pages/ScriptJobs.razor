@@ -52,19 +52,11 @@
             </HeaderContent>
             <RowTemplate>
                 <MudTh DataLabel="id" Style="padding-left: 30px">
-                    <div class="chip">
-                        <div class="chip-text blue-chip">
-                            @context.Id
-                        </div>
-                    </div>
+                    <ChipText Color="#0094FF" Text="@context.Id.ToString()" />
                  </MudTh>
                 <MudTh DataLabel="script">@context.Script.FileName</MudTh>
                 <MudTh DataLabel="status">
-                    <div class="chip">
-                        <div class="chip-text @(GetJobChipClass(context.Status))">
-                            @context.Status
-                        </div>
-                    </div>
+                    <ChipText Color="@(GetJobChipColor(context.Status))" Text="@context.Status.ToString()" />
                 </MudTh>
                 <MudTh DataLabel="device">@context.DeviceName</MudTh>
                 <MudTh Style="text-align:right">
@@ -126,12 +118,9 @@
         }
     }
 
-    private string GetJobChipClass(ScriptJobState status)
+    private string GetJobChipColor(ScriptJobState status)
     {
-        return status == ScriptJobState.Idle || status == ScriptJobState.Running ? "grey-chip"
-                    : status == ScriptJobState.Succeeded ? "green-chip"
-                    : status == ScriptJobState.Failed ? "red-chip"
-                    : "grey-chip";
+        return status == ScriptJobState.Succeeded ? "#00C708" : status == ScriptJobState.Failed ? "#BF0000" : "#747474";
     }
 
     private bool FilterFunc(ScriptJob job) => DoFilterFunc(job, _searchString);

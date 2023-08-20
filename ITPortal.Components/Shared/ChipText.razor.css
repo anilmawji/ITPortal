@@ -1,0 +1,19 @@
+﻿.chip {
+    display: inline-block;
+    height: 24px;
+    width: auto;
+}
+
+.chip-text {
+    color: var(--chip-color);
+    background-color: var(--chip-background-color);
+    height: 24px;
+    border-radius: 4px;
+    text-align: center;
+    padding-left: 6px;
+    padding-right: 6px;
+    line-height: 22px;
+    border: 1px solid var(--chip-color);
+    white-space: nowrap;
+    overflow: hidden;
+}

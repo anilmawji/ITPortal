@@ -1,4 +1,4 @@
-﻿namespace ITPortal.Lib.Utils;
+﻿namespace ITPortal.Lib.Utilities;
 
 public static class StringExtensions
 {
@@ -22,5 +22,14 @@ public static class StringExtensions
         byte[] base64EncodedBytes = Convert.FromBase64String(base64EncodedData);
 
         return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
+    }
+
+    public static string FirstCharToUpper(this string input)
+    {
+        if (string.IsNullOrEmpty(input))
+        {
+            return string.Empty;
+        }
+        return $"{char.ToUpper(input[0])}{input[1..]}";
     }
 }

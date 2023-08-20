@@ -1,7 +1,7 @@
 ﻿using ITPortal.Lib.Services.Automation.Job;
 using Microsoft.AspNetCore.Components;
 
-namespace ITPortal.Data;
+namespace ITPortal.Models;
 
 public class ScriptJobDetailsBase : ComponentBase
 {
