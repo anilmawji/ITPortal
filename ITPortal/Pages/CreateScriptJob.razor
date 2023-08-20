@@ -1,5 +1,5 @@
 ﻿@page "/create-job"
-@page "/create-job/{Id:int}"
+@page "/create-job/{JobName}"
 
 @using Microsoft.AspNetCore.Authorization;
 
@@ -78,7 +78,7 @@
                             {
                                 // Provide a larger input field depending on the parameter name
                                 int numLines = 1;
-                                foreach (string trigger in _extendedInputFieldTriggers)
+                                foreach (string trigger in s_extendedInputFieldTriggers)
                                 {
                                     if (parameter.Name.Equals(trigger, StringComparison.OrdinalIgnoreCase))
                                     {
@@ -131,8 +131,8 @@
                             {
                                 <div class="input-line">
                                     <MudExtensions.MudChipField T="string" Label="@parameterName" Margin="Margin.Dense" Required="@parameter.Mandatory"
-                                                                Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="true" ChipColor="Color.Default"
-                                                                ChipVariant="Variant.Text" ChipSize="Size.Medium" WrapChips="true" ChipsMaxWidth="_chipsMaxWidth" Closeable="true"
+                                                                Values="@((List<string>)parameter.Value)" Delimiter="Delimiter" FullWidth="true" ChipColor="Color.Default"
+                                                                ChipVariant="Variant.Text" ChipSize="Size.Medium" WrapChips="true" ChipsMaxWidth="ChipsMaxWidth" Closeable="true"
                                                                 Variant="Variant.Filled" RequiredError="@requiredError" />
                                 </div>
                             }
@@ -140,8 +140,8 @@
                             {
                                 <div class="input-line">
                                     <MudExtensions.MudChipField T="int" Label="@parameterName" Margin="Margin.Dense" Required="@parameter.Mandatory"
-                                                                Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="true" ChipColor="Color.Default"
-                                                                ChipVariant="Variant.Text" ChipSize="Size.Medium" WrapChips="true" ChipsMaxWidth="_chipsMaxWidth" Closeable="true"
+                                                                Values="@((List<string>)parameter.Value)" Delimiter="Delimiter" FullWidth="true" ChipColor="Color.Default"
+                                                                ChipVariant="Variant.Text" ChipSize="Size.Medium" WrapChips="true" ChipsMaxWidth="ChipsMaxWidth" Closeable="true"
                                                                 Variant="Variant.Filled" RequiredError="@requiredError" />
                                 </div>
                             }
@@ -149,8 +149,8 @@
                             {
                                 <div class="input-line">
                                     <MudExtensions.MudChipField T="bool" Label="@parameterName" Margin="Margin.Dense" Required="@parameter.Mandatory"
-                                                                Values="@((List<string>)parameter.Value)" Delimiter="_delimiter" FullWidth="true" ChipColor="Color.Default"
-                                                                ChipVariant="Variant.Text" ChipSize="Size.Medium" WrapChips="true" ChipsMaxWidth="_chipsMaxWidth" Closeable="true"
+                                                                Values="@((List<string>)parameter.Value)" Delimiter="Delimiter" FullWidth="true" ChipColor="Color.Default"
+                                                                ChipVariant="Variant.Text" ChipSize="Size.Medium" WrapChips="true" ChipsMaxWidth="ChipsMaxWidth" Closeable="true"
                                                                 Variant="Variant.Filled" RequiredError="@requiredError" />
                                 </div>
                             }
@@ -170,9 +170,9 @@
 
         <PageSection Title="Schedule">
                 <div class="input-line">
-                    <MudCheckBox @bind-Checked="@_runNow" Color="Color.Secondary">Run Now</MudCheckBox>
+                <MudCheckBox @bind-Checked="@_shouldRunJobNow" Color="Color.Secondary">Run Now</MudCheckBox>
                 </div>
-                @if (!_runNow)
+            @if (!_shouldRunJobNow)
                 {
                     TimeSpan time = _runDate.TimeOfDay;
 
@@ -194,12 +194,12 @@
         <PageSection>
             <div class="input-group job-details">
                 <div class="input-line">
-                    <MudSelect T="string" @bind-Value="_job.DeviceName" Label="Device" Variant="Variant.Filled" Margin="Margin.Dense" Required="true">
-                        <MudSelectItem Value=@_localhostDevice RequiredError="Device name field is required." />
+                    <MudSelect T="string" @bind-Value="_job.Script.DeviceName" Label="Device" Variant="Variant.Filled" Margin="Margin.Dense" Required="true">
+                        <MudSelectItem Value=@LocalhostDevice RequiredError="Device name field is required." />
                     </MudSelect>
                 </div>
                 <div class="input-line">
-                    <MudCheckBox @bind-Checked="@_shouldViewJob" Color="Color.Secondary">View Job</MudCheckBox>
+                    <MudCheckBox @bind-Checked="@_shouldViewJobResult" Color="Color.Secondary">View Job</MudCheckBox>
                 </div>
             </div>
             <div class="create-job-buttons">
@@ -223,16 +223,16 @@
 
 @code {
     [Parameter]
-    public int? Id { get; set; }
+    public string? JobName { get; set; }
 
-    private const string _localhostDevice = "Localhost";
-    private const char _delimiter = ' ';
-    private const int _chipsMaxWidth = 80;
+    private const string LocalhostDevice = "Localhost";
+    private const char Delimiter = ' ';
+    private const int ChipsMaxWidth = 80;
 
     private MudForm _jobForm;
     private DateTime _runDate;
     private string[] _errors = { }; 
-    private static readonly string[] _extendedInputFieldTriggers = { "body", "description", "message" };
+    private static readonly string[] s_extendedInputFieldTriggers = { "body", "description", "message" };
 
     private FilePickerFileType _allowedFileTypes;
     private PickOptions _filePickOptions;
@@ -240,9 +240,9 @@
 
     private string _headerTitle;
     private bool _creatingNewJob;
-    private bool _shouldViewJob;
+    private bool _shouldRunJobNow = true;
+    private bool _shouldViewJobResult = true;
     private bool _canSaveJob;
-    private bool _runNow = true;
 
     protected override void OnInitialized()
     {
@@ -269,17 +269,16 @@
 
     private void InitJob()
     {
-        if (Id == null)
+        if (JobName == null)
         {
             _creatingNewJob = true;
-            _job = ScriptJobService.NewJob(new PowerShellScript(PowerShellService), _localhostDevice);
-            Id = _job.Id;
+            _job = new ScriptJob("default job name", new PowerShellScript());
             _headerTitle = "New Job";
         }
         else
         {
-            _job = ScriptJobService.GetJobOrDefault((int)Id);
-            _headerTitle = $"Edit Job {Id}";
+            _job = ScriptJobService.TryGetJob(JobName);
+            _headerTitle = $"Edit Job {JobName}";
         }
     }
 
@@ -330,9 +329,13 @@
         {
             if (_creatingNewJob)
             {
-                ScriptJobService.RegisterJob(_job);
+                ScriptJobService.AddJob(_job);
             }
-            NavigationManager.NavigateTo(_shouldViewJob ? $"job-results/{_job.Id}" : "/jobs");
+            if (_shouldRunJobNow)
+            {
+                ScriptJobResult result = ScriptJobService.RunJob(_job, new PowerShellOutputStreamService(), CancellationToken.None);
+                NavigationManager.NavigateTo(_shouldViewJobResult ? $"job-results/{result.Id}" : "/jobs");
+            }
         }
     }
 }

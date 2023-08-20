@@ -28,9 +28,10 @@ public class PowershellParameterList : ScriptParameterList
         {
             if (attribute.TypeName.ToString() == "Parameter")
             {
+                string attributeText = attribute.ToString();
                 // TODO: Find proper way to extract property values from attribute
                 // Mandatory defaults to true if $true or $false isn't provided
-                mandatory = attribute.ToString().Contains("Mandatory") && !attribute.ToString().Contains("Mandatory=$false");
+                mandatory = attributeText.Contains("Mandatory") && !attributeText.Contains("Mandatory=$false");
                 break;
             }
         }

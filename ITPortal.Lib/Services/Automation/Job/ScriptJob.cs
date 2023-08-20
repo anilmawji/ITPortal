@@ -1,31 +1,33 @@
-﻿using ITPortal.Lib.Services.Automation.Script;
+﻿using ITPortal.Lib.Services.Automation.Output;
+using ITPortal.Lib.Services.Automation.Script;
 
 namespace ITPortal.Lib.Services.Automation.Job;
 
-// Easier to use a smaller cut and dry class for jobs instead of PSTaskJob or BackgroundJob from the PowerShell SDK
 public class ScriptJob
 {
-    public int Id { get; set; }
+    public string Name { get; set; }
     public AutomationScript Script { get; set; }
-    public string DeviceName { get; set; }
-    public ScriptJobState Status { get; private set; }
+    public string Description { get; set; } = string.Empty;
+    public ScriptJobState State { get; private set; }
     public DateTime CreationTime { get; private set; }
-    public DateTime? ExecutionTime { get; private set; }
 
-
-    public ScriptJob(int id, AutomationScript script, string deviceName)
+    public ScriptJob(string name, AutomationScript script)
     {
-        Id = id;
+        Name = name;
         Script = script;
-        DeviceName = deviceName;
+        State = ScriptJobState.Idle;
         CreationTime = DateTime.Now;
-        Status = ScriptJobState.Idle;
     }
 
-    public void Run(CancellationToken cancellationToken)
+    public ScriptJob(string name, AutomationScript script, string description) : this(name, script)
     {
-        ExecutionTime = DateTime.Now;
-        Status = ScriptJobState.Running;
-        Script.InvokeAsync("Script execution was cancelled", cancellationToken);
+        Description = description;
+    }
+
+    public async void Run(IScriptOutputStreamService outputStream, CancellationToken cancellationToken)
+    {
+        State = ScriptJobState.Running;
+        await Script.InvokeAsync("Script execution was cancelled", outputStream, cancellationToken);
+        State = ScriptJobState.Idle;
     }
 }

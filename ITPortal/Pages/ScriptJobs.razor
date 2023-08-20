@@ -25,24 +25,24 @@
     </style>
 
     <div class="fixed-size-container">
-        <MudTable Items="@ScriptJobService.Jobs.Values" Dense="true" Hover="true" FixedHeader="true" OnRowClick="GoToViewJob"
-                  T="ScriptJob" Filter="new Func<ScriptJob, bool>(FilterFunc)" Height="calc(100% - 90px - 10px);">
+        <MudTable T="ScriptJob" Items="@ScriptJobService.Jobs.Values" Dense="true" Hover="true" FixedHeader="true" Filter="new Func<ScriptJob, bool>(FilterFunc)"
+                  Height="calc(100% - 90px - 10px);">
             <ToolBarContent>
                 <MudTextField @bind-Value="_searchString" Placeholder="@($"Search {ScriptJobService.Jobs.Values.Count} items...")" Adornment="Adornment.Start"
                               AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
             </ToolBarContent>
             <HeaderContent>
                     <MudTh Style="padding-left: 30px">
-                        <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Id)">Id</MudTableSortLabel>
+                        <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Name)">Name</MudTableSortLabel>
                     </MudTh>
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Script.FileName)">Script</MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Status)">Status</MudTableSortLabel>
+                    <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.State)">Status</MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.DeviceName)">Device</MudTableSortLabel>
+                    <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Description)">Description</MudTableSortLabel>
                 </MudTh>
                 <MudTh Style="text-align:right; margin-right: 50px">
                     <MudButton Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" @onclick="GoToNewJob">
@@ -51,19 +51,17 @@
                 </MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTh DataLabel="id" Style="padding-left: 30px">
-                    <ChipText Color="#0094FF" Text="@context.Id.ToString()" />
-                 </MudTh>
+                <MudTh DataLabel="Name" Style="padding-left: 30px">@context.Name</MudTh>
                 <MudTh DataLabel="script">@context.Script.FileName</MudTh>
                 <MudTh DataLabel="status">
-                    <ChipText Color="@(GetJobChipColor(context.Status))" Text="@context.Status.ToString()" />
+                    <ChipText Color="@(context.State.GetColor())" Text="@context.State.ToString()" />
                 </MudTh>
-                <MudTh DataLabel="device">@context.DeviceName</MudTh>
+                <MudTh DataLabel="Description">@context.Description</MudTh>
                 <MudTh Style="text-align:right">
                     <MudIconButton Icon="@Icons.Material.Filled.Edit" aria-label="edit" Style="margin-right: 10px"
-                                   OnClick="() => GoToEditJob(context.Id)"></MudIconButton>
+                                   OnClick="() => GoToEditJob(context.Name)"></MudIconButton>
                     <MudIconButton Icon="@Icons.Material.Filled.Delete" aria-label="delete"
-                                   OnClick="() => OpenDeleteJobDialog(context.Id)"></MudIconButton>
+                                   OnClick="() => OpenDeleteJobDialog(context.Name)"></MudIconButton>
                 </MudTh>
             </RowTemplate>
             <PagerContent>
@@ -96,31 +94,28 @@
         NavigationManager.NavigateTo("/create-job");
     }
 
-    private void GoToEditJob(int jobId)
+    private void GoToEditJob(string jobName)
     {
-        NavigationManager.NavigateTo($"create-job/{jobId}");
+        NavigationManager.NavigateTo($"create-job/{jobName}");
     }
 
-    private void GoToViewJob(TableRowClickEventArgs<ScriptJob> eventArgs)
-    {
-        NavigationManager.NavigateTo($"job-results/{eventArgs.Item.Id}");
-    }
+    //private void GoToViewJob(TableRowClickEventArgs<ScriptJob> eventArgs)
+    //{
+    //    // TODO: need to get job result from the job...
+    //    // store List<ScriptJobResult> in ScriptJob instead?
+    //    NavigationManager.NavigateTo($"job-results/{eventArgs.Item.Id}");
+    //}
 
-    private async void OpenDeleteJobDialog(int id)
+    private async void OpenDeleteJobDialog(string jobName)
     {
         IDialogReference dialog = DialogService.Show<Dialog>("Confirm Job Deletion", _deleteJobDialogParameters, _dialogOptions);
         DialogResult result = await dialog.Result;
 
         if (!result.Canceled)
         {
-            ScriptJobService.DeleteJob(id);
+            ScriptJobService.DeleteJob(jobName);
             this.StateHasChanged();
         }
-    }
-
-    private string GetJobChipColor(ScriptJobState status)
-    {
-        return status == ScriptJobState.Succeeded ? "#00C708" : status == ScriptJobState.Failed ? "#BF0000" : "#747474";
     }
 
     private bool FilterFunc(ScriptJob job) => DoFilterFunc(job, _searchString);
@@ -128,9 +123,9 @@
     private bool DoFilterFunc(ScriptJob job, string searchString)
     {
         return string.IsNullOrWhiteSpace(searchString)
-                    || job.Id.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase)
+                    || job.Name.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase)
                     || job.Script.FileName.Contains(searchString, StringComparison.OrdinalIgnoreCase)
-                    || job.Status.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase)
-                    || job.DeviceName.Contains(searchString, StringComparison.OrdinalIgnoreCase);
+                    || job.State.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase)
+                    || job.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase);
     }
 }

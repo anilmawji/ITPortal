@@ -3,19 +3,18 @@ using Microsoft.AspNetCore.Components;
 
 namespace ITPortal.Models;
 
-public class ScriptJobDetailsBase : ComponentBase
+public class ScriptJobResultBase : ComponentBase
 {
     [Inject]
     public IScriptJobService ScriptJobService { get; set; }
 
     [Parameter]
-    public int? Id { get; set; }
+    public int ResultId { get; set; }
 
-    public ScriptJob Job { get; set; }
+    public ScriptJobResult Result { get; set; }
 
     protected override void OnInitialized()
     {
-        Id ??= 0;
-        Job = ScriptJobService.GetJobOrDefault((int)Id);
+        Result = ScriptJobService.GetJobResult(ResultId);
     }
 }

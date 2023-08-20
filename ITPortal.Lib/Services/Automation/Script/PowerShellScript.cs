@@ -10,12 +10,17 @@ public class PowerShellScript : AutomationScript
 {
     private readonly InitialSessionState _initialPowerShellState;
 
-    public PowerShellScript(IScriptOutputStreamService outputStreamService) : base(outputStreamService)
+    public PowerShellScript()
     {
         _initialPowerShellState = NewInitialSessionState();
     }
 
-    public PowerShellScript(IScriptOutputStreamService outputStreamService, string filePath) : base(outputStreamService, filePath)
+    public PowerShellScript(string filePath) : base(filePath)
+    {
+        _initialPowerShellState = NewInitialSessionState();
+    }
+
+    public PowerShellScript(string filePath, string deviceName) : base(filePath, deviceName)
     {
         _initialPowerShellState = NewInitialSessionState();
     }
@@ -72,11 +77,11 @@ public class PowerShellScript : AutomationScript
         return true;
     }
 
-    public override async Task InvokeAsync(string cancellationMessage, CancellationToken cancellationToken)
+    public override async Task InvokeAsync(string cancellationMessage, IScriptOutputStreamService outputStream, CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
         {
-            OutputStreamService?.AddOutput(ScriptStreamType.Warning, cancellationMessage);
+            outputStream?.AddOutput(ScriptStreamType.Warning, cancellationMessage);
             return;
         }
 
@@ -94,13 +99,13 @@ public class PowerShellScript : AutomationScript
 
             PSDataCollection<PSObject> outputCollection = new();
 
-            if (OutputStreamService != null)
+            if (outputStream != null)
             {
-                OutputStreamService.SubscribeToOutputStream(outputCollection, ScriptStreamType.Output);
-                OutputStreamService.SubscribeToOutputStream(shell.Streams.Information, ScriptStreamType.Information);
-                OutputStreamService.SubscribeToOutputStream(shell.Streams.Progress, ScriptStreamType.Progress);
-                OutputStreamService.SubscribeToOutputStream(shell.Streams.Warning, ScriptStreamType.Warning);
-                OutputStreamService.SubscribeToOutputStream(shell.Streams.Error, ScriptStreamType.Error);
+                outputStream.SubscribeToOutputStream(outputCollection, ScriptStreamType.Output);
+                outputStream.SubscribeToOutputStream(shell.Streams.Information, ScriptStreamType.Information);
+                outputStream.SubscribeToOutputStream(shell.Streams.Progress, ScriptStreamType.Progress);
+                outputStream.SubscribeToOutputStream(shell.Streams.Warning, ScriptStreamType.Warning);
+                outputStream.SubscribeToOutputStream(shell.Streams.Error, ScriptStreamType.Error);
             }
 
             // Use Task.Factory to opt for the newer async/await keywords
@@ -114,11 +119,11 @@ public class PowerShellScript : AutomationScript
         }
         catch (OperationCanceledException)
         {
-            OutputStreamService?.AddOutput(ScriptStreamType.Warning, cancellationMessage);
+            outputStream?.AddOutput(ScriptStreamType.Warning, cancellationMessage);
         }
         catch (Exception e)
         {
-            OutputStreamService?.AddOutput(ScriptStreamType.Error, e.Message);
+            outputStream?.AddOutput(ScriptStreamType.Error, e.Message);
         }
     }
 }

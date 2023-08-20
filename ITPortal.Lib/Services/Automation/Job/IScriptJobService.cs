@@ -1,13 +1,16 @@
-﻿using ITPortal.Lib.Services.Automation.Script;
+﻿using ITPortal.Lib.Services.Automation.Output;
 
 namespace ITPortal.Lib.Services.Automation.Job;
 
 public interface IScriptJobService
 {
-    public Dictionary<int, ScriptJob> Jobs { get; set; }
-    public ScriptJob NewJob(AutomationScript script, string deviceName);
-    public void RegisterJob(ScriptJob job);
-    public bool DeleteJob(int jobId);
-    public ScriptJob? GetJobOrDefault(int jobId);
-    public bool HasJob(int jobId);
+    public Dictionary<string, ScriptJob> Jobs { get; set; }
+    List<ScriptJobResult> Results { get; set; }
+
+    public void AddJob(ScriptJob job);
+    public ScriptJobResult RunJob(ScriptJob job, IScriptOutputStreamService outputStream, CancellationToken cancellationToken);
+    public ScriptJobResult GetJobResult(int jobResultId);
+    public ScriptJob? TryGetJob(string jobName);
+    public bool HasJob(string jobName);
+    public bool DeleteJob(string jobName);
 }

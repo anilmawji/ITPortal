@@ -5,24 +5,26 @@ namespace ITPortal.Lib.Services.Automation.Script;
 
 public abstract class AutomationScript
 {
-    public IScriptOutputStreamService OutputStreamService { get; set; }
     public string? FilePath { get; protected set; }
     public string? FileName { get; protected set; }
     public ScriptLoadState LoadState { get; protected set; }
+    public string DeviceName { get; set; } = "Localhost";
     public string[]? Content { get; protected set; }
     public ScriptParameterList? Parameters { get; protected set; }
 
-    public AutomationScript(IScriptOutputStreamService outputStreamService)
-    {
-        OutputStreamService = outputStreamService;
-    }
+    public AutomationScript() { }
 
-    public AutomationScript(IScriptOutputStreamService outputStreamService, string filePath) : this(outputStreamService)
+    public AutomationScript(string filePath)
     {
         LoadFromFile(filePath);
     }
 
-    public abstract Task InvokeAsync(string cancellationMessage, CancellationToken cancellationToken);
+    public AutomationScript(string filePath, string deviceName) : this(filePath)
+    {
+        DeviceName = deviceName;
+    }
+
+    public abstract Task InvokeAsync(string cancellationMessage, IScriptOutputStreamService outputStream, CancellationToken cancellationToken);
 
     public virtual bool LoadFromFile(string filePath)
     {

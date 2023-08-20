@@ -1,55 +1,63 @@
-﻿using ITPortal.Lib.Services.Automation.Script;
+﻿using ITPortal.Lib.Services.Automation.Output;
+using Tavis.UriTemplates;
 
 namespace ITPortal.Lib.Services.Automation.Job;
 
 public class ScriptJobService : IScriptJobService
 {
-    public Dictionary<int, ScriptJob> Jobs { get; set; } = new();
+    public const int MaxResults = 50;
+    public Dictionary<string, ScriptJob> Jobs { get; set; } = new();
+    public List<ScriptJobResult> Results { get; set; } = new();
 
-    private int _nextJobId = 0;
+    private int _nextResultId = 0;
 
-    // Creating a job MUST be followed by registering the job before creating a new one
-    public ScriptJob NewJob(AutomationScript script, string deviceName)
+    public void AddJob(ScriptJob job)
     {
-        return new ScriptJob(_nextJobId, script, deviceName);
+        // TODO: default job name should be the name of the script (jobName should be optional)
+        // add (1) or (2), etc. to the end of the job name if it is not unique
+        Jobs.Add(job.Name, job);
     }
 
-    public void RegisterJob(ScriptJob job)
+    public ScriptJobResult RunJob(ScriptJob job, IScriptOutputStreamService outputStream, CancellationToken cancellationToken)
     {
-        Jobs.Add(job.Id, job);
-        _nextJobId = GetNextJobId();
+        ScriptJobResult result = new(_nextResultId++, job, DateTime.Now, outputStream);
+        AddScriptResult(result);
+
+        job.Run(outputStream, cancellationToken);
+
+        return result;
     }
 
-    private int GetNextJobId()
+    private void AddScriptResult(ScriptJobResult result)
     {
-        for (int i = 0; i < Jobs.Count; i++)
+        Results.Add(result);
+        if (Results.Count > MaxResults)
         {
-            if (!HasJob(i))
-            {
-                return i;
-            }
+            Results.RemoveAt(Results.Count - 1);
         }
-        return Jobs.Count;
     }
 
-    public bool DeleteJob(int jobId)
+    public ScriptJobResult GetJobResult(int jobResultId)
     {
-        bool removed = Jobs.Remove(jobId);
-
-        if (jobId < _nextJobId)
-        {
-            _nextJobId = jobId;
-        }
-        return removed;
+        return Results.ElementAt(jobResultId);
     }
 
-    public ScriptJob? GetJobOrDefault(int jobId)
+    public ScriptJob? TryGetJob(string jobName)
     {
-        return Jobs.GetValueOrDefault(jobId);
+       if (HasJob(jobName))
+       {
+            return Jobs[jobName];
+       }
+       return null;
     }
 
-    public bool HasJob(int jobId)
+    public bool HasJob(string jobName)
     {
-        return Jobs.GetValueOrDefault(jobId) != default(ScriptJob);
+        return Jobs.GetValueOrDefault(jobName) != default(ScriptJob);
+    }
+
+    public bool DeleteJob(string jobName)
+    {
+        return Jobs.Remove(jobName);
     }
 }

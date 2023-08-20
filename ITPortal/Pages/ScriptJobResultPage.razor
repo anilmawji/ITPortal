@@ -1,0 +1,26 @@
+﻿@page "/job-results/{ResultId:int}"
+@inherits ScriptJobResultBase
+
+<PageContainer Title="PowerShell Jobs" NestedTitle=@($"Job {Result.Id}") PreviousPage="/jobs">
+    <div class="script-title">
+        <p>Script: @Result.ScriptName</p>
+        <div class="title-chip">
+            <ChipText Color="@Result.Job.State.GetColor()" Text="@Result.Job.State.ToString()" />
+        </div>
+    </div>
+
+    <PageSection Title="Output">
+        @for (int i = 0; i < Result.OutputStream.Output.Count(); i++)
+        {
+            ScriptOutputMessage psMessage = Result.OutputStream.Output[i];
+
+            <div class="@psMessage.Stream">
+                @((MarkupString)psMessage.Data)
+            </div>
+        }
+    </PageSection>
+</PageContainer>
+
+@code {
+
+}

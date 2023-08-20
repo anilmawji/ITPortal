@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace ITPortal.Lib.Utilities;
+namespace ITPortal.Components.Utilities;
 
 public static class ColorConverterExtensions
 {

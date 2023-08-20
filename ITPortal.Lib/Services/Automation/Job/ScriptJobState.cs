@@ -4,6 +4,13 @@ public enum ScriptJobState
 {
     Idle,
     Running,
-    Succeeded,
-    Failed
+    Scheduled
+}
+
+public static class ScriptJobStateMethods
+{
+    public static string GetColor(this ScriptJobState state)
+    {
+        return state == ScriptJobState.Running ? "#0094FF" : "#747474";
+    }
 }
