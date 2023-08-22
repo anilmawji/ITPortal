@@ -10,11 +10,16 @@ public enum ScriptExecutionState
 
 public static class ScriptExecutionStateExtensions
 {
+    public static readonly Dictionary<ScriptExecutionState, string> colors = new()
+    {
+        { ScriptExecutionState.Running, "#0094FF" }, // Blue
+        { ScriptExecutionState.Success, "#00C708" }, // Green
+        { ScriptExecutionState.Error, "#BF0000" },   // Red
+        { ScriptExecutionState.Stopped, "#FCBA03" }, // Yellow
+    };
+
     public static string GetColor(this ScriptExecutionState state)
     {
-        return state == ScriptExecutionState.Success ? "#00C708"    // Green
-            : state == ScriptExecutionState.Error ? "#BF0000"       // Red
-            : state == ScriptExecutionState.Stopped ? "#FCBA03"     // Yellow
-            : "#747474";                                            // Grey
+        return colors[state];
     }
 }
