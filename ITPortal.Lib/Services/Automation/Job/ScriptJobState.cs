@@ -9,15 +9,15 @@ public enum ScriptJobState
 
 public static class ScriptJobStateMethods
 {
-    public static readonly Dictionary<ScriptJobState, string> colors = new()
+    public static readonly Dictionary<ScriptJobState, string> Colors = new()
     {
-        { ScriptJobState.Idle, "#747474" },      // Grey
+        { ScriptJobState.Idle,      "#747474" }, // Grey
         { ScriptJobState.Scheduled, "#747474" }, // Grey
-        { ScriptJobState.Running, "#0094FF" },   // Blue
+        { ScriptJobState.Running,   "#0094FF" }, // Blue
     };
 
     public static string GetColor(this ScriptJobState state)
     {
-        return colors[state];
+        return Colors[state];
     }
 }

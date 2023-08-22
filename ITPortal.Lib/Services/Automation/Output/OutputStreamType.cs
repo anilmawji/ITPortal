@@ -1,6 +1,6 @@
 ﻿namespace ITPortal.Lib.Services.Automation.Output;
 
-public enum StreamType
+public enum OutputStreamType
 {
     Standard,
     Information,

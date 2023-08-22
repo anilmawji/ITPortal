@@ -53,7 +53,7 @@ public abstract class AutomationScript
         {
             Content = File.ReadAllLines(filePath);
             ContentString = string.Join("\n", Content);
-            LoadState = ScriptLoadState.Succeeded;
+            LoadState = ScriptLoadState.Success;
 
             return true;
         }
@@ -67,7 +67,7 @@ public abstract class AutomationScript
 
     public virtual bool Refresh()
     {
-        if (FilePath != null && LoadState == ScriptLoadState.Succeeded)
+        if (FilePath != null && LoadState == ScriptLoadState.Success)
         {
             return DoLoadFromFile(FilePath);
         }
@@ -90,7 +90,7 @@ public abstract class AutomationScript
 
     public bool IsLoaded()
     {
-        return LoadState == ScriptLoadState.Succeeded;
+        return LoadState == ScriptLoadState.Success;
     }
 
     public bool LoadFailed()

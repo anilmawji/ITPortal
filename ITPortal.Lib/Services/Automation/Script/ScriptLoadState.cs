@@ -4,5 +4,5 @@ public enum ScriptLoadState
 {
     Unloaded,
     Failed,
-    Succeeded
+    Success
 }

@@ -2,6 +2,6 @@
 
 public class OutputMessage
 {
-    public StreamType Stream;
+    public OutputStreamType Stream;
     public string? Data;
 }

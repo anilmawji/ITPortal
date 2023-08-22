@@ -86,7 +86,7 @@ public class PowerShellScript : AutomationScript
     {
         if (cancellationToken.IsCancellationRequested)
         {
-            outputStream?.AddOutput(StreamType.Warning, cancellationMessage);
+            outputStream?.AddOutput(OutputStreamType.Warning, cancellationMessage);
             return;
         }
 
@@ -118,11 +118,11 @@ public class PowerShellScript : AutomationScript
         }
         catch (OperationCanceledException)
         {
-            outputStream?.AddOutput(StreamType.Warning, cancellationMessage);
+            outputStream?.AddOutput(OutputStreamType.Warning, cancellationMessage);
         }
         catch (Exception e)
         {
-            outputStream?.AddOutput(StreamType.Error, e.Message);
+            outputStream?.AddOutput(OutputStreamType.Error, e.Message);
         }
     }
 
@@ -138,11 +138,11 @@ public class PowerShellScript : AutomationScript
     {
         PSDataCollection<PSObject> outputCollection = new();
 
-        outputStream.SubscribeToStream(outputCollection, StreamType.Standard);
-        outputStream.SubscribeToStream(shell.Streams.Information, StreamType.Information);
-        outputStream.SubscribeToStream(shell.Streams.Progress, StreamType.Progress);
-        outputStream.SubscribeToStream(shell.Streams.Warning, StreamType.Warning);
-        outputStream.SubscribeToStream(shell.Streams.Error, StreamType.Error);
+        outputStream.SubscribeToStream(outputCollection, OutputStreamType.Standard);
+        outputStream.SubscribeToStream(shell.Streams.Information, OutputStreamType.Information);
+        outputStream.SubscribeToStream(shell.Streams.Progress, OutputStreamType.Progress);
+        outputStream.SubscribeToStream(shell.Streams.Warning, OutputStreamType.Warning);
+        outputStream.SubscribeToStream(shell.Streams.Error, OutputStreamType.Error);
 
         return outputCollection;
     }

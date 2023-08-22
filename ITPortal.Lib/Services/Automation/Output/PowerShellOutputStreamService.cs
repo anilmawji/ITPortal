@@ -6,14 +6,14 @@ namespace ITPortal.Lib.Services.Automation.Output
     public class PowerShellOutputStreamService : IOutputStreamService
     {
         public List<OutputMessage> Output { get; set; } = new();
-        public Dictionary<StreamType, bool> OutputCompleted { get; set; } = new();
+        public Dictionary<OutputStreamType, bool> OutputCompleted { get; set; } = new();
 
         public event EventHandler<List<OutputMessage>>? OutputChanged;
         public bool HasOutputChangedSubscriber { get; set; }
 
         private OutputMessage? previousMessage;
 
-        public void SubscribeToStream<T>(ICollection<T> stream, StreamType streamType)
+        public void SubscribeToStream<T>(ICollection<T> stream, OutputStreamType streamType)
         {
             var psStream = (PSDataCollection<T>)stream;
 
@@ -30,10 +30,10 @@ namespace ITPortal.Lib.Services.Automation.Output
 
         public void AddOutput(string message)
         {
-            AddOutput(StreamType.Standard, message);
+            AddOutput(OutputStreamType.Standard, message);
         }
 
-        public void AddOutput(StreamType streamType, string? message)
+        public void AddOutput(OutputStreamType streamType, string? message)
         {
             if (message.IsNullOrEmpty() || OutputChanged == null) return;
 
@@ -58,7 +58,7 @@ namespace ITPortal.Lib.Services.Automation.Output
 
         public void ResetStreamCompletedState()
         {
-            foreach (StreamType streamType in OutputCompleted.Keys)
+            foreach (OutputStreamType streamType in OutputCompleted.Keys)
             {
                 OutputCompleted[streamType] = false;
             }
