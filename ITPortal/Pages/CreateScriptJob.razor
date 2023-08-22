@@ -208,9 +208,12 @@
                         <MudSelectItem Value="@LocalhostDevice" />
                     </MudSelect>
                 </div>
-                <div class="input-line">
-                    <MudCheckBox @bind-Checked="@_shouldViewJobResult" Color="Color.Secondary">View Job</MudCheckBox>
-                </div>
+                @if (_shouldRunJobNow)
+                {
+                    <div class="input-line">
+                        <MudCheckBox @bind-Checked="@_shouldViewJobResult" Color="Color.Secondary">View Job</MudCheckBox>
+                    </div>
+                }
             </div>
             <div class="create-job-buttons">
                 <MudGrid Spacing="2">
@@ -365,8 +368,12 @@
             {
                 ScriptJobResult result = ScriptJobService.NewJobResult(_job, new PowerShellOutputStreamService());
                 Task runJob = _job.Run(result.OutputStream, CancellationToken.None);
-                //
-                //await runJob;
+
+                if (_shouldViewJobResult)
+                {
+                    NavigationManager.NavigateTo($"/job-results/{result.Id}");
+                    return;
+                }
             }
             GoToJobs();
         }
