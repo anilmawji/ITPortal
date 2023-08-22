@@ -6,6 +6,7 @@
 
 .chip-text {
     color: var(--chip-color);
+    border: 1px solid var(--chip-color);
     background-color: var(--chip-background-color);
     height: 24px;
     border-radius: 4px;
@@ -13,7 +14,6 @@
     padding-left: 6px;
     padding-right: 6px;
     line-height: 22px;
-    border: 1px solid var(--chip-color);
     white-space: nowrap;
     overflow: hidden;
 }

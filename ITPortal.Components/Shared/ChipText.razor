@@ -1,5 +1,6 @@
 ﻿<div class="chip">
-    <div class="chip-text" style="--chip-color:@Color; --chip-background-color:@BackgroundColor">
+    @*Colors must be given in Hex to add transparency of 21 (13% transparence)*@
+    <div class="chip-text" style="--chip-color:@Color; --chip-background-color:@(Color + "21")">
         <span>@Text</span>
     </div>
 </div>
@@ -10,11 +11,4 @@
 
     [Parameter]
     public string Text { get; set; } = string.Empty;
-
-    public string? BackgroundColor { get; set; }
-
-    protected override void OnInitialized()
-    {
-        BackgroundColor = ColorConverterExtensions.AddTransparencyToHtmlColor(Color, 20).ToHexString();
-    }
 }
