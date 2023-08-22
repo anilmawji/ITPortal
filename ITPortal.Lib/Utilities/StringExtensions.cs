@@ -32,4 +32,9 @@ public static class StringExtensions
         }
         return $"{char.ToUpper(input[0])}{input[1..]}";
     }
+
+    public static string NormalizeLength(this string input, int maxLength)
+    {
+        return input.Length <= maxLength ? input : input.Substring(0, maxLength);
+    }
 }

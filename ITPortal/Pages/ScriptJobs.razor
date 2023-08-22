@@ -56,7 +56,7 @@
                 <MudTh DataLabel="status">
                     <ChipText Color="@(context.State.GetColor())" Text="@context.State.ToString()" />
                 </MudTh>
-                <MudTh DataLabel="Description">@context.Description.Substring(0, 40)</MudTh>
+                <MudTh DataLabel="Description">@context.Description.NormalizeLength(40)</MudTh>
                 <MudTh Style="text-align:right">
                     <MudIconButton Icon="@Icons.Material.Filled.Edit" aria-label="edit" Style="margin-right: 10px"
                                    OnClick="() => GoToEditJob(context.Name)"></MudIconButton>
