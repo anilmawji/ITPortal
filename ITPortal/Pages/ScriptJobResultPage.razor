@@ -9,6 +9,7 @@
         </div>
     </div>
 
+    @*TODO: move this to a separate component that is subscribed to the state changed event*@
     <PageSection Title="Output">
         @for (int i = 0; i < Result.OutputStream.Output.Count(); i++)
         {
@@ -34,5 +35,12 @@
                 InvokeAsync(() => this.StateHasChanged());
             });
         }
+
+        // TODO: support multiple subscriptions to the same event without adding duplicates
+        // create dictionary here to track if it is already subscribed?
+        Result.Job.SubscribeToStateChanged((object sender, ScriptJobState state) =>
+        {
+            InvokeAsync(() => this.StateHasChanged());
+        });
     }
 }
