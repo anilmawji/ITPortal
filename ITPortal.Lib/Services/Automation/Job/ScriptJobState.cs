@@ -3,8 +3,8 @@
 public enum ScriptJobState
 {
     Idle,
-    Running,
-    Scheduled
+    Scheduled,
+    Running
 }
 
 public static class ScriptJobStateMethods

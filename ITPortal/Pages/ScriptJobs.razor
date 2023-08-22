@@ -56,7 +56,7 @@
                 <MudTh DataLabel="status">
                     <ChipText Color="@(context.State.GetColor())" Text="@context.State.ToString()" />
                 </MudTh>
-                <MudTh DataLabel="Description">@context.Description</MudTh>
+                <MudTh DataLabel="Description">@context.Description.Substring(0, 40)</MudTh>
                 <MudTh Style="text-align:right">
                     <MudIconButton Icon="@Icons.Material.Filled.Edit" aria-label="edit" Style="margin-right: 10px"
                                    OnClick="() => GoToEditJob(context.Name)"></MudIconButton>
@@ -77,7 +77,7 @@
         DisableBackdropClick = true,
         MaxWidth = MaxWidth.ExtraSmall
     };
-    private static DialogParameters<Dialog> _deleteJobDialogParameters = new();
+    private static readonly DialogParameters<Dialog> _deleteJobDialogParameters = new();
     private static readonly int[] _pageSizeOptions = { 10, 20, 30 };
 
     private string _searchString = "";
@@ -88,6 +88,7 @@
         {
             if (!job.HasStateChangedSubscriber)
             {
+                System.Diagnostics.Debug.WriteLine("has sub to" + job.Name);
                 job.SubscribeToStateChanged((object sender, ScriptJobState newState) =>
                 {
                     this.StateHasChanged();

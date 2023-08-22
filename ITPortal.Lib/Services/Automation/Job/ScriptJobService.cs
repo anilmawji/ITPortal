@@ -1,4 +1,5 @@
 ﻿using ITPortal.Lib.Services.Automation.Output;
+using System.Text.RegularExpressions;
 
 namespace ITPortal.Lib.Services.Automation.Job;
 
@@ -13,15 +14,8 @@ public class ScriptJobService : IScriptJobService
 
     public void AddJob(ScriptJob job)
     {
-        if (job.Name == ScriptJob.DefaultName)
-        {
-            int numJobsWithScriptName = GetNumJobsWithName(ScriptJob.DefaultName);
+        ArgumentNullException.ThrowIfNull(job.Name, nameof(job.Name));
 
-            if (numJobsWithScriptName > 0)
-            {
-                job.Name = $"Job ({numJobsWithScriptName})";
-            }
-        }
         Jobs.Add(job.Name, job);
     }
 
@@ -40,20 +34,6 @@ public class ScriptJobService : IScriptJobService
     public ScriptJobResult GetJobResult(int jobResultId)
     {
         return Results.ElementAt(jobResultId);
-    }
-
-    public int GetNumJobsWithName(string jobName)
-    {
-        int numJobs = 0;
-
-        foreach (ScriptJob job in Jobs.Values)
-        {
-            if (job.Name == jobName)
-            {
-                numJobs++;
-            }
-        }
-        return numJobs;
     }
 
     public ScriptJob? TryGetJob(string jobName)

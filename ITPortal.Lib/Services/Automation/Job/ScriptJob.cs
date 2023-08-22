@@ -5,10 +5,8 @@ namespace ITPortal.Lib.Services.Automation.Job;
 
 public class ScriptJob
 {
-    public const string DefaultName = "Job";
-
-    public string Name { get; set; }
     public AutomationScript Script { get; set; }
+    public string? Name { get; set; }
     public string Description { get; set; } = string.Empty;
     public ScriptJobState State { get; private set; }
     public DateTime CreationTime { get; private set; }
@@ -16,7 +14,12 @@ public class ScriptJob
     public event EventHandler<ScriptJobState>? StateChanged;
     public bool HasStateChangedSubscriber;
 
-    public ScriptJob(AutomationScript script, string name = DefaultName)
+    public ScriptJob(AutomationScript script)
+    {
+        Script = script;
+    }
+
+    public ScriptJob(AutomationScript script, string name) : this(script)
     {
         Script = script;
         Name = name;
@@ -24,7 +27,7 @@ public class ScriptJob
         CreationTime = DateTime.Now;
     }
 
-    public ScriptJob(AutomationScript script, string description, string name = DefaultName) : this(script, name)
+    public ScriptJob(AutomationScript script, string name, string description) : this(script, name)
     {
         Description = description;
     }

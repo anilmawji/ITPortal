@@ -13,10 +13,11 @@
         <PageSection Title="Job Details">
             <div class="input-line">
                 <MudTextField T="string" @bind-Value="_job.Name" Label="Name" Variant="Variant.Filled" Margin="Margin.Dense"
-                              Required="true" RequiredError="The Name field is required." />
+                              Validation="@(new Func<string, IEnumerable<string>>(JobNameValidator))" />
             </div>
             <div class="input-line">
-                <MudTextField T="string" @bind-Value="_job.Description" Label="Description" Variant="Variant.Filled" Margin="Margin.Dense" />
+                <MudTextField T="string" @bind-Value="@_job.Description" Label="Description" Variant="Variant.Filled" Margin="Margin.Dense"
+                              Validation="@(new Func<string, IEnumerable<string>>(JobDescriptionValidator))"/>
             </div>
         </PageSection>
 
@@ -80,7 +81,7 @@
                         @foreach (ScriptParameter parameter in _job.Script.Parameters)
                         {
                             string parameterName = parameter.Name.FirstCharToUpper();
-                            string requiredError = "The " + parameter.Name + " field is required.";
+                            string requiredError = parameter.Name + " is a required field";
 
                             // Cannot use two-way binding for these since parameter.Value is an object and must be casted to the correct type
                             @if (parameter.DesiredType == typeof(string))
@@ -188,14 +189,14 @@
                     <div class="small-input-line mud-date">
                         <MudDatePicker Label="Run Date" Variant="Variant.Filled" Margin="Margin.Dense" Required="true"
                                        PickerVariant="PickerVariant.Inline" Date="@_runDate" DateChanged="(newDate) => _runDate = ((DateTime)newDate).Date.Add(time)"
-                                       RequiredError="The Run Date field is required." />
+                                       RequiredError="The Run Date is a required field" />
 
                         <MudTimePicker Label="Run Time" Variant="Variant.Filled" Margin="Margin.Dense" AmPm="true" Time="time"
                                        TimeChanged="(newTime) => {
                                             time = (TimeSpan)newTime;
                                             _runDate = _runDate.Date.Add((TimeSpan)newTime);
                                        }"
-                                       RequiredError="The Run Time field is required." />
+                                       RequiredError="Run Time is a required field" />
                     </div>
                 }
         </PageSection>
@@ -204,7 +205,7 @@
             <div class="input-group job-details">
                 <div class="input-line">
                     <MudSelect T="string" @bind-Value="_job.Script.DeviceName" Label="Device" Variant="Variant.Filled" Margin="Margin.Dense" Required="true">
-                        <MudSelectItem Value=@LocalhostDevice RequiredError="Device name field is required." />
+                        <MudSelectItem Value="@LocalhostDevice" />
                     </MudSelect>
                 </div>
                 <div class="input-line">
@@ -262,6 +263,35 @@
     private bool _shouldRunJobNow = true;
     private bool _shouldViewJobResult = true;
     private bool _canSaveJob;
+
+    private IEnumerable<string> JobNameValidator(string jobName)
+    {
+        if (string.IsNullOrWhiteSpace(jobName))
+        {
+            yield return "Job name is a required field";
+            yield break;
+        }
+        if (jobName.Length < 3)
+        {
+            yield return "Job name must be at least 3 characters in length";
+        }
+        if (jobName.Length > 30)
+        {
+            yield return "Job name must be less than 30 characters in length";
+        }
+        if (ScriptJobService.HasJob(jobName))
+        {
+            yield return "Job name must be unique";
+        }
+    }
+
+    private IEnumerable<string> JobDescriptionValidator(string jobDescription)
+    {
+        if (jobDescription.Length > 100)
+        {
+            yield return "Job description must be less than 100 characters in length";
+        }
+    }
 
     protected override void OnInitialized()
     {
