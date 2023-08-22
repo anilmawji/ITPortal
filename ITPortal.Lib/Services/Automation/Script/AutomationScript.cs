@@ -7,10 +7,11 @@ public abstract class AutomationScript
 {
     public string? FilePath { get; protected set; }
     public string? FileName { get; protected set; }
-    public ScriptLoadState LoadState { get; protected set; }
-    public string DeviceName { get; set; } = "Localhost";
+    public string DeviceName { get; protected set; } = "Localhost";
     public string[]? Content { get; protected set; }
-    public ScriptParameterList? Parameters { get; protected set; }
+    public string? ContentString { get; protected set; }
+    public ScriptLoadState LoadState { get; protected set; }
+    public ScriptParameterList Parameters { get; protected set; } = new();
 
     public AutomationScript() { }
 
@@ -24,7 +25,7 @@ public abstract class AutomationScript
         DeviceName = deviceName;
     }
 
-    public abstract Task InvokeAsync(string cancellationMessage, IScriptOutputStreamService outputStream, CancellationToken cancellationToken);
+    public abstract Task InvokeAsync(string cancellationMessage, IOutputStreamService outputStream, CancellationToken cancellationToken);
 
     public virtual bool LoadFromFile(string filePath)
     {
@@ -51,6 +52,7 @@ public abstract class AutomationScript
         try
         {
             Content = File.ReadAllLines(filePath);
+            ContentString = string.Join("\n", Content);
             LoadState = ScriptLoadState.Succeeded;
 
             return true;
@@ -78,6 +80,7 @@ public abstract class AutomationScript
         FilePath = null;
         FileName = null;
         Content = null;
+        ContentString = null;
     }
 
     public bool IsUnloaded()
@@ -94,14 +97,9 @@ public abstract class AutomationScript
     {
         return LoadState == ScriptLoadState.Failed;
     }
-
-    public string? GetContentAsString()
-    {
-        return Content != null ? string.Join("\n", Content) : null;
-    }
     
     public override string? ToString()
     {
-        return GetContentAsString();
+        return ContentString;
     }
 }

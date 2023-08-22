@@ -12,7 +12,7 @@
     <PageSection Title="Output">
         @for (int i = 0; i < Result.OutputStream.Output.Count(); i++)
         {
-            ScriptOutputMessage psMessage = Result.OutputStream.Output[i];
+            OutputMessage psMessage = Result.OutputStream.Output[i];
 
             <div class="@psMessage.Stream">
                 @((MarkupString)psMessage.Data)
@@ -22,5 +22,17 @@
 </PageContainer>
 
 @code {
+    protected override void OnInitialized()
+    {
+        // Very important to make sure ScriptJobResultBase is populated
+        base.OnInitialized();
 
+        if (!Result.OutputStream.HasOutputChangedHandler)
+        {
+            Result.OutputStream.OutputChanged += (object sender, List<OutputMessage> newOutput) =>
+            {
+                InvokeAsync(() => this.StateHasChanged());
+            };
+        }
+    }
 }

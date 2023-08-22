@@ -1,50 +1,89 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System.Management.Automation;
 
-namespace ITPortal.Lib.Services.Automation.Output;
-
-public class PowerShellOutputStreamService : IScriptOutputStreamService
+namespace ITPortal.Lib.Services.Automation.Output
 {
-    public List<ScriptOutputMessage> Output { get; set; } = new();
-    public event EventHandler<List<ScriptOutputMessage>>? OutputChanged;
-
-    private ScriptOutputMessage prevMessage = new();
-
-    public void SubscribeToOutputStream<T>(ICollection<T> stream, ScriptStreamType streamType)
+    public class PowerShellOutputStreamService : IOutputStreamService
     {
-        var psStream = (PSDataCollection<T>)stream;
-        psStream.DataAdded += (sender, e) =>
-        {
-            string? message = psStream[e.Index]?.ToString();
-            AddOutput(streamType, message);
-        };
-    }
+        public List<OutputMessage> Output { get; set; } = new();
+        public Dictionary<StreamType, bool> OutputCompleted { get; set; } = new();
+        public event EventHandler<List<OutputMessage>>? OutputChanged;
+        public bool HasOutputChangedHandler { get; set; }
 
-    public void AddOutput(string? message)
-    {
-        AddOutput(ScriptStreamType.Output, message);
-    }
+        private OutputMessage? previousMessage;
 
-    public void AddOutput(ScriptStreamType streamType, string? message)
-    {
-        if (message.IsNullOrEmpty() || OutputChanged == null) return;
+        public void SubscribeToStream<T>(ICollection<T> stream, StreamType streamType)
+        {
+            var psStream = (PSDataCollection<T>)stream;
 
-        if (prevMessage.Data == message)
-        {
-            Output.Last().Data += ".";
-        }
-        else
-        {
-            ScriptOutputMessage psMessage = new()
+            psStream.DataAdded += (sender, e) =>
             {
-                Stream = streamType,
-                Data = message
+                string? message = psStream[e.Index]?.ToString();
+                AddOutput(streamType, message);
             };
-
-            Output.Add(psMessage);
-            prevMessage = psMessage;
+            psStream.Completed += (sender, e) =>
+            {
+                OutputCompleted[streamType] = true;
+            };
         }
-        // Execute callback function to update the UI
-        OutputChanged?.Invoke(this, Output);
+
+        public bool OnOutputChanged(EventHandler<List<OutputMessage>> outputChangedEvent)
+        {
+            if (OutputChanged == null)
+            {
+                OutputChanged += outputChangedEvent;
+                HasOutputChangedHandler = true;
+
+                return true;
+            }
+            return false;
+        }
+
+        public void AddOutput(string message)
+        {
+            AddOutput(StreamType.Standard, message);
+        }
+
+        public void AddOutput(StreamType streamType, string? message)
+        {
+            if (message.IsNullOrEmpty() || OutputChanged == null) return;
+
+            if (previousMessage?.Data == message)
+            {
+                Output.Last().Data += ".";
+            }
+            else
+            {
+                OutputMessage psMessage = new()
+                {
+                    Stream = streamType,
+                    Data = message
+                };
+
+                Output.Add(psMessage);
+                previousMessage = psMessage;
+            }
+            // Execute callback function to update the UI
+            OutputChanged?.Invoke(this, Output);
+        }
+
+        public void ResetStreamState()
+        {
+            foreach (StreamType streamType in OutputCompleted.Keys)
+            {
+                OutputCompleted[streamType] = false;
+            }
+        }
+
+        public void ClearOutput()
+        {
+            Output.Clear();
+            ResetStreamState();
+        }
+
+        public void Dispose()
+        {
+            foreach ()
+        }
     }
 }

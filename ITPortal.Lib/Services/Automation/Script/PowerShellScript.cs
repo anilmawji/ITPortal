@@ -30,7 +30,7 @@ public class PowerShellScript : AutomationScript
         // CreateDefault() only loads the commands necessary to host PowerShell, CreateDefault2() loads all available commands
         InitialSessionState initialPowerShellState = InitialSessionState.CreateDefault();
         // Limit script execution to one thread
-        initialPowerShellState.ApartmentState = ApartmentState.STA;
+        initialPowerShellState.ApartmentState = ApartmentState.MTA;
         // Set execution policy of the PS session
         initialPowerShellState.ExecutionPolicy = Microsoft.PowerShell.ExecutionPolicy.Bypass;
 
@@ -57,7 +57,12 @@ public class PowerShellScript : AutomationScript
 
     public bool LoadParameters()
     {
-        ScriptBlockAst scriptAst = Parser.ParseInput(GetContentAsString(), out _, out ParseError[] errors);
+        if (!IsLoaded())
+        {
+            throw new InvalidOperationException("Cannot load parameters on an unloaded script");
+        }
+
+        ScriptBlockAst scriptAst = Parser.ParseInput(ContentString, out _, out ParseError[] errors);
 
         if (errors.Length != 0)
         {
@@ -77,36 +82,30 @@ public class PowerShellScript : AutomationScript
         return true;
     }
 
-    public override async Task InvokeAsync(string cancellationMessage, IScriptOutputStreamService outputStream, CancellationToken cancellationToken)
+    public override async Task InvokeAsync(string cancellationMessage, IOutputStreamService outputStream, CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
         {
-            outputStream?.AddOutput(ScriptStreamType.Warning, cancellationMessage);
+            outputStream?.AddOutput(StreamType.Warning, cancellationMessage);
             return;
         }
 
         if (!IsLoaded())
         {
-            throw new InvalidPowerShellStateException("Attempt to invoke a script that was not loaded");
+            throw new InvalidOperationException("Attempt to invoke a script that was not loaded");
         }
 
         try
         {
             // "using" relies on compiler to dispose of shell when method is popped from call stack
             using PowerShell shell = PowerShell.Create(_initialPowerShellState);
-            shell.AddScript(GetContentAsString());
-            ((PowershellParameterList?)Parameters)?.RegisterShell(shell);
+            shell.AddScript(ContentString);
 
-            PSDataCollection<PSObject> outputCollection = new();
-
-            if (outputStream != null)
+            if (Parameters.Any())
             {
-                outputStream.SubscribeToOutputStream(outputCollection, ScriptStreamType.Output);
-                outputStream.SubscribeToOutputStream(shell.Streams.Information, ScriptStreamType.Information);
-                outputStream.SubscribeToOutputStream(shell.Streams.Progress, ScriptStreamType.Progress);
-                outputStream.SubscribeToOutputStream(shell.Streams.Warning, ScriptStreamType.Warning);
-                outputStream.SubscribeToOutputStream(shell.Streams.Error, ScriptStreamType.Error);
+                RegisterParameters(shell);
             }
+            PSDataCollection<PSObject> outputCollection = RegisterOutputStreams(shell, outputStream);
 
             // Use Task.Factory to opt for the newer async/await keywords
             // Moves away from the old IAsyncResult functionality still used by the PowerShell API
@@ -119,11 +118,32 @@ public class PowerShellScript : AutomationScript
         }
         catch (OperationCanceledException)
         {
-            outputStream?.AddOutput(ScriptStreamType.Warning, cancellationMessage);
+            outputStream?.AddOutput(StreamType.Warning, cancellationMessage);
         }
         catch (Exception e)
         {
-            outputStream?.AddOutput(ScriptStreamType.Error, e.Message);
+            outputStream?.AddOutput(StreamType.Error, e.Message);
         }
+    }
+
+    private void RegisterParameters(PowerShell shell)
+    {
+        foreach (ScriptParameter parameter in Parameters)
+        {
+            shell.AddParameter(parameter.Name, parameter.Value);
+        }
+    }
+
+    private static PSDataCollection<PSObject> RegisterOutputStreams(PowerShell shell, IOutputStreamService outputStream)
+    {
+        PSDataCollection<PSObject> outputCollection = new();
+
+        outputStream.SubscribeToStream(outputCollection, StreamType.Standard);
+        outputStream.SubscribeToStream(shell.Streams.Information, StreamType.Information);
+        outputStream.SubscribeToStream(shell.Streams.Progress, StreamType.Progress);
+        outputStream.SubscribeToStream(shell.Streams.Warning, StreamType.Warning);
+        outputStream.SubscribeToStream(shell.Streams.Error, StreamType.Error);
+
+        return outputCollection;
     }
 }

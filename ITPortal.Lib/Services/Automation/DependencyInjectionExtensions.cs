@@ -20,7 +20,7 @@ public static class DependencyInjectionExtensions
 
     public static IServiceCollection AddPowerShellServices(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddTransient<IScriptOutputStreamService, PowerShellOutputStreamService>();
+        serviceCollection.AddTransient<IOutputStreamService, PowerShellOutputStreamService>();
         serviceCollection.TryAddScriptJobService();
 
         return serviceCollection;

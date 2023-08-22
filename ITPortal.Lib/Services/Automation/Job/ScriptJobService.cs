@@ -18,12 +18,10 @@ public class ScriptJobService : IScriptJobService
         Jobs.Add(job.Name, job);
     }
 
-    public ScriptJobResult RunJob(ScriptJob job, IScriptOutputStreamService outputStream, CancellationToken cancellationToken)
+    public ScriptJobResult NewJobResult(ScriptJob job, IOutputStreamService outputStream)
     {
         ScriptJobResult result = new(_nextResultId++, job, DateTime.Now, outputStream);
         AddScriptResult(result);
-
-        job.Run(outputStream, cancellationToken);
 
         return result;
     }

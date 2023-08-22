@@ -37,12 +37,4 @@ public class PowershellParameterList : ScriptParameterList
         }
         return mandatory;
     }
-
-    public void RegisterShell(PowerShell shell)
-    {
-        foreach (ScriptParameter parameter in Parameters)
-        {
-            shell.AddParameter(parameter.Name, parameter.Value);
-        }
-    }
 }

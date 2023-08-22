@@ -24,7 +24,7 @@ public class ScriptJob
         Description = description;
     }
 
-    public async void Run(IScriptOutputStreamService outputStream, CancellationToken cancellationToken)
+    public async Task Run(IOutputStreamService outputStream, CancellationToken cancellationToken)
     {
         State = ScriptJobState.Running;
         await Script.InvokeAsync("Script execution was cancelled", outputStream, cancellationToken);

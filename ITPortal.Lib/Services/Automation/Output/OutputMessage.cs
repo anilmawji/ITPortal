@@ -1,7 +1,7 @@
 ﻿namespace ITPortal.Lib.Services.Automation.Output;
 
-public class ScriptOutputMessage
+public class OutputMessage
 {
-    public ScriptStreamType Stream;
+    public StreamType Stream;
     public string? Data;
 }
