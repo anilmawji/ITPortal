@@ -210,9 +210,9 @@
                 </div>
                 @if (_shouldRunJobNow)
                 {
-                    <div class="input-line">
-                        <MudCheckBox @bind-Checked="@_shouldViewJobResult" Color="Color.Secondary">View Job</MudCheckBox>
-                    </div>
+                                    <div class="input-line">
+                    <MudCheckBox @bind-Checked="@_shouldViewJobResult" Color="Color.Secondary">View Job</MudCheckBox>
+                </div>
                 }
             </div>
             <div class="create-job-buttons">
@@ -366,8 +366,7 @@
             }
             if (_shouldRunJobNow)
             {
-                ScriptJobResult result = ScriptJobService.NewJobResult(_job, new PowerShellOutputStreamService());
-                Task runJob = _job.Run(result.OutputStream, CancellationToken.None);
+                ScriptJobResult result = ScriptJobService.RunJob(_job, new PowerShellOutputStreamService(), CancellationToken.None);
 
                 if (_shouldViewJobResult)
                 {

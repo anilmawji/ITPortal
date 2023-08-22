@@ -1,5 +1,4 @@
 ﻿using ITPortal.Lib.Services.Automation.Output;
-using System.Text.RegularExpressions;
 
 namespace ITPortal.Lib.Services.Automation.Job;
 
@@ -19,8 +18,10 @@ public class ScriptJobService : IScriptJobService
         Jobs.Add(job.Name, job);
     }
 
-    public ScriptJobResult NewJobResult(ScriptJob job, IOutputStreamService outputStream)
+    public ScriptJobResult RunJob(ScriptJob job, IOutputStreamService outputStream, CancellationToken cancellationToken)
     {
+        job.Run(outputStream, cancellationToken).ConfigureAwait(false);
+
         ScriptJobResult result = new(_nextResultId++, job, DateTime.Now, outputStream);
         Results.Add(result);
 
