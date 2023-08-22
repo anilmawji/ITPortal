@@ -5,9 +5,9 @@ namespace ITPortal.Lib.Services.Automation.Script;
 
 public abstract class AutomationScript
 {
+    public string DeviceName { get; set; } = "Localhost";
     public string? FilePath { get; protected set; }
     public string? FileName { get; protected set; }
-    public string DeviceName { get; protected set; } = "Localhost";
     public string[]? Content { get; protected set; }
     public string? ContentString { get; protected set; }
     public ScriptLoadState LoadState { get; protected set; }

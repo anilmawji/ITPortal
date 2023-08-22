@@ -147,7 +147,7 @@
                 PickerTitle = "Please select a PowerShell _script file",
                 FileTypes = _psFileType,
             };
-        _script = new PowerShellScript();
+        _script = new PowerShellScript("", "");
 
         PowerShellService.OutputChanged += (object sender, List<OutputMessage> newOutput) =>
         {
@@ -231,7 +231,7 @@
         if (_scriptRunning) CancelRunScript();
         PowerShellService.Output.Clear();
 
-        _script = new PowerShellScript();
+        _script = new PowerShellScript("", "");
 
         this.StateHasChanged();
     }

@@ -72,21 +72,38 @@
 </PageContainer>
 
 @code {
-    private string _searchString = "";
-    private readonly int[] _pageSizeOptions = { 10, 20, 30 };
-
-    private readonly DialogOptions _dialogOptions = new() {
+    private static readonly DialogOptions _dialogOptions = new() {
         CloseButton = true,
         DisableBackdropClick = true,
         MaxWidth = MaxWidth.ExtraSmall
     };
-    private DialogParameters<Dialog> _deleteJobDialogParameters = new();
+    private static DialogParameters<Dialog> _deleteJobDialogParameters = new();
+    private static readonly int[] _pageSizeOptions = { 10, 20, 30 };
+
+    private string _searchString = "";
 
     protected override void OnInitialized()
     {
-        _deleteJobDialogParameters.Add(dialog => dialog.ContentText, "Are you sure you want to delete this script job? This action cannot be undone.");
-        _deleteJobDialogParameters.Add(dialog => dialog.ButtonText, "Delete");
-        _deleteJobDialogParameters.Add(dialog => dialog.Color, Color.Error);
+        foreach (ScriptJob job in ScriptJobService.Jobs.Values)
+        {
+            if (!job.HasOnStateChangedHandler)
+            {
+                job.OnStateChanged += (object sender, ScriptJobState newState) =>
+                {
+                    this.StateHasChanged();
+                };
+            }
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _deleteJobDialogParameters.Add(dialog => dialog.ContentText, "Are you sure you want to delete this script job? This action cannot be undone.");
+            _deleteJobDialogParameters.Add(dialog => dialog.ButtonText, "Delete");
+            _deleteJobDialogParameters.Add(dialog => dialog.Color, Color.Error);
+        }
     }
 
     private void GoToNewJob()
@@ -101,8 +118,6 @@
 
     //private void GoToViewJob(TableRowClickEventArgs<ScriptJob> eventArgs)
     //{
-    //    // TODO: need to get job result from the job...
-    //    // store List<ScriptJobResult> in ScriptJob instead?
     //    NavigationManager.NavigateTo($"job-results/{eventArgs.Item.Id}");
     //}
 

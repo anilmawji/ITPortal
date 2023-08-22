@@ -10,6 +10,8 @@ public class ScriptJob
     public string Description { get; set; } = string.Empty;
     public ScriptJobState State { get; private set; }
     public DateTime CreationTime { get; private set; }
+    public EventHandler<ScriptJobState>? OnStateChanged;
+    public bool HasOnStateChangedHandler = false;
 
     public ScriptJob(string name, AutomationScript script)
     {
@@ -26,8 +28,15 @@ public class ScriptJob
 
     public async Task Run(IOutputStreamService outputStream, CancellationToken cancellationToken)
     {
-        State = ScriptJobState.Running;
+        SetState(ScriptJobState.Running);
         await Script.InvokeAsync("Script execution was cancelled", outputStream, cancellationToken);
-        State = ScriptJobState.Idle;
+        SetState(ScriptJobState.Idle);
+
+    }
+
+    private void SetState(ScriptJobState state)
+    {
+        State = state;
+        OnStateChanged?.Invoke(this, State);
     }
 }

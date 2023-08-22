@@ -27,18 +27,6 @@ namespace ITPortal.Lib.Services.Automation.Output
             };
         }
 
-        public bool OnOutputChanged(EventHandler<List<OutputMessage>> outputChangedEvent)
-        {
-            if (OutputChanged == null)
-            {
-                OutputChanged += outputChangedEvent;
-                HasOutputChangedHandler = true;
-
-                return true;
-            }
-            return false;
-        }
-
         public void AddOutput(string message)
         {
             AddOutput(StreamType.Standard, message);
@@ -67,7 +55,7 @@ namespace ITPortal.Lib.Services.Automation.Output
             OutputChanged?.Invoke(this, Output);
         }
 
-        public void ResetStreamState()
+        public void ResetStreamCompletedState()
         {
             foreach (StreamType streamType in OutputCompleted.Keys)
             {
@@ -78,12 +66,7 @@ namespace ITPortal.Lib.Services.Automation.Output
         public void ClearOutput()
         {
             Output.Clear();
-            ResetStreamState();
-        }
-
-        public void Dispose()
-        {
-            foreach ()
+            ResetStreamCompletedState();
         }
     }
 }

@@ -155,13 +155,13 @@
                             }
                             else
                             {
-                                <p>Parameter @parameterName is not supported</p>
+                                <p>Parameter @parameterName uses an unsupported data type.</p>
                             }
                         }
                     }
                     else
                     {
-                        <p>This script does not accept any parameters</p>
+                        <p>This script does not accept any parameters.</p>
                     }
                 </div>
             </PageSection>
@@ -224,44 +224,36 @@
     [Parameter]
     public string JobName { get; set; }
 
+    private static readonly FilePickerFileType s_allowedFileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
+        {
+            { DevicePlatform.WinUI, new[] { ".ps1" } },
+            { DevicePlatform.macOS, new[] { "ps1" } }
+        }
+    );
+    private static readonly PickOptions s_filePickOptions = new PickOptions()
+    {
+        // PickerTitle is used by macOS but not Windows - unreliable for providing information to user
+        PickerTitle = "Please select a PowerShell script file",
+        FileTypes = s_allowedFileTypes,
+    };
+    private static readonly string[] s_extendedInputFieldTriggers = { "body", "description", "message" };
+
     private const string LocalhostDevice = "Localhost";
     private const char Delimiter = ' ';
     private const int ChipsMaxWidth = 80;
 
     private MudForm _jobForm;
+    private string _headerTitle;
     private DateTime _runDate;
     private string[] _errors = { }; 
-    private static readonly string[] s_extendedInputFieldTriggers = { "body", "description", "message" };
 
-    private FilePickerFileType _allowedFileTypes;
-    private PickOptions _filePickOptions;
     private ScriptJob _job;
-
-    private string _headerTitle;
     private bool _creatingNewJob;
     private bool _shouldRunJobNow = true;
     private bool _shouldViewJobResult = true;
     private bool _canSaveJob;
 
     protected override void OnInitialized()
-    {
-        _allowedFileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
-            {
-                { DevicePlatform.WinUI, new[] { ".ps1" } },
-                { DevicePlatform.macOS, new[] { "ps1" } }
-            }
-        );
-        _filePickOptions = new PickOptions()
-        {
-            // PickerTitle is used by macOS but not Windows - unreliable for providing information to user
-            PickerTitle = "Please select a PowerShell script file",
-            FileTypes = _allowedFileTypes,
-        };
-
-        InitJob();
-    }
-
-    private void InitJob()
     {
         if (JobName == null)
         {
@@ -278,7 +270,7 @@
 
     private async void PickAndLoadScript()
     {
-        FileResult fileResult = await FilePickerHandler.PickFile(_filePickOptions);
+        FileResult fileResult = await FilePickerHandler.PickFile(s_filePickOptions);
 
         if (fileResult != null)
         {
@@ -332,7 +324,6 @@
                 //
                 //await runJob;
             }
-            System.Diagnostics.Debug.WriteLine("can save job");
             GoToJobs();
         }
     }

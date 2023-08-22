@@ -1,5 +1,4 @@
 ﻿using ITPortal.Lib.Services.Automation.Output;
-using Tavis.UriTemplates;
 
 namespace ITPortal.Lib.Services.Automation.Job;
 

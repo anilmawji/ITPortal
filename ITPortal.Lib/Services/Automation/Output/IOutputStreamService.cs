@@ -9,9 +9,19 @@ public interface IOutputStreamService
 
     public void SubscribeToStream<V>(ICollection<V> stream, StreamType streamType);
 
+    public virtual bool OnOutputChanged(EventHandler<List<OutputMessage>> outputChangedEvent)
+    {
+        if (!HasOutputChangedHandler)
+        {
+            OutputChanged += outputChangedEvent;
+            HasOutputChangedHandler = true;
+
+            return true;
+        }
+        return false;
+    }
+
     public void AddOutput(string message);
 
     public void AddOutput(StreamType streamType, string? message);
-
-    public void Dispose();
 }
