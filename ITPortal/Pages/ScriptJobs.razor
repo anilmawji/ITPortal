@@ -88,10 +88,10 @@
         {
             if (!job.HasOnStateChangedHandler)
             {
-                job.OnStateChanged += (object sender, ScriptJobState newState) =>
+                job.SetOnStateChanged((object sender, ScriptJobState newState) =>
                 {
                     this.StateHasChanged();
-                };
+                });
             }
         }
     }

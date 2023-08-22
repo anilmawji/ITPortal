@@ -27,9 +27,12 @@
         // Very important to make sure ScriptJobResultBase is populated
         base.OnInitialized();
 
-        Result.OutputStream.OnOutputChanged((object sender, List<OutputMessage> newOutput) =>
+        if (!Result.OutputStream.HasOnOutputChangedHandler)
         {
-            InvokeAsync(() => this.StateHasChanged());
-        });
+            Result.OutputStream.SetOnOutputChanged((object sender, List<OutputMessage> newOutput) =>
+            {
+                InvokeAsync(() => this.StateHasChanged());
+            });
+        }
     }
 }
