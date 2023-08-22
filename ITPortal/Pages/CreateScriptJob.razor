@@ -259,9 +259,10 @@
     private string[] _errors = { }; 
 
     private ScriptJob _job;
+    private string _initialJobName;
     private bool _creatingNewJob;
-    private bool _shouldRunJobNow = true;
-    private bool _shouldViewJobResult = true;
+    private bool _shouldRunJobNow;
+    private bool _shouldViewJobResult;
     private bool _canSaveJob;
 
     private IEnumerable<string> JobNameValidator(string jobName)
@@ -279,7 +280,7 @@
         {
             yield return "Job name must be less than 30 characters in length";
         }
-        if (ScriptJobService.HasJob(jobName))
+        if (ScriptJobService.HasJob(jobName) && (_creatingNewJob || jobName != _initialJobName))
         {
             yield return "Job name must be unique";
         }
@@ -297,14 +298,17 @@
     {
         if (JobName == null)
         {
-            _creatingNewJob = true;
             _job = new ScriptJob(new PowerShellScript());
             _headerTitle = "New Job";
+            _creatingNewJob = true;
+            _shouldRunJobNow = true;
+            _shouldViewJobResult = true;
         }
         else
         {
             _job = ScriptJobService.TryGetJob(JobName);
             _headerTitle = $"Edit Job {JobName}";
+            _initialJobName = _job.Name;
         }
     }
 
