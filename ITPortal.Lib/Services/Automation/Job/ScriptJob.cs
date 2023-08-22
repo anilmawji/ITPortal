@@ -5,23 +5,26 @@ namespace ITPortal.Lib.Services.Automation.Job;
 
 public class ScriptJob
 {
+    public const string DefaultName = "Job";
+
     public string Name { get; set; }
     public AutomationScript Script { get; set; }
     public string Description { get; set; } = string.Empty;
     public ScriptJobState State { get; private set; }
     public DateTime CreationTime { get; private set; }
-    public EventHandler<ScriptJobState>? OnStateChanged { get; private set; }
-    public bool HasOnStateChangedHandler = false;
 
-    public ScriptJob(string name, AutomationScript script)
+    public event EventHandler<ScriptJobState>? StateChanged;
+    public bool HasStateChangedSubscriber;
+
+    public ScriptJob(AutomationScript script, string name = DefaultName)
     {
-        Name = name;
         Script = script;
+        Name = name;
         State = ScriptJobState.Idle;
         CreationTime = DateTime.Now;
     }
 
-    public ScriptJob(string name, AutomationScript script, string description) : this(name, script)
+    public ScriptJob(AutomationScript script, string description, string name = DefaultName) : this(script, name)
     {
         Description = description;
     }
@@ -33,15 +36,15 @@ public class ScriptJob
         SetState(ScriptJobState.Idle);
     }
 
-    public void SetOnStateChanged(EventHandler<ScriptJobState> handler)
+    public void SubscribeToStateChanged(EventHandler<ScriptJobState> handler)
     {
-        OnStateChanged += handler;
-        HasOnStateChangedHandler = true;
+        StateChanged += handler;
+        HasStateChangedSubscriber = true;
     }
 
     private void SetState(ScriptJobState state)
     {
         State = state;
-        OnStateChanged?.Invoke(this, State);
+        StateChanged?.Invoke(this, State);
     }
 }

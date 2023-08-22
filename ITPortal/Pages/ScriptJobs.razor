@@ -86,9 +86,9 @@
     {
         foreach (ScriptJob job in ScriptJobService.Jobs.Values)
         {
-            if (!job.HasOnStateChangedHandler)
+            if (!job.HasStateChangedSubscriber)
             {
-                job.SetOnStateChanged((object sender, ScriptJobState newState) =>
+                job.SubscribeToStateChanged((object sender, ScriptJobState newState) =>
                 {
                     this.StateHasChanged();
                 });
@@ -128,7 +128,7 @@
 
         if (!result.Canceled)
         {
-            ScriptJobService.DeleteJob(jobName);
+            ScriptJobService.Jobs.Remove(jobName);
             this.StateHasChanged();
         }
     }

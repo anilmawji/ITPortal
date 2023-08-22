@@ -7,8 +7,9 @@ namespace ITPortal.Lib.Services.Automation.Output
     {
         public List<OutputMessage> Output { get; set; } = new();
         public Dictionary<StreamType, bool> OutputCompleted { get; set; } = new();
+
         public event EventHandler<List<OutputMessage>>? OutputChanged;
-        public bool HasOnOutputChangedHandler { get; set; }
+        public bool HasOutputChangedSubscriber { get; set; }
 
         private OutputMessage? previousMessage;
 

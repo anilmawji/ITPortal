@@ -2,7 +2,7 @@
 
 namespace ITPortal.Lib.Services.Automation.Job;
 
-public class ScriptJobResult
+public struct ScriptJobResult
 {
     public int Id { get; set; }
     public ScriptJob Job { get; set; }

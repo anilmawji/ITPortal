@@ -12,5 +12,4 @@ public interface IScriptJobService
     public ScriptJobResult GetJobResult(int jobResultId);
     public ScriptJob? TryGetJob(string jobName);
     public bool HasJob(string jobName);
-    public bool DeleteJob(string jobName);
 }
