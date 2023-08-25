@@ -18,13 +18,14 @@ public class ScriptJobService : IScriptJobService
         Jobs.Add(job.Name, job);
     }
 
-    public ScriptJobResult RunJob(ScriptJob job, IOutputStreamService outputStream, CancellationToken cancellationToken)
+    public ScriptJobResult RunJob(ScriptJob job, IOutputStreamService outputStreamService, CancellationToken cancellationToken)
     {
-        job.Run(outputStream, cancellationToken).ConfigureAwait(false);
+        job.Run(outputStreamService, cancellationToken)
+            .ConfigureAwait(false);
 
-        ScriptJobResult result = new(_nextResultId++, job, DateTime.Now, outputStream);
+        ScriptJobResult result = new(_nextResultId++, job, DateTime.Now, outputStreamService);
+
         Results.Add(result);
-
         if (Results.Count > MaxResults)
         {
             Results.RemoveAt(Results.Count - 1);

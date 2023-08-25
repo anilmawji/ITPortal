@@ -3,13 +3,12 @@ using System.Management.Automation;
 
 namespace ITPortal.Lib.Services.Automation.Output
 {
-    public class PowerShellOutputStreamService : IOutputStreamService
+    public class PowerShellService : IOutputStreamService
     {
         public List<OutputMessage> Output { get; set; } = new();
-        public Dictionary<OutputStreamType, bool> OutputCompleted { get; set; } = new();
 
-        public event EventHandler<List<OutputMessage>>? OutputChanged;
-        public bool HasOutputChangedSubscriber { get; set; }
+        public event EventHandler<ScriptOutputChangedEventArgs>? OutputChanged;
+        public bool HasOutputChangedHandler { get; set; }
 
         private OutputMessage? previousMessage;
 
@@ -21,10 +20,6 @@ namespace ITPortal.Lib.Services.Automation.Output
             {
                 string? message = psStream[e.Index]?.ToString();
                 AddOutput(streamType, message);
-            };
-            psStream.Completed += (sender, e) =>
-            {
-                OutputCompleted[streamType] = true;
             };
         }
 
@@ -52,22 +47,13 @@ namespace ITPortal.Lib.Services.Automation.Output
                 Output.Add(psMessage);
                 previousMessage = psMessage;
             }
-            // Execute callback function to update the UI
-            OutputChanged?.Invoke(this, Output);
-        }
 
-        public void ResetStreamCompletedState()
-        {
-            foreach (OutputStreamType streamType in OutputCompleted.Keys)
+            ScriptOutputChangedEventArgs args = new()
             {
-                OutputCompleted[streamType] = false;
-            }
-        }
-
-        public void ClearOutput()
-        {
-            Output.Clear();
-            ResetStreamCompletedState();
+                Output = Output,
+                StreamType = streamType
+            };
+            OutputChanged?.Invoke(this, args);
         }
     }
 }

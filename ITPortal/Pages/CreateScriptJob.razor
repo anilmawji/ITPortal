@@ -366,15 +366,17 @@
             }
             if (_shouldRunJobNow)
             {
-                ScriptJobResult result = ScriptJobService.RunJob(_job, new PowerShellOutputStreamService(), CancellationToken.None);
+                ScriptJobResult result = ScriptJobService.RunJob(_job, new PowerShellService(), CancellationToken.None);
 
                 if (_shouldViewJobResult)
                 {
                     NavigationManager.NavigateTo($"/job-results/{result.Id}");
-                    return;
+                }
+                else
+                {
+                    GoToJobs();
                 }
             }
-            GoToJobs();
         }
     }
 }

@@ -8,7 +8,7 @@ public interface IScriptJobService
     List<ScriptJobResult> Results { get; set; }
 
     public void AddJob(ScriptJob job);
-    public ScriptJobResult RunJob(ScriptJob job, IOutputStreamService outputStream, CancellationToken cancellationToken);
+    public ScriptJobResult RunJob(ScriptJob job, IOutputStreamService outputStreamService, CancellationToken cancellationToken);
     public ScriptJobResult GetJobResult(int jobResultId);
     public ScriptJob? TryGetJob(string jobName);
     public bool HasJob(string jobName);

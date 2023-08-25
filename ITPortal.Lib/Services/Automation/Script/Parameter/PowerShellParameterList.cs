@@ -1,5 +1,4 @@
-﻿using System.Management.Automation;
-using System.Management.Automation.Language;
+﻿using System.Management.Automation.Language;
 
 namespace ITPortal.Lib.Services.Automation.Script.Parameter;
 

@@ -11,9 +11,9 @@
 
     @*TODO: move this to a separate component that is subscribed to the state changed event*@
     <PageSection Title="Output">
-        @for (int i = 0; i < Result.OutputStream.Output.Count(); i++)
+        @for (int i = 0; i < Result.OutputStreamService.Output.Count(); i++)
         {
-            OutputMessage psMessage = Result.OutputStream.Output[i];
+            OutputMessage psMessage = Result.OutputStreamService.Output[i];
 
             <div class="@psMessage.Stream">
                 @((MarkupString)psMessage.Data)
@@ -28,19 +28,12 @@
         // Very important to make sure ScriptJobResultBase is populated
         base.OnInitialized();
 
-        if (!Result.OutputStream.HasOutputChangedSubscriber)
+        if (!Result.OutputStreamService.HasOutputChangedHandler)
         {
-            Result.OutputStream.SubscribeToOutputChanged((object sender, List<OutputMessage> newOutput) =>
+            Result.OutputStreamService.OnOutputChanged((object sender, ScriptOutputChangedEventArgs args) =>
             {
                 InvokeAsync(() => this.StateHasChanged());
             });
         }
-
-        // TODO: support multiple subscriptions to the same event without adding duplicates
-        // create dictionary here to track if it is already subscribed?
-        Result.Job.SubscribeToStateChanged((object sender, ScriptJobState state) =>
-        {
-            InvokeAsync(() => this.StateHasChanged());
-        });
     }
 }

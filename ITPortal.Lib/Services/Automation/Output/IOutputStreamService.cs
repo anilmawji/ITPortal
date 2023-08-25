@@ -3,17 +3,16 @@
 public interface IOutputStreamService
 {
     public List<OutputMessage> Output { get; set; }
-    public Dictionary<OutputStreamType, bool> OutputCompleted { get; set; }
 
-    public event EventHandler<List<OutputMessage>>? OutputChanged;
-    public bool HasOutputChangedSubscriber { get; set; }
+    public event EventHandler<ScriptOutputChangedEventArgs>? OutputChanged;
+    public bool HasOutputChangedHandler { get; set; }
 
     public void SubscribeToStream<V>(ICollection<V> stream, OutputStreamType streamType);
 
-    public virtual void SubscribeToOutputChanged(EventHandler<List<OutputMessage>> outputChangedEvent)
+    public virtual void OnOutputChanged(EventHandler<ScriptOutputChangedEventArgs> outputChangedEvent)
     {
         OutputChanged += outputChangedEvent;
-        HasOutputChangedSubscriber = true;
+        HasOutputChangedHandler = true;
     }
 
     public void AddOutput(string message);

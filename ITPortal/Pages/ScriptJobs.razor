@@ -4,6 +4,8 @@
 @using ITPortal.Lib.Services.Automation.Job;
 @using ITPortal.Lib.Services.Automation.Script;
 
+@implements IDisposable
+
 @inject IOutputStreamService PowerShellService
 @inject IScriptJobService ScriptJobService
 @inject IDialogService DialogService
@@ -86,14 +88,10 @@
     {
         foreach (ScriptJob job in ScriptJobService.Jobs.Values)
         {
-            if (!job.HasStateChangedSubscriber)
+            job.StateChanged += (object sender, ScriptJobState newState) =>
             {
-                System.Diagnostics.Debug.WriteLine("has sub to" + job.Name);
-                job.SubscribeToStateChanged((object sender, ScriptJobState newState) =>
-                {
-                    this.StateHasChanged();
-                });
-            }
+                this.StateHasChanged();
+            };
         }
     }
 
@@ -143,5 +141,13 @@
                     || job.Script.FileName.Contains(searchString, StringComparison.OrdinalIgnoreCase)
                     || job.State.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase)
                     || job.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase);
+    }
+
+    public void Dispose()
+    {
+        foreach (ScriptJob job in ScriptJobService.Jobs.Values)
+        {
+            job.DisposeEventSubscriptions();
+        }
     }
 }

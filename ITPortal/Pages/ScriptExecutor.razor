@@ -149,7 +149,7 @@
             };
         _script = new PowerShellScript("", "");
 
-        PowerShellService.OutputChanged += (object sender, List<OutputMessage> newOutput) =>
+        PowerShellService.OutputChanged += (object sender, ScriptOutputChangedEventArgs args) =>
         {
             InvokeAsync(() => this.StateHasChanged());
         };

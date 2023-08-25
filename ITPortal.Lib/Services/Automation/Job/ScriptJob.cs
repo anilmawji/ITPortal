@@ -12,7 +12,6 @@ public class ScriptJob
     public DateTime CreationTime { get; private set; }
 
     public event EventHandler<ScriptJobState>? StateChanged;
-    public bool HasStateChangedSubscriber;
 
     public ScriptJob(AutomationScript script)
     {
@@ -39,15 +38,20 @@ public class ScriptJob
         SetState(ScriptJobState.Idle);
     }
 
-    public void SubscribeToStateChanged(EventHandler<ScriptJobState> handler)
-    {
-        StateChanged += handler;
-        HasStateChangedSubscriber = true;
-    }
-
     private void SetState(ScriptJobState state)
     {
         State = state;
         StateChanged?.Invoke(this, State);
+    }
+
+    public void DisposeEventSubscriptions()
+    {
+        if (StateChanged != null)
+        {
+            foreach (Delegate d in StateChanged.GetInvocationList())
+            {
+                StateChanged -= (EventHandler<ScriptJobState>)d;
+            }
+        }
     }
 }
