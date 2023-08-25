@@ -1,4 +1,5 @@
-﻿using ITPortal.Lib.Services.Automation.Output;
+﻿using ITPortal.Lib.Services.Automation.Job;
+using ITPortal.Lib.Services.Automation.Output;
 using ITPortal.Lib.Services.Automation.Script.Parameter;
 
 namespace ITPortal.Lib.Services.Automation.Script;
@@ -11,6 +12,7 @@ public abstract class AutomationScript
     public string[]? Content { get; protected set; }
     public string? ContentString { get; protected set; }
     public ScriptLoadState LoadState { get; protected set; }
+    public ScriptExecutionState ExecutionState { get; protected set; }
     public ScriptParameterList Parameters { get; protected set; } = new();
 
     public AutomationScript() { }

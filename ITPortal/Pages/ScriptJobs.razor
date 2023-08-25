@@ -6,7 +6,6 @@
 
 @implements IDisposable
 
-@inject IOutputStreamService PowerShellService
 @inject IScriptJobService ScriptJobService
 @inject IDialogService DialogService
 @inject NavigationManager NavigationManager
@@ -15,19 +14,20 @@
 
 <PageContainer Title="PowerShell Jobs">
     <style>
+        /* Correct MudTable border */
         .mud-table {
             border-radius: 8px;
             border: solid 1px #D2D2D2;
         }
 
-        /*Correct MudTable height and color */
+        /* Correct MudTable height and color */
         .mud-table-toolbar {
             --mud-internal-toolbar-height: 48px !important;
         }
     </style>
 
-    <div class="fixed-size-container">
-        <MudTable T="ScriptJob" Items="@ScriptJobService.Jobs.Values" Dense="true" Hover="true" FixedHeader="true" Filter="new Func<ScriptJob, bool>(FilterFunc)"
+    <div class="table-container">
+        <MudTable T="ScriptJob" Items="@ScriptJobService.Jobs.Values" Dense="true" Hover="true" FixedHeader="true" Filter="new Func<ScriptJob, bool>(FilterJobFunc)"
                   Height="calc(100% - 90px - 10px);">
             <ToolBarContent>
                 <MudTextField @bind-Value="_searchString" Placeholder="@($"Search {ScriptJobService.Jobs.Values.Count} items...")" Adornment="Adornment.Start"
@@ -115,11 +115,6 @@
         NavigationManager.NavigateTo($"create-job/{jobName}");
     }
 
-    //private void GoToViewJob(TableRowClickEventArgs<ScriptJob> eventArgs)
-    //{
-    //    NavigationManager.NavigateTo($"job-results/{eventArgs.Item.Id}");
-    //}
-
     private async void OpenDeleteJobDialog(string jobName)
     {
         IDialogReference dialog = DialogService.Show<Dialog>("Confirm Job Deletion", _deleteJobDialogParameters, _dialogOptions);
@@ -132,9 +127,9 @@
         }
     }
 
-    private bool FilterFunc(ScriptJob job) => DoFilterFunc(job, _searchString);
+    private bool FilterJobFunc(ScriptJob job) => DoFilterJobFunc(job, _searchString);
 
-    private bool DoFilterFunc(ScriptJob job, string searchString)
+    private bool DoFilterJobFunc(ScriptJob job, string searchString)
     {
         return string.IsNullOrWhiteSpace(searchString)
                     || job.Name.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase)

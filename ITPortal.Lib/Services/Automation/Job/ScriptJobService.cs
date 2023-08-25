@@ -7,7 +7,7 @@ public class ScriptJobService : IScriptJobService
     public const int MaxResults = 50;
 
     public Dictionary<string, ScriptJob> Jobs { get; set; } = new();
-    public List<ScriptJobResult> Results { get; set; } = new();
+    public List<ScriptJobResult> JobResults { get; set; } = new();
 
     private int _nextResultId = 0;
 
@@ -25,17 +25,17 @@ public class ScriptJobService : IScriptJobService
 
         ScriptJobResult result = new(_nextResultId++, job, DateTime.Now, outputStreamService);
 
-        Results.Add(result);
-        if (Results.Count > MaxResults)
+        JobResults.Add(result);
+        if (JobResults.Count > MaxResults)
         {
-            Results.RemoveAt(Results.Count - 1);
+            JobResults.RemoveAt(JobResults.Count - 1);
         }
         return result;
     }
 
     public ScriptJobResult GetJobResult(int jobResultId)
     {
-        return Results.ElementAt(jobResultId);
+        return JobResults.ElementAt(jobResultId);
     }
 
     public ScriptJob? TryGetJob(string jobName)

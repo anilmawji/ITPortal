@@ -1,7 +1,0 @@
-﻿/*Workaround to make MudTable resize with window*/
-.fixed-size-container {
-    height: calc(100vh - 90px - 100px);
-    display: grid;
-    grid-template-columns: minmax(0,1fr);
-    grid-template-rows: minmax(0,1fr);
-}

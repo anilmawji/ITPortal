@@ -14,7 +14,7 @@
 
 @*@attribute [Authorize]*@
 
-<button @onclick="PickAndLoadScript">Choose file</button>
+@*<button @onclick="PickAndLoadScript">Choose file</button>
 
 @if (_script != null)
 {
@@ -102,20 +102,20 @@
     }
 }
 
-<hr background-color="black" color="black" border="none">
+<hr background-color="black" color="black" border="none">*@
 
 @*Use standard for loop to avoid "Collection Was Modified error" caused by
   invalidating the iterator by adding elements while iterating (foreach has an implicit iterator)*@
-@for (int i = 0; i < PowerShellService.Output.Count(); i++)
+@*@for (int i = 0; i < PowerShellService.Output.Count(); i++)
 {
     var psMessage = PowerShellService.Output[i];
 
     <div class="@psMessage.Stream">
         @((MarkupString)psMessage.Data)
     </div>
-}
+}*@
 
-@code {
+@*@code {
     // MudChipField settings
     private readonly char _delimiter = ' ';
     private readonly int _chipsMaxWidth = 80;
@@ -242,4 +242,4 @@
 
         FileHandler.OpenFileWithDefaultProgram(_script.FilePath);
     }
-}
+}*@

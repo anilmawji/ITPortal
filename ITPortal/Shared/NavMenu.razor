@@ -1,7 +1,11 @@
 ﻿<MudNavMenu>
-	<MudNavLink Href="/jobs" Match="NavLinkMatch.All">PowerShell Jobs</MudNavLink>
-	<MudNavLink Href="/job-results" Match="NavLinkMatch.All">Job Results</MudNavLink>
-	<MudNavLink Href="/devices" Match="NavLinkMatch.All">Device Inventory</MudNavLink>
+	<MudNavGroup Title="PowerShell Executor" Expanded="true">
+		<MudNavLink Href="/jobs" Match="NavLinkMatch.All">Jobs</MudNavLink>
+		<MudNavLink Href="/job-results" Match="NavLinkMatch.All">Job Results</MudNavLink>
+	</MudNavGroup>
+	<MudNavGroup Title="Inventory" Expanded="true">
+		<MudNavLink Href="/devices" Match="NavLinkMatch.All">Devices</MudNavLink>
+	</MudNavGroup>
 	<MudNavGroup Title="Testing" Expanded="true">
 		<MudNavLink Href="/counter" Match="NavLinkMatch.All">Counter</MudNavLink>
 		<MudNavLink Href="/fetchdata" Match="NavLinkMatch.All">Fetch Data</MudNavLink>

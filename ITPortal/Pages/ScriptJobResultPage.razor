@@ -1,7 +1,7 @@
 ﻿@page "/job-results/{ResultId:int}"
 @inherits ScriptJobResultBase
 
-<PageContainer Title="PowerShell Jobs" NestedTitle=@($"Job {Result.Id}") PreviousPage="/jobs">
+<PageContainer Title="PowerShell Job Results" NestedTitle=@($"Result {Result.Id}") PreviousPage="/job-results">
     <div class="script-title">
         <p>Script: @Result.ScriptName</p>
         <div class="title-chip">

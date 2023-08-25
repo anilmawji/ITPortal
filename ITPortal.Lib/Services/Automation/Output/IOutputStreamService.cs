@@ -15,7 +15,5 @@ public interface IOutputStreamService
         HasOutputChangedHandler = true;
     }
 
-    public void AddOutput(string message);
-
-    public void AddOutput(OutputStreamType streamType, string? message);
+    public void AddOutput(string? message, OutputStreamType streamType = OutputStreamType.Standard);
 }

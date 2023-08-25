@@ -19,16 +19,11 @@ namespace ITPortal.Lib.Services.Automation.Output
             psStream.DataAdded += (sender, e) =>
             {
                 string? message = psStream[e.Index]?.ToString();
-                AddOutput(streamType, message);
+                AddOutput(message, streamType);
             };
         }
 
-        public void AddOutput(string message)
-        {
-            AddOutput(OutputStreamType.Standard, message);
-        }
-
-        public void AddOutput(OutputStreamType streamType, string? message)
+        public void AddOutput(string? message, OutputStreamType streamType)
         {
             if (message.IsNullOrEmpty() || OutputChanged == null) return;
 

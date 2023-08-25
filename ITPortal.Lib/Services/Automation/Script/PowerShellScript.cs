@@ -1,4 +1,5 @@
-﻿using ITPortal.Lib.Services.Automation.Output;
+﻿using ITPortal.Lib.Services.Automation.Job;
+using ITPortal.Lib.Services.Automation.Output;
 using ITPortal.Lib.Services.Automation.Script.Parameter;
 using System.Management.Automation;
 using System.Management.Automation.Language;
@@ -82,12 +83,13 @@ public class PowerShellScript : AutomationScript
         return true;
     }
 
-    public override async Task InvokeAsync(string cancellationMessage, IOutputStreamService outputStream, CancellationToken cancellationToken)
+    public override async Task<ScriptExecutionState> InvokeAsync(string cancellationMessage, IOutputStreamService outputStream, CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
         {
-            outputStream?.AddOutput(OutputStreamType.Warning, cancellationMessage);
-            return;
+            ExecutionState = ScriptExecutionState.Stopped;
+            outputStream?.AddOutput(cancellationMessage, OutputStreamType.Warning);
+            return ExecutionState;
         }
 
         if (!IsLoaded())
@@ -107,23 +109,30 @@ public class PowerShellScript : AutomationScript
             }
             PSDataCollection<PSObject> outputCollection = RegisterOutputStreams(shell, outputStream);
 
+            ExecutionState = ScriptExecutionState.Running;
+
             // Use Task.Factory to opt for the newer async/await keywords
             // Moves away from the old IAsyncResult functionality still used by the PowerShell API
             Task<PSDataCollection<PSObject>> shellTask = Task.Factory.FromAsync(
                 shell.BeginInvoke<PSObject, PSObject>(null, outputCollection),
                 shell.EndInvoke);
 
-            PSDataCollection<PSObject> result = await shellTask.WaitAsync(cancellationToken)
+            await shellTask.WaitAsync(cancellationToken)
                 .ConfigureAwait(false);
+
+            ExecutionState = ScriptExecutionState.Success;
         }
         catch (OperationCanceledException)
         {
-            outputStream?.AddOutput(OutputStreamType.Warning, cancellationMessage);
+            ExecutionState = ScriptExecutionState.Stopped;
+            outputStream?.AddOutput(cancellationMessage, OutputStreamType.Warning);
         }
         catch (Exception e)
         {
-            outputStream?.AddOutput(OutputStreamType.Error, e.Message);
+            ExecutionState = ScriptExecutionState.Error;
+            outputStream?.AddOutput(e.Message, OutputStreamType.Error);
         }
+        return ExecutionState;
     }
 
     private void RegisterParameters(PowerShell shell)

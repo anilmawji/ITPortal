@@ -5,7 +5,7 @@ namespace ITPortal.Lib.Services.Automation.Job;
 public interface IScriptJobService
 {
     public Dictionary<string, ScriptJob> Jobs { get; set; }
-    List<ScriptJobResult> Results { get; set; }
+    public List<ScriptJobResult> JobResults { get; set; }
 
     public void AddJob(ScriptJob job);
     public ScriptJobResult RunJob(ScriptJob job, IOutputStreamService outputStreamService, CancellationToken cancellationToken);

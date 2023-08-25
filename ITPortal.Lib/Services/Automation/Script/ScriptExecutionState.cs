@@ -2,6 +2,7 @@
 
 public enum ScriptExecutionState
 {
+    Idle,
     Running,
     Success,
     Stopped,
@@ -12,6 +13,7 @@ public static class ScriptExecutionStateExtensions
 {
     public static readonly Dictionary<ScriptExecutionState, string> Colors = new()
     {
+        { ScriptExecutionState.Idle,    "#747474" }, // Grey
         { ScriptExecutionState.Running, "#0094FF" }, // Blue
         { ScriptExecutionState.Success, "#00C708" }, // Green
         { ScriptExecutionState.Error,   "#BF0000" }, // Red

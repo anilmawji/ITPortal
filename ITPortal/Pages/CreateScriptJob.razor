@@ -322,7 +322,6 @@
         if (fileResult != null)
         {
             _job.Script.LoadFromFile(fileResult.FullPath);
-
             this.StateHasChanged();
         }
     }
@@ -345,7 +344,6 @@
     private void RemoveScript()
     {
         _job.Script.Unload();
-
         this.StateHasChanged();
     }
 
