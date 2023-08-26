@@ -1,5 +1,4 @@
-﻿using ITPortal.Lib.Services.Automation.Job;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.IdentityModel.Tokens;
 using System.Management.Automation;
 
 namespace ITPortal.Lib.Services.Automation.Output;
@@ -8,7 +7,7 @@ public class PowerShellService : IOutputStreamService
 {
     public List<OutputMessage> Output { get; set; } = new();
 
-    public event EventHandler<ScriptOutputChangedEventArgs>? OutputChanged;
+    public event EventHandler<ScriptOutputChangedEventArgs>? OnOutputChanged;
 
     private OutputMessage? previousMessage;
 
@@ -25,7 +24,7 @@ public class PowerShellService : IOutputStreamService
 
     public void AddOutput(string? message, OutputStreamType streamType)
     {
-        if (message.IsNullOrEmpty() || OutputChanged == null) return;
+        if (message.IsNullOrEmpty() || OnOutputChanged == null) return;
 
         if (previousMessage?.Data == message)
         {
@@ -48,16 +47,16 @@ public class PowerShellService : IOutputStreamService
             Output = Output,
             StreamType = streamType
         };
-        OutputChanged?.Invoke(this, args);
+        OnOutputChanged?.Invoke(this, args);
     }
 
     public void DisposeEventSubscriptions()
     {
-        if (OutputChanged != null)
+        if (OnOutputChanged != null)
         {
-            foreach (Delegate d in OutputChanged.GetInvocationList())
+            foreach (Delegate d in OnOutputChanged.GetInvocationList())
             {
-                OutputChanged -= (EventHandler<ScriptOutputChangedEventArgs>)d;
+                OnOutputChanged -= (EventHandler<ScriptOutputChangedEventArgs>)d;
             }
         }
     }

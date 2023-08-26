@@ -88,7 +88,7 @@
     {
         foreach (ScriptJob job in ScriptJobService.Jobs.Values)
         {
-            job.StateChanged += (object sender, ScriptJobState newState) =>
+            job.OnStateChanged += (object sender, ScriptJobState newState) =>
             {
                 this.StateHasChanged();
             };

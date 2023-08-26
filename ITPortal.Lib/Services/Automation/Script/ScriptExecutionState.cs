@@ -1,4 +1,6 @@
-﻿namespace ITPortal.Lib.Services.Automation.Job;
+﻿using ITPortal.Lib.Utilities;
+
+namespace ITPortal.Lib.Services.Automation.Job;
 
 public enum ScriptExecutionState
 {
@@ -12,10 +14,10 @@ public static class ScriptExecutionStateExtensions
 {
     public static readonly Dictionary<ScriptExecutionState, string> Colors = new()
     {
-        { ScriptExecutionState.Running, "#0094FF" }, // Blue
-        { ScriptExecutionState.Success, "#00C708" }, // Green
-        { ScriptExecutionState.Error,   "#BF0000" }, // Red
-        { ScriptExecutionState.Stopped, "#FCBA03" }, // Yellow
+        { ScriptExecutionState.Running, StateColors.Blue   },
+        { ScriptExecutionState.Success, StateColors.Green  },
+        { ScriptExecutionState.Stopped, StateColors.Yellow },
+        { ScriptExecutionState.Error,   StateColors.Red    },
     };
 
     public static string GetColor(this ScriptExecutionState state)

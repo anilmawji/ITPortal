@@ -18,13 +18,19 @@ public class ScriptJobService : IScriptJobService
         Jobs.Add(job.Name, job);
     }
 
-    public ScriptJobResult RunJob(ScriptJob job, IOutputStreamService outputStreamService, CancellationToken cancellationToken)
+    public ScriptJobResult RunJob(ScriptJob job, IOutputStreamService outputStreamService)
     {
         ArgumentNullException.ThrowIfNull(job.Script.FileName, nameof(job.Script.FileName));
 
-        ScriptJobResult result = new(_nextResultId++, job.Script.FileName, job.Script.DeviceName, DateTime.Now, outputStreamService);
+        ScriptJobResult result = new(
+            _nextResultId++,
+            job.Script.FileName,
+            job.Script.DeviceName,
+            DateTime.Now,
+            outputStreamService
+        );
 
-        job.Run(outputStreamService, result, cancellationToken)
+        job.Run(outputStreamService, result)
             .ConfigureAwait(false);
 
         JobResults.Add(result);
@@ -48,5 +54,13 @@ public class ScriptJobService : IScriptJobService
     public bool HasJob(string jobName)
     {
         return Jobs.GetValueOrDefault(jobName) != default(ScriptJob);
+    }
+
+    public void DisposeEventSubscriptions()
+    {
+        foreach (ScriptJob job in Jobs.Values)
+        {
+            job.DisposeEventSubscriptions();
+        }
     }
 }

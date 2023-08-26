@@ -11,11 +11,18 @@ public class ScriptJob
     public ScriptJobState State { get; private set; }
     public DateTime CreationTime { get; private set; }
 
-    public event EventHandler<ScriptJobState>? StateChanged;
+    public event EventHandler<ScriptJobState>? OnStateChanged;
+    public event EventHandler? OnCancelled;
+
+    private readonly CancellationTokenSource _cancellationTokenSource;
 
     public ScriptJob(AutomationScript script)
     {
         Script = script;
+
+        _cancellationTokenSource = new();
+        _cancellationTokenSource.Token.Register(() => OnCancelled?.Invoke(this, EventArgs.Empty));
+
     }
 
     public ScriptJob(AutomationScript script, string name) : this(script)
@@ -31,26 +38,38 @@ public class ScriptJob
         Description = description;
     }
 
-    public async Task Run(IOutputStreamService outputStream, ScriptJobResult result, CancellationToken cancellationToken)
+    public async Task Run(IOutputStreamService outputStream, ScriptJobResult result)
     {
         SetState(ScriptJobState.Running);
-        result.ExecutionState = await Script.InvokeAsync("Script execution was cancelled", outputStream, cancellationToken);
+        result.ExecutionState = await Script.InvokeAsync("Script execution was cancelled", outputStream, _cancellationTokenSource.Token);
         SetState(ScriptJobState.Idle);
+    }
+
+    public void Cancel()
+    {
+        _cancellationTokenSource.Cancel();
     }
 
     private void SetState(ScriptJobState state)
     {
         State = state;
-        StateChanged?.Invoke(this, State);
+        OnStateChanged?.Invoke(this, State);
     }
 
     public void DisposeEventSubscriptions()
     {
-        if (StateChanged != null)
+        if (OnStateChanged != null)
         {
-            foreach (Delegate d in StateChanged.GetInvocationList())
+            foreach (Delegate d in OnStateChanged.GetInvocationList())
             {
-                StateChanged -= (EventHandler<ScriptJobState>)d;
+                OnStateChanged -= (EventHandler<ScriptJobState>)d;
+            }
+        }
+        if (OnCancelled != null)
+        {
+            foreach (Delegate d in OnCancelled.GetInvocationList())
+            {
+                OnCancelled -= (EventHandler)d;
             }
         }
     }
