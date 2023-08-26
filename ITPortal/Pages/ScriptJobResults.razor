@@ -34,7 +34,7 @@
                     <MudTableSortLabel SortBy="new Func<ScriptJobResult, object>(x=>x.ScriptName)">Script</MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<ScriptJobResult, object>(x=>x.Job.ExecutionResult)">Status</MudTableSortLabel>
+                    <MudTableSortLabel SortBy="new Func<ScriptJobResult, object>(x=>x.ExecutionState)">Status</MudTableSortLabel>
                 </MudTh>
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<ScriptJobResult, object>(x=>x.ExecutionTime)">Execution Time</MudTableSortLabel>
@@ -44,7 +44,7 @@
                 <MudTh DataLabel="Id" Style="padding-left: 30px">@context.Id</MudTh>
                 <MudTh DataLabel="Script">@context.ScriptName</MudTh>
                 <MudTh DataLabel="Status">
-                    <ChipText Color="@(context.Job.ExecutionResult.GetColor())" Text="@context.Job.ExecutionResult.ToString()" />
+                    <ChipText Color="@(context.ExecutionState.GetColor())" Text="@context.ExecutionState.ToString()" />
                 </MudTh>
                 <MudTh DataLabel="ExecutionTime">@context.ExecutionTime</MudTh>
             </RowTemplate>
@@ -83,7 +83,7 @@
         return string.IsNullOrWhiteSpace(searchString)
                     || result.Id.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase)
                     || result.ScriptName.Contains(searchString, StringComparison.OrdinalIgnoreCase)
-                    || result.Job.ExecutionResult.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase);
+                    || result.ExecutionState.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase);
     }
 
     public void Dispose()

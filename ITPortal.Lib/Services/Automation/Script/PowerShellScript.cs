@@ -83,13 +83,13 @@ public class PowerShellScript : AutomationScript
         return true;
     }
 
-    public override async Task<ScriptExecutionResult> InvokeAsync(string cancellationMessage, IOutputStreamService outputStream, CancellationToken cancellationToken)
+    public override async Task<ScriptExecutionState> InvokeAsync(string cancellationMessage, IOutputStreamService outputStream, CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
         {
             outputStream?.AddOutput(cancellationMessage, OutputStreamType.Warning);
 
-            return ScriptExecutionResult.Stopped;
+            return ScriptExecutionState.Stopped;
         }
 
         if (!IsLoaded())
@@ -118,19 +118,19 @@ public class PowerShellScript : AutomationScript
             await shellTask.WaitAsync(cancellationToken)
                 .ConfigureAwait(false);
 
-            return ScriptExecutionResult.Success;
+            return ScriptExecutionState.Success;
         }
         catch (OperationCanceledException)
         {
             outputStream?.AddOutput(cancellationMessage, OutputStreamType.Warning);
 
-            return ScriptExecutionResult.Stopped;
+            return ScriptExecutionState.Stopped;
         }
         catch (Exception e)
         {
             outputStream?.AddOutput(e.Message, OutputStreamType.Error);
 
-            return ScriptExecutionResult.Error;
+            return ScriptExecutionState.Error;
         }
     }
 

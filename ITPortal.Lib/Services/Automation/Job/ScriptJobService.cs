@@ -20,10 +20,12 @@ public class ScriptJobService : IScriptJobService
 
     public ScriptJobResult RunJob(ScriptJob job, IOutputStreamService outputStreamService, CancellationToken cancellationToken)
     {
-        job.Run(outputStreamService, cancellationToken)
-            .ConfigureAwait(false);
+        ArgumentNullException.ThrowIfNull(job.Script.FileName, nameof(job.Script.FileName));
 
-        ScriptJobResult result = new(_nextResultId++, job, DateTime.Now, outputStreamService);
+        ScriptJobResult result = new(_nextResultId++, job.Script.FileName, job.Script.DeviceName, DateTime.Now, outputStreamService);
+
+        job.Run(outputStreamService, result, cancellationToken)
+            .ConfigureAwait(false);
 
         JobResults.Add(result);
         if (JobResults.Count > MaxResults)
