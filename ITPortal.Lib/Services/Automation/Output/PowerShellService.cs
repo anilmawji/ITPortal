@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using ITPortal.Lib.Services.Event;
+using Microsoft.IdentityModel.Tokens;
 using System.Management.Automation;
 
 namespace ITPortal.Lib.Services.Automation.Output;
@@ -50,14 +51,8 @@ public class PowerShellService : IOutputStreamService
         OnOutputChanged?.Invoke(this, args);
     }
 
-    public void DisposeEventSubscriptions()
+    public bool DisposeOnOutputChangedEventSubscriptions()
     {
-        if (OnOutputChanged != null)
-        {
-            foreach (Delegate d in OnOutputChanged.GetInvocationList())
-            {
-                OnOutputChanged -= (EventHandler<ScriptOutputChangedEventArgs>)d;
-            }
-        }
+        return OnOutputChanged.DisposeSubscriptions();
     }
 }

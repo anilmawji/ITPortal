@@ -10,5 +10,5 @@ public interface IOutputStreamService
 
     public void AddOutput(string? message, OutputStreamType streamType = OutputStreamType.Standard);
 
-    public void DisposeEventSubscriptions();
+    public bool DisposeOnOutputChangedEventSubscriptions();
 }

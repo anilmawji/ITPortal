@@ -31,7 +31,7 @@
         // Very important to make sure ScriptJobResultBase is populated
         base.OnInitialized();
 
-        Result.OutputStreamService.OnOutputChanged += (object sender, ScriptOutputChangedEventArgs args) =>
+        Result.OutputStreamService.OnOutputChanged += (object sender, ScriptOutputChangedEventArgs _) =>
         {
             InvokeAsync(() => this.StateHasChanged());
         };
@@ -39,6 +39,6 @@
 
     public void Dispose()
     {
-        Result.OutputStreamService.DisposeEventSubscriptions();
+        Result.OutputStreamService.DisposeOnOutputChangedEventSubscriptions();
     }
 }

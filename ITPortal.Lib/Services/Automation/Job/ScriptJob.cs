@@ -1,5 +1,6 @@
 ﻿using ITPortal.Lib.Services.Automation.Output;
 using ITPortal.Lib.Services.Automation.Script;
+using ITPortal.Lib.Services.Event;
 
 namespace ITPortal.Lib.Services.Automation.Job;
 
@@ -12,7 +13,8 @@ public class ScriptJob
     public DateTime CreationTime { get; private set; }
 
     public event EventHandler<ScriptJobState>? OnStateChanged;
-    public event EventHandler? OnCancelled;
+    public event EventHandler<ScriptExecutionState>? OnExecutionResultReceived = null;
+    public event EventHandler<bool>? OnCancelled;
 
     private readonly CancellationTokenSource _cancellationTokenSource = new();
 
@@ -20,7 +22,7 @@ public class ScriptJob
     {
         Script = script;
 
-        _cancellationTokenSource.Token.Register(() => OnCancelled?.Invoke(this, EventArgs.Empty));
+        _cancellationTokenSource.Token.Register(() => OnCancelled?.Invoke(this, State == ScriptJobState.Running));
 
     }
 
@@ -41,6 +43,7 @@ public class ScriptJob
     {
         SetState(ScriptJobState.Running);
         result.ExecutionState = await Script.InvokeAsync("Script execution was cancelled", outputStream, _cancellationTokenSource.Token);
+        OnExecutionResultReceived?.Invoke(this, result.ExecutionState);
         SetState(ScriptJobState.Idle);
     }
 
@@ -55,21 +58,18 @@ public class ScriptJob
         OnStateChanged?.Invoke(this, State);
     }
 
-    public void DisposeEventSubscriptions()
+    public bool DisposeOnStateChangedEventSubscriptions()
     {
-        if (OnStateChanged != null)
-        {
-            foreach (Delegate d in OnStateChanged.GetInvocationList())
-            {
-                OnStateChanged -= (EventHandler<ScriptJobState>)d;
-            }
-        }
-        if (OnCancelled != null)
-        {
-            foreach (Delegate d in OnCancelled.GetInvocationList())
-            {
-                OnCancelled -= (EventHandler)d;
-            }
-        }
+        return OnStateChanged.DisposeSubscriptions();
+    }
+
+    public bool DisposeOnCancelledEventSubscriptions()
+    {
+        return OnCancelled.DisposeSubscriptions();
+    }
+
+    public bool DisposeOnExecutionResultReceivedEventSubscriptions()
+    {
+        return OnExecutionResultReceived.DisposeSubscriptions();
     }
 }

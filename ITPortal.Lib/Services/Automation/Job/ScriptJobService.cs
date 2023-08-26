@@ -55,12 +55,4 @@ public class ScriptJobService : IScriptJobService
     {
         return Jobs.GetValueOrDefault(jobName) != default(ScriptJob);
     }
-
-    public void DisposeEventSubscriptions()
-    {
-        foreach (ScriptJob job in Jobs.Values)
-        {
-            job.DisposeEventSubscriptions();
-        }
-    }
 }
