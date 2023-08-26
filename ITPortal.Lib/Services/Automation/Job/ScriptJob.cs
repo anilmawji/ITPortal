@@ -14,13 +14,12 @@ public class ScriptJob
     public event EventHandler<ScriptJobState>? OnStateChanged;
     public event EventHandler? OnCancelled;
 
-    private readonly CancellationTokenSource _cancellationTokenSource;
+    private readonly CancellationTokenSource _cancellationTokenSource = new();
 
     public ScriptJob(AutomationScript script)
     {
         Script = script;
 
-        _cancellationTokenSource = new();
         _cancellationTokenSource.Token.Register(() => OnCancelled?.Invoke(this, EventArgs.Empty));
 
     }

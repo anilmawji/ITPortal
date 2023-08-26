@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ITPortal.Lib.Services.Automation.Job;
-using ITPortal.Lib.Services.Automation.Output;
 
 namespace ITPortal.Lib.Services.Automation;
 
@@ -20,7 +19,7 @@ public static class DependencyInjectionExtensions
 
     public static IServiceCollection AddPowerShellServices(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddTransient<IOutputStreamService, PowerShellService>();
+        //serviceCollection.AddTransient<IOutputStreamService, PowerShellService>();
         serviceCollection.TryAddScriptJobService();
 
         return serviceCollection;
