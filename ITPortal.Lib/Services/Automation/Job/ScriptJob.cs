@@ -9,6 +9,7 @@ public class ScriptJob
     public string? Name { get; set; }
     public string Description { get; set; } = string.Empty;
     public ScriptJobState State { get; private set; }
+    public ScriptExecutionResult ExecutionResult { get; private set; }
     public DateTime CreationTime { get; private set; }
 
     public event EventHandler<ScriptJobState>? StateChanged;
@@ -34,7 +35,7 @@ public class ScriptJob
     public async Task Run(IOutputStreamService outputStream, CancellationToken cancellationToken)
     {
         SetState(ScriptJobState.Running);
-        await Script.InvokeAsync("Script execution was cancelled", outputStream, cancellationToken);
+        ExecutionResult = await Script.InvokeAsync("Script execution was cancelled", outputStream, cancellationToken);
         SetState(ScriptJobState.Idle);
     }
 

@@ -12,7 +12,6 @@ public abstract class AutomationScript
     public string[]? Content { get; protected set; }
     public string? ContentString { get; protected set; }
     public ScriptLoadState LoadState { get; protected set; }
-    public ScriptExecutionState ExecutionState { get; protected set; }
     public ScriptParameterList Parameters { get; protected set; } = new();
 
     public AutomationScript() { }
@@ -27,7 +26,7 @@ public abstract class AutomationScript
         DeviceName = deviceName;
     }
 
-    public abstract Task InvokeAsync(string cancellationMessage, IOutputStreamService outputStream, CancellationToken cancellationToken);
+    public abstract Task<ScriptExecutionResult> InvokeAsync(string cancellationMessage, IOutputStreamService outputStream, CancellationToken cancellationToken);
 
     public virtual bool LoadFromFile(string filePath)
     {

@@ -83,13 +83,13 @@ public class PowerShellScript : AutomationScript
         return true;
     }
 
-    public override async Task<ScriptExecutionState> InvokeAsync(string cancellationMessage, IOutputStreamService outputStream, CancellationToken cancellationToken)
+    public override async Task<ScriptExecutionResult> InvokeAsync(string cancellationMessage, IOutputStreamService outputStream, CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
         {
-            ExecutionState = ScriptExecutionState.Stopped;
             outputStream?.AddOutput(cancellationMessage, OutputStreamType.Warning);
-            return ExecutionState;
+
+            return ScriptExecutionResult.Stopped;
         }
 
         if (!IsLoaded())
@@ -109,8 +109,6 @@ public class PowerShellScript : AutomationScript
             }
             PSDataCollection<PSObject> outputCollection = RegisterOutputStreams(shell, outputStream);
 
-            ExecutionState = ScriptExecutionState.Running;
-
             // Use Task.Factory to opt for the newer async/await keywords
             // Moves away from the old IAsyncResult functionality still used by the PowerShell API
             Task<PSDataCollection<PSObject>> shellTask = Task.Factory.FromAsync(
@@ -120,19 +118,20 @@ public class PowerShellScript : AutomationScript
             await shellTask.WaitAsync(cancellationToken)
                 .ConfigureAwait(false);
 
-            ExecutionState = ScriptExecutionState.Success;
+            return ScriptExecutionResult.Success;
         }
         catch (OperationCanceledException)
         {
-            ExecutionState = ScriptExecutionState.Stopped;
             outputStream?.AddOutput(cancellationMessage, OutputStreamType.Warning);
+
+            return ScriptExecutionResult.Stopped;
         }
         catch (Exception e)
         {
-            ExecutionState = ScriptExecutionState.Error;
             outputStream?.AddOutput(e.Message, OutputStreamType.Error);
+
+            return ScriptExecutionResult.Error;
         }
-        return ExecutionState;
     }
 
     private void RegisterParameters(PowerShell shell)

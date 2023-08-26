@@ -1,4 +1,7 @@
 ﻿@page "/job-results/{ResultId:int}"
+
+@implements IDisposable
+
 @inherits ScriptJobResultBase
 
 <PageContainer Title="PowerShell Job Results" NestedTitle=@($"Result {Result.Id}") PreviousPage="/job-results">
@@ -28,12 +31,14 @@
         // Very important to make sure ScriptJobResultBase is populated
         base.OnInitialized();
 
-        if (!Result.OutputStreamService.HasOutputChangedHandler)
+        Result.OutputStreamService.OutputChanged += (object sender, ScriptOutputChangedEventArgs args) =>
         {
-            Result.OutputStreamService.OnOutputChanged((object sender, ScriptOutputChangedEventArgs args) =>
-            {
-                InvokeAsync(() => this.StateHasChanged());
-            });
-        }
+            InvokeAsync(() => this.StateHasChanged());
+        };
+    }
+
+    public void Dispose()
+    {
+        Result.OutputStreamService.DisposeEventSubscriptions();
     }
 }
