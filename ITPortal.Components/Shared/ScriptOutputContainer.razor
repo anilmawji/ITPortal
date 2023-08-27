@@ -1,5 +1,31 @@
-﻿<h3>ScriptOutputContainer</h3>
+﻿@implements IDisposable
+
+@for (int i = 0; i < OutputStreamService?.Output.Count; i++)
+{
+    OutputMessage psMessage = OutputStreamService.Output[i];
+
+    <div class="@psMessage.Stream">
+        @(psMessage.Data)
+    </div>
+}
 
 @code {
+    [Parameter, EditorRequired]
+    public IOutputStreamService? OutputStreamService { get; set; }
 
+    protected override void OnInitialized()
+    {
+        if (OutputStreamService != null)
+        {
+            OutputStreamService.OnOutputChanged += (object? sender, ScriptOutputChangedEventArgs _) =>
+            {
+                InvokeAsync(() => this.StateHasChanged());
+            };
+        }
+    }
+
+    public void Dispose()
+    {
+        OutputStreamService?.DisposeOnOutputChangedEventSubscriptions();
+    }
 }

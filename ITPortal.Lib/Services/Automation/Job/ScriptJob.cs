@@ -14,7 +14,6 @@ public class ScriptJob
     public ScriptJobResult? LatestResult { get; private set; }
 
     public event EventHandler<ScriptJobState>? OnStateChanged;
-    public event EventHandler<ScriptExecutionState>? OnExecutionResultReceived = null;
 
     private readonly CancellationTokenSource _cancellationTokenSource = new();
 
@@ -41,8 +40,9 @@ public class ScriptJob
         LatestResult = result;
         SetState(ScriptJobState.Running);
 
-        result.ExecutionState = await Script.InvokeAsync("Script execution was cancelled", result.OutputStreamService, _cancellationTokenSource.Token);
-        OnExecutionResultReceived?.Invoke(this, result.ExecutionState);
+        ScriptExecutionState executionResult = await Script.InvokeAsync("Script execution was cancelled", result.OutputStreamService, _cancellationTokenSource.Token);
+        result.InvokeOnExecutionResultReceived(executionResult);
+        result.ExecutionState = executionResult;
 
         SetState(ScriptJobState.Idle);
     }
@@ -61,10 +61,5 @@ public class ScriptJob
     public bool DisposeOnStateChangedEventSubscriptions()
     {
         return OnStateChanged.DisposeSubscriptions();
-    }
-
-    public bool DisposeOnExecutionResultReceivedEventSubscriptions()
-    {
-        return OnExecutionResultReceived.DisposeSubscriptions();
     }
 }

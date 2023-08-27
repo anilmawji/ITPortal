@@ -88,9 +88,9 @@
     {
         foreach (ScriptJob job in ScriptJobService.Jobs.Values)
         {
-            job.OnStateChanged += (object sender, ScriptJobState _) =>
+            job.OnStateChanged += (object sender, ScriptJobState newState) =>
             {
-                this.StateHasChanged();
+                InvokeAsync(() => this.StateHasChanged());
             };
         }
     }

@@ -62,11 +62,11 @@
 
     protected override void OnInitialized()
     {
-        foreach (ScriptJob job in ScriptJobService.Jobs.Values)
+        foreach (ScriptJobResult result in ScriptJobService.JobResults)
         {
-            job.OnExecutionResultReceived += (object sender, ScriptExecutionState _) =>
+            result.OnExecutionResultReceived += (object sender, ScriptExecutionState newState) =>
             {
-                this.StateHasChanged();
+                InvokeAsync(() => this.StateHasChanged());
             };
         }
     }
@@ -88,9 +88,9 @@
 
     public void Dispose()
     {
-        foreach (ScriptJob job in ScriptJobService.Jobs.Values)
+        foreach (ScriptJobResult result in ScriptJobService.JobResults)
         {
-            job.DisposeOnExecutionResultReceivedEventSubscriptions();
+            result.DisposeOnExecutionResultReceivedEventSubscriptions();
         }
     }
 }
