@@ -2,32 +2,36 @@
 
 <MudDialog>
     <DialogContent>
-        <MudCheckBox @bind-Checked="@Result.ShouldRunJobImmediately" Color="Color.Secondary" Style="width:500px">Run Now</MudCheckBox>
-        @if (!Result.ShouldRunJobImmediately)
-        {
-            TimeSpan time = Result.RunDate.TimeOfDay;
+        <div class="dialog-container">
+            <MudCheckBox @bind-Checked="@Result.ShouldRunJobImmediately" Color="Color.Secondary" Style="width:500px">Run Now</MudCheckBox>
+            @if (!Result.ShouldRunJobImmediately)
+            {
+                TimeSpan time = Result.RunDate.TimeOfDay;
 
-            <MudDatePicker Label="Run Date" Variant="Variant.Filled" Margin="Margin.Dense" Required="true"
-                           PickerVariant="PickerVariant.Inline" Date="@Result.RunDate"
-                           DateChanged="(newDate) => {
-                               if (newDate != null)
-                               {
-                                   Result.RunDate = ((DateTime)newDate).Date.Add(time);
-                               }
-                           }"
-                           RequiredError="Run date is a required field" />
+                <MudDatePicker Label="Run Date" Variant="Variant.Filled" Margin="Margin.Dense" Required="true"
+                               PickerVariant="PickerVariant.Inline" Date="@Result.RunDate"
+                               DateChanged="(newDate) => {
+                                   if (newDate != null)
+                                   {
+                                       Result.RunDate = ((DateTime)newDate).Date.Add(time);
+                                   }
+                               }"
+                               RequiredError="Run date is a required field" />
 
-            <MudTimePicker Label="Run Time" Variant="Variant.Filled" Margin="Margin.Dense" AmPm="true" Time="time" Required="true"
-                           TimeChanged="(newTime) => {
-                               if (newTime != null)
-                               {
-                                   time = (TimeSpan)newTime;
-                                   Result.RunDate = Result.RunDate.Date.Add((TimeSpan)newTime);
-                               }
-                           }"
-                           RequiredError="Run time is a required field" />
-        }
-        <MudCheckBox @bind-Checked="@Result.ShouldViewJobResult" Color="Color.Secondary">View Job</MudCheckBox>
+                <MudTimePicker Label="Run Time" Variant="Variant.Filled" Margin="Margin.Dense" AmPm="true" Time="time" Required="true"
+                               TimeChanged="(newTime) => {
+                                   if (newTime != null)
+                                   {
+                                       time = (TimeSpan)newTime;
+                                       Result.RunDate = Result.RunDate.Date.Add((TimeSpan)newTime);
+                                   }
+                               }"
+                               RequiredError="Run time is a required field" />
+            }
+            <div class="checkbox">
+                <MudCheckBox @bind-Checked="@Result.ShouldViewJobResult" Color="Color.Secondary">View Job</MudCheckBox>
+            </div>
+        </div>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
@@ -38,7 +42,5 @@
 @code {
     public RunScriptJobDialogResult Result { get; set; } = new();
 
-    internal override void Submit() {
-        MudDialog?.Close(DialogResult.Ok(Result));
-    }
+    internal override void Submit() => MudDialog?.Close(DialogResult.Ok(Result));
 }
