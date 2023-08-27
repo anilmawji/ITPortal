@@ -1,10 +1,9 @@
 ﻿using ITPortal.Lib.Utilities;
 using Microsoft.IdentityModel.Tokens;
-using System.Collections;
 
 namespace ITPortal.Lib.Automation.Output;
 
-public abstract class ScriptOutputList : IEnumerable<ScriptOutputMessage>
+public abstract class ScriptOutputList
 {
     public event EventHandler<ScriptOutputChangedEventArgs>? OnOutputChanged;
 
@@ -25,7 +24,7 @@ public abstract class ScriptOutputList : IEnumerable<ScriptOutputMessage>
         {
             ScriptOutputMessage psMessage = new()
             {
-                Stream = streamType,
+                StreamType = streamType,
                 Data = message
             };
             Output.Add(psMessage);
@@ -45,18 +44,13 @@ public abstract class ScriptOutputList : IEnumerable<ScriptOutputMessage>
         return Output.AsReadOnly();
     }
 
+    public void Clear()
+    {
+        Output.Clear();
+    }
+
     public bool DisposeOnOutputChangedEventSubscriptions()
     {
         return OnOutputChanged.DisposeSubscriptions();
-    }
-
-    public IEnumerator<ScriptOutputMessage> GetEnumerator()
-    {
-        return Output.GetEnumerator();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return Output.GetEnumerator();
     }
 }

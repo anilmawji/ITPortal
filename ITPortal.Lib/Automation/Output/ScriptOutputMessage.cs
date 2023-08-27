@@ -2,6 +2,6 @@
 
 public sealed class ScriptOutputMessage
 {
-    public ScriptOutputStreamType Stream;
+    public ScriptOutputStreamType StreamType;
     public string? Data;
 }

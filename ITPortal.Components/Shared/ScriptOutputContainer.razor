@@ -6,7 +6,7 @@
     {
         ScriptOutputMessage message = ScriptOutput.Get().ElementAt(i);
 
-        <div class="@message.Stream">
+        <div style="color:@message.StreamType.GetColor()">
             @(message.Data)
         </div>
     }
