@@ -7,7 +7,7 @@
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="@Color" Variant="Variant.Filled" OnClick="Submit">@ButtonText</MudButton>
+        <MudButton Color="@Color" Variant="Variant.Filled" OnClick="Submit">@SubmitButtonText</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -19,7 +19,7 @@
     public string? ContentText { get; set; }
 
     [Parameter]
-    public string ButtonText { get; set; } = "Submit";
+    public string SubmitButtonText { get; set; } = "Submit";
 
     [Parameter]
     public Color Color { get; set; }

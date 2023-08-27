@@ -29,10 +29,7 @@ public abstract class AutomationScript
 
     public virtual bool LoadFromFile(string filePath)
     {
-        if (filePath == null)
-        {
-            throw new ArgumentNullException(nameof(filePath));
-        }
+        ArgumentNullException.ThrowIfNull(filePath, nameof(filePath));
 
         try
         {
