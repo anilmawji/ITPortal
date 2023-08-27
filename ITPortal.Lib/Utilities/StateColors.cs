@@ -1,6 +1,6 @@
 ﻿namespace ITPortal.Lib.Utilities
 {
-    public class StateColors
+    public static class StateColors
     {
         public const string Green  = "#00C708";
         public const string Yellow = "#FCBA03";

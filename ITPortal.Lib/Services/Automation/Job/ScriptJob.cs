@@ -3,7 +3,7 @@ using ITPortal.Lib.Utilities;
 
 namespace ITPortal.Lib.Services.Automation.Job;
 
-public class ScriptJob
+public sealed class ScriptJob
 {
     public AutomationScript Script { get; set; }
     public string? Name { get; set; }

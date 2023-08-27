@@ -2,7 +2,7 @@
 
 namespace ITPortal.Lib.Services.Automation.Job;
 
-public class ScriptJobService : IScriptJobService
+public sealed class ScriptJobService : IScriptJobService
 {
     public const int MaxResults = 50;
 

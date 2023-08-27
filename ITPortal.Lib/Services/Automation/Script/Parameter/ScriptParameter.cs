@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 
 namespace ITPortal.Lib.Services.Automation.Script.Parameter;
 
-public class ScriptParameter
+public sealed class ScriptParameter
 {
     public string Name { get; }
     public object? Value { get; set; }

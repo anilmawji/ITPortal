@@ -2,7 +2,7 @@
 
 namespace ITPortal.Lib.Services.Automation.Script.Parameter;
 
-public class PowershellParameterList : ScriptParameterList
+public sealed class PowershellParameterList : ScriptParameterList
 {
     public PowershellParameterList() { }
 

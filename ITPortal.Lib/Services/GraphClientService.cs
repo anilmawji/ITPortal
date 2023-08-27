@@ -4,7 +4,7 @@ using Microsoft.Kiota.Abstractions.Authentication;
 
 namespace ITPortal.Lib.Services;
 
-public class GraphClientService : IGraphClientService
+public sealed class GraphClientService : IGraphClientService
 {
     public GraphServiceClient Client { get; set; }
 

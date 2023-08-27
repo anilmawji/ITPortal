@@ -1,6 +1,6 @@
 ﻿namespace ITPortal.Utilities;
 
-public class FilePickerHandler
+public sealed class FilePickerHandler
 {
     public static async Task<FileResult> PickFile(PickOptions options)
     {

@@ -2,7 +2,7 @@
 
 namespace ITPortal.Lib.Utilities;
 
-public class FileHandler
+public sealed class FileHandler
 {
     public static void OpenFileWithDefaultProgram(string filePath)
     {

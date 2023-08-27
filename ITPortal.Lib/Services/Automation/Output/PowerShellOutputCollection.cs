@@ -2,7 +2,7 @@
 
 namespace ITPortal.Lib.Services.Automation.Output;
 
-public class PowerShellOutputCollection : ScriptOutputCollection
+public sealed class PowerShellOutputCollection : ScriptOutputCollection
 {
     public override void SubscribeToOutputStream<T>(ICollection<T> stream, ScriptOutputStreamType streamType)
     {

@@ -5,7 +5,7 @@ using System.Net.Http.Headers;
 
 namespace ITPortal.Lib.Services;
 
-public class GitHubService : IGitHubService
+public sealed class GitHubService : IGitHubService
 {
     private readonly IHttpClientService? _httpClient;
     private string? errorMessage;

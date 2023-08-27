@@ -7,7 +7,7 @@ using System.Management.Automation.Runspaces;
 
 namespace ITPortal.Lib.Services.Automation.Script;
 
-public class PowerShellScript : AutomationScript
+public sealed class PowerShellScript : AutomationScript
 {
     private readonly InitialSessionState _initialPowerShellState;
 
