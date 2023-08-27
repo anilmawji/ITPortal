@@ -19,7 +19,8 @@
     </div>
     <MudGrid Spacing="2">
         <MudItem>
-            <MudButton @onclick="Cancel" Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" Disabled=@(Result.ExecutionState != ScriptExecutionState.Running)>
+            <MudButton @onclick="@(() => Result.Job.TryCancel())" Variant="Variant.Filled" Color="Color.Secondary"
+                       Style="color:white" Disabled=@(Result.ExecutionState != ScriptExecutionState.Running)>
                 <MudText>Cancel</MudText>
             </MudButton>
         </MudItem>
@@ -47,11 +48,6 @@
         {
             InvokeAsync(() => this.StateHasChanged());
         };
-    }
-
-    private void Cancel()
-    {
-        Result.Job.Cancel();
     }
 
     private void GoToEditJob()

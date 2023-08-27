@@ -246,7 +246,7 @@
         }
         else
         {
-            _job = ScriptJobService.TryGetJob(JobName);
+            ScriptJobService.Jobs.TryGetValue(JobName, out _job);
             _headerTitle = $"Edit Job \"{JobName}\"";
             _initialJobName = _job.Name;
 

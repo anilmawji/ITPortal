@@ -11,6 +11,5 @@ public interface IScriptJobService
     public void AddJob(ScriptJob job);
     public ScriptJobResult RunJob(ScriptJob job, ScriptOutputList scriptOutput);
     public ScriptJobResult GetJobResult(int jobResultId);
-    public ScriptJob? TryGetJob(string jobName);
     public bool HasJob(string jobName);
 }

@@ -1,4 +1,40 @@
 ﻿<Dialog SubmitButtonText="Done" Color="Color.Secondary">
-    <MudText>This is test text This is test text This is test text</MudText>
+    <MudCheckBox @bind-Checked="@ShouldRunJobImmediately" Color="Color.Secondary" Style="width:500px">Run Now</MudCheckBox>
+    @if (!ShouldRunJobImmediately)
+    {
+        TimeSpan time = RunDate.TimeOfDay;
+
+        <MudDatePicker Label="Run Date" Variant="Variant.Filled" Margin="Margin.Dense" Required="!ShouldRunJobImmediately"
+                        PickerVariant="PickerVariant.Inline" Date="@RunDate"
+                        DateChanged="(newDate) => {
+                            if (newDate != null)
+                            {
+                                RunDate = ((DateTime)newDate).Date.Add(time);
+                            }
+                        }"
+                        RequiredError="The Run Date is a required field" />
+
+        <MudTimePicker Label="Run Time" Variant="Variant.Filled" Margin="Margin.Dense" AmPm="true" Time="time"
+                        TimeChanged="(newTime) => {
+                            if (newTime != null)
+                            {
+                                time = (TimeSpan)newTime;
+                                RunDate = RunDate.Date.Add((TimeSpan)newTime);
+                            }
+                        }"
+                        RequiredError="Run Time is a required field" />
+    }
+    <MudCheckBox @bind-Checked="@ShouldViewJobResult" Color="Color.Secondary">View Job</MudCheckBox>
 </Dialog>
 
+@code {
+
+    [Parameter, EditorRequired]
+    public bool ShouldRunJobImmediately { get; set; }
+
+    [Parameter, EditorRequired]
+    public bool ShouldViewJobResult { get; set; }
+
+    [Parameter]
+    public DateTime RunDate { get; set; }
+}

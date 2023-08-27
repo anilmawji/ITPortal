@@ -48,13 +48,8 @@ public sealed class ScriptJobService : IScriptJobService
         return JobResults.ElementAt(jobResultId);
     }
 
-    public ScriptJob? TryGetJob(string jobName)
-    {
-       return HasJob(jobName) ? Jobs[jobName] : null;
-    }
-
     public bool HasJob(string jobName)
     {
-        return Jobs.GetValueOrDefault(jobName) != default(ScriptJob);
+        return Jobs.GetValueOrDefault(jobName) != default(ScriptJob?);
     }
 }

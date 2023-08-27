@@ -51,9 +51,15 @@ public sealed class ScriptJob
         SetState(ScriptJobState.Idle);
     }
 
-    public void Cancel()
+    public bool TryCancel()
     {
-        _cancellationTokenSource?.Cancel();
+        if (State == ScriptJobState.Running)
+        {
+            _cancellationTokenSource?.Cancel();
+
+            return true;
+        }
+        return false;
     }
 
     private void SetState(ScriptJobState state)
