@@ -4,17 +4,16 @@ using System.Collections;
 
 namespace ITPortal.Lib.Services.Automation.Output;
 
-public abstract class ScriptOutputCollection : IEnumerable<ScriptOutputMessage>
+public abstract class ScriptOutputList : IEnumerable<ScriptOutputMessage>
 {
-    public List<ScriptOutputMessage> Output { get; set; } = new();
-
     public event EventHandler<ScriptOutputChangedEventArgs>? OnOutputChanged;
 
+    private List<ScriptOutputMessage> Output { get; set; } = new();
     private ScriptOutputMessage? _previousMessage;
 
     public abstract void SubscribeToOutputStream<T>(ICollection<T> stream, ScriptOutputStreamType streamType);
 
-    public void AddOutput(string? message, ScriptOutputStreamType streamType)
+    public void Add(string? message, ScriptOutputStreamType streamType)
     {
         if (message.IsNullOrEmpty()) return;
 

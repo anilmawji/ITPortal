@@ -8,12 +8,12 @@
     <div class="script-title">
         <p>Script: @Result.ScriptName</p>
         <div class="title-chip">
-            <ChipText Color="@Result.ExecutionState.GetColor()" Text="@Result.ExecutionState.ToString()" />
+            <ChipText Color=@Result.ExecutionState.GetColor() Text=@Result.ExecutionState.ToString() />
         </div>
     </div>
 
     <PageSection Title="Output">
-        <ScriptOutputContainer OutputCollection=@Result.OutputCollection @ref=OutputContainer />
+        <ScriptOutputContainer ScriptOutput=@Result.ScriptOutput @ref=OutputContainer />
     </PageSection>
 </PageContainer>
 

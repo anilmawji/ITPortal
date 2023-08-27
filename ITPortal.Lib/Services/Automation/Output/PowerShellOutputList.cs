@@ -2,7 +2,7 @@
 
 namespace ITPortal.Lib.Services.Automation.Output;
 
-public sealed class PowerShellOutputCollection : ScriptOutputCollection
+public sealed class PowerShellOutputList : ScriptOutputList
 {
     public override void SubscribeToOutputStream<T>(ICollection<T> stream, ScriptOutputStreamType streamType)
     {
@@ -11,7 +11,7 @@ public sealed class PowerShellOutputCollection : ScriptOutputCollection
         psStream.DataAdded += (sender, e) =>
         {
             string? message = psStream[e.Index]?.ToString();
-            AddOutput(message, streamType);
+            Add(message, streamType);
         };
     }
 }

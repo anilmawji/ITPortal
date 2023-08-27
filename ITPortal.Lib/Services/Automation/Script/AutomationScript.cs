@@ -26,7 +26,7 @@ public abstract class AutomationScript
         DeviceName = deviceName;
     }
 
-    public abstract Task<ScriptExecutionState> InvokeAsync(string cancellationMessage, ScriptOutputCollection outputCollection, CancellationToken cancellationToken);
+    public abstract Task<ScriptExecutionState> InvokeAsync(string cancellationMessage, ScriptOutputList scriptOutput, CancellationToken cancellationToken);
 
     public virtual bool LoadFromFile(string filePath)
     {

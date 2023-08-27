@@ -39,7 +39,7 @@ public sealed class ScriptJob
         LatestResult = result;
         SetState(ScriptJobState.Running);
 
-        ScriptExecutionState executionResult = await Script.InvokeAsync("Script execution was cancelled", result.OutputCollection, _cancellationTokenSource.Token);
+        ScriptExecutionState executionResult = await Script.InvokeAsync("Script execution was cancelled", result.ScriptOutput, _cancellationTokenSource.Token);
         result.InvokeOnExecutionResultReceived(executionResult);
         result.ExecutionState = executionResult;
 

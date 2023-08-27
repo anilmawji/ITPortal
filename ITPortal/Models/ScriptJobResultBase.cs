@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace ITPortal.Models;
 
-public sealed class ScriptJobResultBase : ComponentBase
+public class ScriptJobResultBase : ComponentBase
 {
     [Inject]
     public IScriptJobService ScriptJobService { get; set; }

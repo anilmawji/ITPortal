@@ -366,7 +366,7 @@
             }
             if (_shouldRunJobNow)
             {
-                ScriptJobResult result = ScriptJobService.RunJob(_job, new PowerShellOutputCollection());
+                ScriptJobResult result = ScriptJobService.RunJob(_job, new PowerShellOutputList());
 
                 if (_shouldViewJobResult)
                 {
