@@ -1,4 +1,4 @@
-﻿@page "/job-results/{ResultId:int}"
+﻿@page "/job-results/{Id:int}"
 
 @implements IDisposable
 
@@ -11,6 +11,8 @@
             <ChipText Color=@Result.ExecutionState.GetColor() Text=@Result.ExecutionState.ToString() />
         </div>
     </div>
+    <p>Execution Time: @Result.ExecutionTime</p>
+    <p>Device: @Result.DeviceName</p>
 
     <PageSection Title="Output">
         <ScriptOutputContainer ScriptOutput=@Result.ScriptOutput @ref=OutputContainer />

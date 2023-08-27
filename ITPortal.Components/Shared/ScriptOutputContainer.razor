@@ -2,14 +2,16 @@
 
 @if (ScriptOutput != null)
 {
-    @for (int i = 0; i < ScriptOutput.Get().Count; i++)
-    {
-        ScriptOutputMessage message = ScriptOutput.Get().ElementAt(i);
+    <div class="scroll output-container">
+        @for (int i = 0; i < ScriptOutput.Get().Count; i++)
+        {
+            ScriptOutputMessage message = ScriptOutput.Get().ElementAt(i);
 
-        <div style="color:@message.StreamType.GetColor()">
-            @(message.Data)
-        </div>
-    }
+            <div class="output-message" style="color:@message.StreamType.GetColor()">
+                @(message.Data)
+            </div>
+        }
+    </div>
 }
 
 @code {

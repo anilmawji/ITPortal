@@ -1,0 +1,18 @@
+﻿.output-container {
+    width: 100%;
+    height: calc(100vh - 420px);
+    border: solid 1px #D2D2D2;
+    border-radius: 8px;
+    padding: 20px;
+    padding: 24px;
+    background-color: rgba(0,0,0,.02);
+}
+
+.scroll {
+    overflow-y: scroll;
+    overflow-x: scroll;
+}
+
+.output-message {
+    font-size: 16px;
+}

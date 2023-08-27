@@ -10,12 +10,12 @@ public class ScriptJobResultBase : ComponentBase
     public IScriptJobService ScriptJobService { get; set; }
 
     [Parameter]
-    public int ResultId { get; set; }
+    public int Id { get; set; }
 
     public ScriptJobResult Result { get; set; }
 
     protected override void OnInitialized()
     {
-        Result = ScriptJobService.GetJobResult(ResultId);
+        Result = ScriptJobService.GetJobResult(Id);
     }
 }

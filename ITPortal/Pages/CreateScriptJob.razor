@@ -81,7 +81,7 @@
                         @foreach (ScriptParameter parameter in _job.Script.Parameters)
                         {
                             string parameterName = parameter.Name.FirstCharToUpper();
-                            string requiredError = parameter.Name + " is a required field";
+                            string requiredError = parameterName + " is a required field";
 
                             // Cannot use two-way binding for these since parameter.Value is an object and must be casted to the correct type
                             @if (parameter.DesiredType == typeof(string))
