@@ -2,8 +2,10 @@
 
 @if (ScriptOutput != null)
 {
-    @foreach (ScriptOutputMessage message in ScriptOutput)
+    @for (int i = 0; i < ScriptOutput.Get().Count; i++)
     {
+        ScriptOutputMessage message = ScriptOutput.Get().ElementAt(i);
+
         <div class="@message.Stream">
             @(message.Data)
         </div>

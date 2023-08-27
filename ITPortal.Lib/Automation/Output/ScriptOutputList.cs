@@ -40,6 +40,11 @@ public abstract class ScriptOutputList : IEnumerable<ScriptOutputMessage>
         OnOutputChanged?.Invoke(this, args);
     }
 
+    public IReadOnlyList<ScriptOutputMessage> Get()
+    {
+        return Output.AsReadOnly();
+    }
+
     public bool DisposeOnOutputChangedEventSubscriptions()
     {
         return OnOutputChanged.DisposeSubscriptions();
