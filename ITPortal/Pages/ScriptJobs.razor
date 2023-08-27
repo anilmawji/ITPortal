@@ -117,13 +117,12 @@
             s_deleteJobDialogParameters.Add(dialog => dialog.SubmitButtonText, "Delete");
             s_deleteJobDialogParameters.Add(dialog => dialog.Color, Color.Error);
 
-            s_runJobDialogParameters.Add(dialog => dialog.ShouldRunJobImmediately, _shouldRunJobImmediately);
-            s_runJobDialogParameters.Add(dialog => dialog.ShouldViewJobResult, _shouldViewJobResult);
-            s_runJobDialogParameters.Add(dialog => dialog.RunDate, _runDate);
+            s_runJobDialogParameters.Add(dialog => dialog.SubmitButtonText, "Done");
+            s_runJobDialogParameters.Add(dialog => dialog.Color, Color.Secondary);
 
             s_cancelJobDialogParameters.Add(dialog => dialog.ContentText, "Are you sure you want to stop execution of this script job?");
-            s_cancelJobDialogParameters.Add(dialog => dialog.CancelButtonText, "No");
             s_cancelJobDialogParameters.Add(dialog => dialog.SubmitButtonText, "Yes");
+            s_cancelJobDialogParameters.Add(dialog => dialog.CancelButtonText, "No");
             s_cancelJobDialogParameters.Add(dialog => dialog.Color, Color.Secondary);
         }
     }
@@ -135,18 +134,20 @@
 
         if (!dialogResult.Canceled)
         {
-            if (_shouldRunJobImmediately)
-            {
-                ScriptJobResult jobResult = ScriptJobService.RunJob(job, new PowerShellOutputList());
+            RunScriptJobDialogResult dialogResultData = dialogResult.Data as RunScriptJobDialogResult;
+            ScriptJobResult jobResult = ScriptJobService.RunJob(job, new PowerShellOutputList());
 
-                if (_shouldViewJobResult)
-                {
-                    NavigationManager.NavigateTo($"/job-results/{jobResult.Id}");
-                }
+            if (dialogResultData.ShouldRunJobImmediately)
+            {
+                
             }
             else
             {
                 //TODO: Schedule job to run at _runDate
+            }
+            if (dialogResultData.ShouldViewJobResult)
+            {
+                NavigationManager.NavigateTo($"/job-results/{jobResult.Id}");
             }
         }
     }
