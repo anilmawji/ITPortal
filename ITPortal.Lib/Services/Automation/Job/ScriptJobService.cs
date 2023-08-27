@@ -1,5 +1,4 @@
 ﻿using ITPortal.Lib.Services.Automation.Output;
-using Tavis.UriTemplates;
 
 namespace ITPortal.Lib.Services.Automation.Job;
 
@@ -37,20 +36,13 @@ public class ScriptJobService : IScriptJobService
             JobResults.RemoveAt(JobResults.Count - 1);
         }
 
-        job.Run(outputStreamService, result)
-            .ConfigureAwait(false);
-
-        Thread.Sleep(3000);
-        System.Diagnostics.Debug.WriteLine(outputStreamService.Output.Count);
-        System.Diagnostics.Debug.WriteLine(result.OutputStreamService.Output.Count);
+        job.Run(result).ConfigureAwait(false);
 
         return result;
     }
 
     public ScriptJobResult GetJobResult(int jobResultId)
     {
-        System.Diagnostics.Debug.WriteLine(JobResults.ElementAt(jobResultId).OutputStreamService.Output.Count);
-
         return JobResults.ElementAt(jobResultId);
     }
 

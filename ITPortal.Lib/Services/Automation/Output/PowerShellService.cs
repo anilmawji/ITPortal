@@ -25,7 +25,7 @@ public class PowerShellService : IOutputStreamService
 
     public void AddOutput(string? message, OutputStreamType streamType)
     {
-        if (message.IsNullOrEmpty() || OnOutputChanged == null) return;
+        if (message.IsNullOrEmpty()) return;
 
         if (previousMessage?.Data == message)
         {

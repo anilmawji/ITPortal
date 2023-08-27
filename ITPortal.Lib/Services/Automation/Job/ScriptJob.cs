@@ -36,12 +36,12 @@ public class ScriptJob
         Description = description;
     }
 
-    public async Task Run(IOutputStreamService outputStream, ScriptJobResult result)
+    public async Task Run(ScriptJobResult result)
     {
         LatestResult = result;
         SetState(ScriptJobState.Running);
 
-        result.ExecutionState = await Script.InvokeAsync("Script execution was cancelled", outputStream, _cancellationTokenSource.Token);
+        result.ExecutionState = await Script.InvokeAsync("Script execution was cancelled", result.OutputStreamService, _cancellationTokenSource.Token);
         OnExecutionResultReceived?.Invoke(this, result.ExecutionState);
 
         SetState(ScriptJobState.Idle);

@@ -31,8 +31,6 @@
         // Very important to make sure ScriptJobResultBase is populated
         base.OnInitialized();
 
-        System.Diagnostics.Debug.WriteLine(Result.OutputStreamService.Output.Count);
-
         Result.OutputStreamService.OnOutputChanged += (object sender, ScriptOutputChangedEventArgs _) =>
         {
             InvokeAsync(() => this.StateHasChanged());

@@ -87,7 +87,7 @@ public class PowerShellScript : AutomationScript
     {
         if (cancellationToken.IsCancellationRequested)
         {
-            outputStream?.AddOutput(cancellationMessage, OutputStreamType.Warning);
+            outputStream.AddOutput(cancellationMessage, OutputStreamType.Warning);
 
             return ScriptExecutionState.Stopped;
         }
@@ -122,13 +122,13 @@ public class PowerShellScript : AutomationScript
         }
         catch (OperationCanceledException)
         {
-            outputStream?.AddOutput(cancellationMessage, OutputStreamType.Warning);
+            outputStream.AddOutput(cancellationMessage, OutputStreamType.Warning);
 
             return ScriptExecutionState.Stopped;
         }
         catch (Exception e)
         {
-            outputStream?.AddOutput(e.Message, OutputStreamType.Error);
+            outputStream.AddOutput(e.Message, OutputStreamType.Error);
 
             return ScriptExecutionState.Error;
         }
