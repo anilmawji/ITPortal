@@ -29,6 +29,10 @@ body {
     height: 100vh;
 }
 
+::-webkit-scrollbar {
+    width: 10px !important;
+}
+
 .mud-main-content {
     height: 100%;
     bottom: 0;

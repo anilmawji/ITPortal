@@ -2,6 +2,8 @@
 
 @implements IDisposable
 
+@inject NavigationManager NavigationManager
+
 @inherits ScriptJobResultBase
 
 <PageContainer Title="PowerShell Job Results" NestedTitle=@($"Result {Result.Id}") PreviousPage="/job-results">
@@ -11,8 +13,22 @@
             <ChipText Color=@Result.ExecutionState.GetColor() Text=@Result.ExecutionState.ToString() />
         </div>
     </div>
-    <p>Execution Time: @Result.ExecutionTime</p>
-    <p>Device: @Result.DeviceName</p>
+    <div class="job-details">
+        <p>Execution Time: @Result.ExecutionTime</p>
+        <p>Device: @Result.DeviceName</p>
+    </div>
+    <MudGrid Spacing="2">
+        <MudItem>
+            <MudButton @onclick="Cancel" Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" Disabled=@(Result.ExecutionState != ScriptExecutionState.Running)>
+                <MudText>Cancel</MudText>
+            </MudButton>
+        </MudItem>
+        <MudItem>
+            <MudButton @onclick="GoToEditJob" Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
+                <MudText>Edit Job</MudText>
+            </MudButton>
+        </MudItem>
+    </MudGrid>
 
     <PageSection Title="Output">
         <ScriptOutputContainer ScriptOutput=@Result.ScriptOutput @ref=OutputContainer />
@@ -31,6 +47,16 @@
         {
             InvokeAsync(() => this.StateHasChanged());
         };
+    }
+
+    private void Cancel()
+    {
+        Result.Job.Cancel();
+    }
+
+    private void GoToEditJob()
+    {
+        NavigationManager.NavigateTo($"/create-job/{Result.Job.Name}");
     }
 
     public void Dispose()

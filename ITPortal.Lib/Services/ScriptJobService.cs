@@ -25,6 +25,7 @@ public sealed class ScriptJobService : IScriptJobService
 
         ScriptJobResult result = new(
             _nextResultId++,
+            job,
             job.Script.FileName,
             job.Script.DeviceName,
             DateTime.Now,

@@ -14,7 +14,7 @@ public sealed class ScriptJob
 
     public event EventHandler<ScriptJobState>? OnStateChanged;
 
-    private readonly CancellationTokenSource _cancellationTokenSource = new();
+    private CancellationTokenSource? _cancellationTokenSource;
 
     public ScriptJob(AutomationScript script)
     {
@@ -37,9 +37,14 @@ public sealed class ScriptJob
     public async Task Run(ScriptJobResult result)
     {
         LatestResult = result;
+        _cancellationTokenSource = new();
         SetState(ScriptJobState.Running);
 
-        ScriptExecutionState executionResult = await Script.InvokeAsync("Script execution was cancelled", result.ScriptOutput, _cancellationTokenSource.Token);
+        ScriptExecutionState executionResult = await Script.InvokeAsync(
+            "Script execution was cancelled",
+            result.ScriptOutput,
+            _cancellationTokenSource.Token
+        );
         result.InvokeOnExecutionResultReceived(executionResult);
         result.ExecutionState = executionResult;
 
@@ -48,7 +53,7 @@ public sealed class ScriptJob
 
     public void Cancel()
     {
-        _cancellationTokenSource.Cancel();
+        _cancellationTokenSource?.Cancel();
     }
 
     private void SetState(ScriptJobState state)
