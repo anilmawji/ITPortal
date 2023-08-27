@@ -1,4 +1,4 @@
-﻿using ITPortal.Lib.Services.Event;
+﻿using ITPortal.Lib.Utilities;
 using Microsoft.IdentityModel.Tokens;
 using System.Management.Automation;
 
@@ -38,7 +38,6 @@ public class PowerShellService : IOutputStreamService
                 Stream = streamType,
                 Data = message
             };
-
             Output.Add(psMessage);
             previousMessage = psMessage;
         }

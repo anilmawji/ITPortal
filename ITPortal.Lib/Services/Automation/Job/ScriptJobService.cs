@@ -1,4 +1,5 @@
 ﻿using ITPortal.Lib.Services.Automation.Output;
+using Tavis.UriTemplates;
 
 namespace ITPortal.Lib.Services.Automation.Job;
 
@@ -29,20 +30,27 @@ public class ScriptJobService : IScriptJobService
             DateTime.Now,
             outputStreamService
         );
-
-        job.Run(outputStreamService, result)
-            .ConfigureAwait(false);
-
         JobResults.Add(result);
+        // Cap the results list to store only the most recent results
         if (JobResults.Count > MaxResults)
         {
             JobResults.RemoveAt(JobResults.Count - 1);
         }
+
+        job.Run(outputStreamService, result)
+            .ConfigureAwait(false);
+
+        Thread.Sleep(3000);
+        System.Diagnostics.Debug.WriteLine(outputStreamService.Output.Count);
+        System.Diagnostics.Debug.WriteLine(result.OutputStreamService.Output.Count);
+
         return result;
     }
 
     public ScriptJobResult GetJobResult(int jobResultId)
     {
+        System.Diagnostics.Debug.WriteLine(JobResults.ElementAt(jobResultId).OutputStreamService.Output.Count);
+
         return JobResults.ElementAt(jobResultId);
     }
 

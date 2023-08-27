@@ -312,6 +312,8 @@
             _job = ScriptJobService.TryGetJob(JobName);
             _headerTitle = $"Edit Job \"{JobName}\"";
             _initialJobName = _job.Name;
+
+            _job.Script.Refresh();
         }
     }
 
