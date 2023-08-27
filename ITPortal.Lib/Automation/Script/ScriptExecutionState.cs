@@ -1,6 +1,6 @@
 ﻿using ITPortal.Lib.Utilities;
 
-namespace ITPortal.Lib.Services.Automation.Job;
+namespace ITPortal.Lib.Automation.Script;
 
 public enum ScriptExecutionState
 {

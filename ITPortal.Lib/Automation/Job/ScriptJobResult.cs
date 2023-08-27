@@ -1,7 +1,8 @@
-﻿using ITPortal.Lib.Services.Automation.Output;
+﻿using ITPortal.Lib.Automation.Output;
+using ITPortal.Lib.Automation.Script;
 using ITPortal.Lib.Utilities;
 
-namespace ITPortal.Lib.Services.Automation.Job;
+namespace ITPortal.Lib.Automation.Job;
 
 public sealed class ScriptJobResult
 {

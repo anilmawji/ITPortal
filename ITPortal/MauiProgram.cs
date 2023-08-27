@@ -4,7 +4,6 @@ using ITPortal.Lib.Services.Authentication;
 using ITPortal.Lib.Services.Core;
 using Microsoft.Extensions.Configuration;
 using MudBlazor.Services;
-using ITPortal.Lib.Services.Automation.Job;
 
 namespace ITPortal;
 

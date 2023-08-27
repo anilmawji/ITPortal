@@ -2,7 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using System.Collections;
 
-namespace ITPortal.Lib.Services.Automation.Output;
+namespace ITPortal.Lib.Automation.Output;
 
 public abstract class ScriptOutputList : IEnumerable<ScriptOutputMessage>
 {

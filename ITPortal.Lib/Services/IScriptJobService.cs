@@ -1,6 +1,7 @@
-﻿using ITPortal.Lib.Services.Automation.Output;
+﻿using ITPortal.Lib.Automation.Job;
+using ITPortal.Lib.Automation.Output;
 
-namespace ITPortal.Lib.Services.Automation.Job;
+namespace ITPortal.Lib.Services;
 
 public interface IScriptJobService
 {

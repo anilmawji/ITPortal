@@ -1,6 +1,7 @@
-﻿using System.Management.Automation.Language;
+﻿using ITPortal.Lib.Script.Parameter;
+using System.Management.Automation.Language;
 
-namespace ITPortal.Lib.Services.Automation.Script.Parameter;
+namespace ITPortal.Lib.Automation.Script.Parameter;
 
 public sealed class PowershellParameterList : ScriptParameterList
 {

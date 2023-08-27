@@ -1,4 +1,4 @@
-﻿namespace ITPortal.Lib.Services.Automation.Output;
+﻿namespace ITPortal.Lib.Automation.Output;
 
 public enum ScriptOutputStreamType
 {

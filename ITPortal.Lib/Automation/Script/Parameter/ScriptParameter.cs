@@ -1,7 +1,7 @@
 ﻿using System.Management.Automation;
 using System.Runtime.Serialization;
 
-namespace ITPortal.Lib.Services.Automation.Script.Parameter;
+namespace ITPortal.Lib.Automation.Script.Parameter;
 
 public sealed class ScriptParameter
 {

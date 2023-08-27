@@ -1,11 +1,10 @@
-﻿using ITPortal.Lib.Services.Automation.Job;
-using ITPortal.Lib.Services.Automation.Output;
-using ITPortal.Lib.Services.Automation.Script.Parameter;
+﻿using ITPortal.Lib.Automation.Output;
+using ITPortal.Lib.Automation.Script.Parameter;
 using System.Management.Automation;
 using System.Management.Automation.Language;
 using System.Management.Automation.Runspaces;
 
-namespace ITPortal.Lib.Services.Automation.Script;
+namespace ITPortal.Lib.Automation.Script;
 
 public sealed class PowerShellScript : AutomationScript
 {

@@ -1,6 +1,6 @@
 ﻿using ITPortal.Lib.Utilities;
 
-namespace ITPortal.Lib.Services.Automation.Script;
+namespace ITPortal.Lib.Automation.Script;
 
 public enum ScriptLoadState
 {
@@ -9,7 +9,7 @@ public enum ScriptLoadState
     Success
 }
 
-public static class ScriptExecutionStateExtensions
+public static class ScriptLoadStateExtensions
 {
     public static readonly Dictionary<ScriptLoadState, string> Colors = new()
     {

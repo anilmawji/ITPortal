@@ -1,6 +1,6 @@
 ﻿using System.Management.Automation;
 
-namespace ITPortal.Lib.Services.Automation.Output;
+namespace ITPortal.Lib.Automation.Output;
 
 public sealed class PowerShellOutputList : ScriptOutputList
 {

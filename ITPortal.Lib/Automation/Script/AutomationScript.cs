@@ -1,8 +1,7 @@
-﻿using ITPortal.Lib.Services.Automation.Job;
-using ITPortal.Lib.Services.Automation.Output;
-using ITPortal.Lib.Services.Automation.Script.Parameter;
+﻿using ITPortal.Lib.Automation.Output;
+using ITPortal.Lib.Script.Parameter;
 
-namespace ITPortal.Lib.Services.Automation.Script;
+namespace ITPortal.Lib.Automation.Script;
 
 public abstract class AutomationScript
 {

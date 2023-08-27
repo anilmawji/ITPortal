@@ -1,6 +1,7 @@
-﻿using System.Collections;
+﻿using ITPortal.Lib.Automation.Script.Parameter;
+using System.Collections;
 
-namespace ITPortal.Lib.Services.Automation.Script.Parameter;
+namespace ITPortal.Lib.Script.Parameter;
 
 // Extends from IEnumerable instead of List<PSParameter> to force caller to interact with the list through exposed methods only
 public class ScriptParameterList : IEnumerable<ScriptParameter>
