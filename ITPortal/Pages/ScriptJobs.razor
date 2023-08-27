@@ -147,7 +147,7 @@
 
     private async void OpenRunJobDialog(ScriptJob job)
     {
-        IDialogReference dialog = DialogService.Show<RunJobDialog>("Confirm Job Execution", s_dialogOptions);
+        IDialogReference dialog = DialogService.Show<RunScriptJobDialog>("Confirm Job Execution", s_dialogOptions);
         DialogResult dialogResult = await dialog.Result;
 
         if (!dialogResult.Canceled)

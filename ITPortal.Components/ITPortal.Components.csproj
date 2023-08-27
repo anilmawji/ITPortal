@@ -22,7 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Shared\Dialog\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
