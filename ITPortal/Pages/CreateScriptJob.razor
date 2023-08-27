@@ -13,11 +13,11 @@
         <PageSection Title="Job Details">
             <div class="input-line">
                 <MudTextField T="string" @bind-Value="_job.Name" Label="Name" Variant="Variant.Filled" Margin="Margin.Dense"
-                              Validation="@(new Func<string, IEnumerable<string>>(JobNameValidator))" />
+                              Validation="@(new Func<string, IEnumerable<string>>(ValidateJobName))" />
             </div>
             <div class="input-line">
                 <MudTextField T="string" @bind-Value="@_job.Description" Label="Description" Variant="Variant.Filled" Margin="Margin.Dense"
-                              Validation="@(new Func<string, IEnumerable<string>>(JobDescriptionValidator))"/>
+                              Validation="@(new Func<string, IEnumerable<string>>(ValidateJobDescription))"/>
             </div>
         </PageSection>
 
@@ -50,13 +50,13 @@
                 </p>
                 <MudGrid Spacing="2">
                     <MudItem>
-                        <MudButton @onclick="EditScript" Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
-                            <MudText>Edit</MudText>
+                        <MudButton @onclick="RefreshScript" Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
+                            <MudText>Refresh</MudText>
                         </MudButton>
                     </MudItem>
                     <MudItem>
-                        <MudButton @onclick="RefreshScript" Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
-                            <MudText>Refresh</MudText>
+                        <MudButton @onclick="EditScript" Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
+                            <MudText>Edit</MudText>
                         </MudButton>
                     </MudItem>
                     <MudItem>
@@ -178,43 +178,15 @@
             </PageSection>
         }
 
-        <PageSection Title="Schedule">
-                <div class="input-line">
-                <MudCheckBox @bind-Checked="@_shouldRunJobNow" Color="Color.Secondary">Run Now</MudCheckBox>
-                </div>
-            @if (!_shouldRunJobNow)
-                {
-                    TimeSpan time = _runDate.TimeOfDay;
-
-                    <div class="small-input-line mud-date">
-                        <MudDatePicker Label="Run Date" Variant="Variant.Filled" Margin="Margin.Dense" Required="true"
-                                       PickerVariant="PickerVariant.Inline" Date="@_runDate" DateChanged="(newDate) => _runDate = ((DateTime)newDate).Date.Add(time)"
-                                       RequiredError="The Run Date is a required field" />
-
-                        <MudTimePicker Label="Run Time" Variant="Variant.Filled" Margin="Margin.Dense" AmPm="true" Time="time"
-                                       TimeChanged="(newTime) => {
-                                            time = (TimeSpan)newTime;
-                                            _runDate = _runDate.Date.Add((TimeSpan)newTime);
-                                       }"
-                                       RequiredError="Run Time is a required field" />
-                    </div>
-                }
-        </PageSection>
-
         <PageSection>
-            <div class="input-group job-details">
+            <div class="input-group device-selection">
                 <div class="input-line">
                     <MudSelect T="string" @bind-Value="_job.Script.DeviceName" Label="Device" Variant="Variant.Filled" Margin="Margin.Dense" Required="true">
                         <MudSelectItem Value="@LocalhostDevice" />
                     </MudSelect>
                 </div>
-                @if (_shouldRunJobNow)
-                {
-                    <div class="input-line">
-                        <MudCheckBox @bind-Checked="@_shouldViewJobResult" Color="Color.Secondary">View Job</MudCheckBox>
-                    </div>
-                }
             </div>
+            <ErrorList Errors="@_errors" />
             <div class="create-job-buttons">
                 <MudGrid Spacing="2">
                     <MudItem>
@@ -229,7 +201,6 @@
                     </MudItem>
                 </MudGrid>
             </div>
-            <ErrorList Errors="@_errors" />
         </PageSection>
     </MudForm>
 </PageContainer>
@@ -258,17 +229,32 @@
 
     private MudForm _jobForm;
     private string _headerTitle;
-    private DateTime _runDate;
     private string[] _errors = { }; 
 
     private ScriptJob _job;
     private string _initialJobName;
     private bool _creatingNewJob;
-    private bool _shouldRunJobNow;
-    private bool _shouldViewJobResult;
     private bool _canSaveJob;
 
-    private IEnumerable<string> JobNameValidator(string jobName)
+    protected override void OnInitialized()
+    {
+        if (JobName == null)
+        {
+            _job = new ScriptJob(new PowerShellScript());
+            _headerTitle = "New Job";
+            _creatingNewJob = true;
+        }
+        else
+        {
+            _job = ScriptJobService.TryGetJob(JobName);
+            _headerTitle = $"Edit Job \"{JobName}\"";
+            _initialJobName = _job.Name;
+
+            _job.Script.Refresh();
+        }
+    }
+
+    private IEnumerable<string> ValidateJobName(string jobName)
     {
         if (string.IsNullOrWhiteSpace(jobName))
         {
@@ -289,31 +275,11 @@
         }
     }
 
-    private IEnumerable<string> JobDescriptionValidator(string jobDescription)
+    private IEnumerable<string> ValidateJobDescription(string jobDescription)
     {
         if (jobDescription.Length > 100)
         {
             yield return "Job description must be less than 100 characters in length";
-        }
-    }
-
-    protected override void OnInitialized()
-    {
-        if (JobName == null)
-        {
-            _job = new ScriptJob(new PowerShellScript());
-            _headerTitle = "New Job";
-            _creatingNewJob = true;
-            _shouldRunJobNow = true;
-            _shouldViewJobResult = true;
-        }
-        else
-        {
-            _job = ScriptJobService.TryGetJob(JobName);
-            _headerTitle = $"Edit Job \"{JobName}\"";
-            _initialJobName = _job.Name;
-
-            _job.Script.Refresh();
         }
     }
 
@@ -364,19 +330,7 @@
             {
                 ScriptJobService.AddJob(_job);
             }
-            if (_shouldRunJobNow)
-            {
-                ScriptJobResult result = ScriptJobService.RunJob(_job, new PowerShellOutputList());
-
-                if (_shouldViewJobResult)
-                {
-                    NavigationManager.NavigateTo($"/job-results/{result.Id}");
-                }
-                else
-                {
-                    GoToJobs();
-                }
-            }
+            GoToJobs();
         }
     }
 }
