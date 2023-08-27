@@ -2,9 +2,9 @@
 using ITPortal.Lib.Services;
 using ITPortal.Lib.Services.Authentication;
 using ITPortal.Lib.Services.Core;
-using ITPortal.Lib.Services.Automation;
 using Microsoft.Extensions.Configuration;
 using MudBlazor.Services;
+using ITPortal.Lib.Services.Automation.Job;
 
 namespace ITPortal;
 
@@ -40,7 +40,7 @@ public static class MauiProgram
     {
         services.AddMudServices();
         services.AddMsalAuthentication();
-        services.AddPowerShellServices();
+        services.AddSingleton<IScriptJobService, ScriptJobService>();
         services.AddGitHubServices();
         services.AddSingleton<IGraphClientService, GraphClientService>();
 

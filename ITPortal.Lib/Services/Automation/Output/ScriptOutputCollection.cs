@@ -1,45 +1,36 @@
 ﻿using ITPortal.Lib.Utilities;
 using Microsoft.IdentityModel.Tokens;
-using System.Management.Automation;
+using System.Collections;
 
 namespace ITPortal.Lib.Services.Automation.Output;
 
-public class PowerShellService : IOutputStreamService
+public abstract class ScriptOutputCollection : IEnumerable<ScriptOutputMessage>
 {
-    public List<OutputMessage> Output { get; set; } = new();
+    public List<ScriptOutputMessage> Output { get; set; } = new();
 
     public event EventHandler<ScriptOutputChangedEventArgs>? OnOutputChanged;
 
-    private OutputMessage? previousMessage;
+    private ScriptOutputMessage? _previousMessage;
 
-    public void SubscribeToStream<T>(ICollection<T> stream, OutputStreamType streamType)
-    {
-        var psStream = (PSDataCollection<T>)stream;
+    public abstract void SubscribeToOutputStream<T>(ICollection<T> stream, ScriptOutputStreamType streamType);
 
-        psStream.DataAdded += (sender, e) =>
-        {
-            string? message = psStream[e.Index]?.ToString();
-            AddOutput(message, streamType);
-        };
-    }
-
-    public void AddOutput(string? message, OutputStreamType streamType)
+    public void AddOutput(string? message, ScriptOutputStreamType streamType)
     {
         if (message.IsNullOrEmpty()) return;
 
-        if (previousMessage?.Data == message)
+        if (_previousMessage?.Data == message)
         {
             Output.Last().Data += ".";
         }
         else
         {
-            OutputMessage psMessage = new()
+            ScriptOutputMessage psMessage = new()
             {
                 Stream = streamType,
                 Data = message
             };
             Output.Add(psMessage);
-            previousMessage = psMessage;
+            _previousMessage = psMessage;
         }
 
         ScriptOutputChangedEventArgs args = new()
@@ -53,5 +44,15 @@ public class PowerShellService : IOutputStreamService
     public bool DisposeOnOutputChangedEventSubscriptions()
     {
         return OnOutputChanged.DisposeSubscriptions();
+    }
+
+    public IEnumerator<ScriptOutputMessage> GetEnumerator()
+    {
+        return Output.GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return Output.GetEnumerator();
     }
 }

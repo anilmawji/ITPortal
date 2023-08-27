@@ -2,6 +2,6 @@
 
 public class ScriptOutputChangedEventArgs : EventArgs
 {
-    public OutputStreamType StreamType { get; set; }
-    public List<OutputMessage>? Output { get; set; }
+    public ScriptOutputStreamType StreamType { get; set; }
+    public List<ScriptOutputMessage>? Output { get; set; }
 }

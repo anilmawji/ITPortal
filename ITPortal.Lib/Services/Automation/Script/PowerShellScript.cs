@@ -83,11 +83,11 @@ public class PowerShellScript : AutomationScript
         return true;
     }
 
-    public override async Task<ScriptExecutionState> InvokeAsync(string cancellationMessage, IOutputStreamService outputStream, CancellationToken cancellationToken)
+    public override async Task<ScriptExecutionState> InvokeAsync(string cancellationMessage, ScriptOutputCollection outputCollection, CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested)
         {
-            outputStream.AddOutput(cancellationMessage, OutputStreamType.Warning);
+            outputCollection.AddOutput(cancellationMessage, ScriptOutputStreamType.Warning);
 
             return ScriptExecutionState.Stopped;
         }
@@ -107,12 +107,12 @@ public class PowerShellScript : AutomationScript
             {
                 RegisterParameters(shell);
             }
-            PSDataCollection<PSObject> outputCollection = RegisterOutputStreams(shell, outputStream);
+            PSDataCollection<PSObject> standardOutputStream = RegisterOutputStreams(shell, outputCollection);
 
             // Use Task.Factory to opt for the newer async/await keywords
             // Moves away from the old IAsyncResult functionality still used by the PowerShell API
             Task<PSDataCollection<PSObject>> shellTask = Task.Factory.FromAsync(
-                shell.BeginInvoke<PSObject, PSObject>(null, outputCollection),
+                shell.BeginInvoke<PSObject, PSObject>(null, standardOutputStream),
                 shell.EndInvoke);
 
             await shellTask.WaitAsync(cancellationToken)
@@ -122,13 +122,13 @@ public class PowerShellScript : AutomationScript
         }
         catch (OperationCanceledException)
         {
-            outputStream.AddOutput(cancellationMessage, OutputStreamType.Warning);
+            outputCollection.AddOutput(cancellationMessage, ScriptOutputStreamType.Warning);
 
             return ScriptExecutionState.Stopped;
         }
         catch (Exception e)
         {
-            outputStream.AddOutput(e.Message, OutputStreamType.Error);
+            outputCollection.AddOutput(e.Message, ScriptOutputStreamType.Error);
 
             return ScriptExecutionState.Error;
         }
@@ -142,16 +142,16 @@ public class PowerShellScript : AutomationScript
         }
     }
 
-    private static PSDataCollection<PSObject> RegisterOutputStreams(PowerShell shell, IOutputStreamService outputStream)
+    private static PSDataCollection<PSObject> RegisterOutputStreams(PowerShell shell, ScriptOutputCollection outputCollection)
     {
-        PSDataCollection<PSObject> outputCollection = new();
+        PSDataCollection<PSObject> standardOutputStream = new();
 
-        outputStream.SubscribeToStream(outputCollection, OutputStreamType.Standard);
-        outputStream.SubscribeToStream(shell.Streams.Information, OutputStreamType.Information);
-        outputStream.SubscribeToStream(shell.Streams.Progress, OutputStreamType.Progress);
-        outputStream.SubscribeToStream(shell.Streams.Warning, OutputStreamType.Warning);
-        outputStream.SubscribeToStream(shell.Streams.Error, OutputStreamType.Error);
+        outputCollection.SubscribeToOutputStream(standardOutputStream, ScriptOutputStreamType.Standard);
+        outputCollection.SubscribeToOutputStream(shell.Streams.Information, ScriptOutputStreamType.Information);
+        outputCollection.SubscribeToOutputStream(shell.Streams.Progress, ScriptOutputStreamType.Progress);
+        outputCollection.SubscribeToOutputStream(shell.Streams.Warning, ScriptOutputStreamType.Warning);
+        outputCollection.SubscribeToOutputStream(shell.Streams.Error, ScriptOutputStreamType.Error);
 
-        return outputCollection;
+        return standardOutputStream;
     }
 }

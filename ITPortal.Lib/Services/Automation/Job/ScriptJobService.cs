@@ -18,7 +18,7 @@ public class ScriptJobService : IScriptJobService
         Jobs.Add(job.Name, job);
     }
 
-    public ScriptJobResult RunJob(ScriptJob job, IOutputStreamService outputStreamService)
+    public ScriptJobResult RunJob(ScriptJob job, ScriptOutputCollection outputCollection)
     {
         ArgumentNullException.ThrowIfNull(job.Script.FileName, nameof(job.Script.FileName));
 
@@ -27,7 +27,7 @@ public class ScriptJobService : IScriptJobService
             job.Script.FileName,
             job.Script.DeviceName,
             DateTime.Now,
-            outputStreamService
+            outputCollection
         );
         JobResults.Add(result);
         // Cap the results list to store only the most recent results

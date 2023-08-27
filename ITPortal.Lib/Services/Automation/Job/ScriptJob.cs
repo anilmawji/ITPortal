@@ -1,5 +1,4 @@
-﻿using ITPortal.Lib.Services.Automation.Output;
-using ITPortal.Lib.Services.Automation.Script;
+﻿using ITPortal.Lib.Services.Automation.Script;
 using ITPortal.Lib.Utilities;
 
 namespace ITPortal.Lib.Services.Automation.Job;
@@ -40,7 +39,7 @@ public class ScriptJob
         LatestResult = result;
         SetState(ScriptJobState.Running);
 
-        ScriptExecutionState executionResult = await Script.InvokeAsync("Script execution was cancelled", result.OutputStreamService, _cancellationTokenSource.Token);
+        ScriptExecutionState executionResult = await Script.InvokeAsync("Script execution was cancelled", result.OutputCollection, _cancellationTokenSource.Token);
         result.InvokeOnExecutionResultReceived(executionResult);
         result.ExecutionState = executionResult;
 

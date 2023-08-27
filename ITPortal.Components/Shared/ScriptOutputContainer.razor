@@ -1,8 +1,8 @@
 ﻿@implements IDisposable
 
-@for (int i = 0; i < OutputStreamService?.Output.Count; i++)
+@for (int i = 0; i < OutputCollection?.Output.Count; i++)
 {
-    OutputMessage psMessage = OutputStreamService.Output[i];
+    ScriptOutputMessage psMessage = OutputCollection.Output[i];
 
     <div class="@psMessage.Stream">
         @(psMessage.Data)
@@ -11,13 +11,13 @@
 
 @code {
     [Parameter, EditorRequired]
-    public IOutputStreamService? OutputStreamService { get; set; }
+    public ScriptOutputCollection? OutputCollection { get; set; }
 
     protected override void OnInitialized()
     {
-        if (OutputStreamService != null)
+        if (OutputCollection != null)
         {
-            OutputStreamService.OnOutputChanged += (object? sender, ScriptOutputChangedEventArgs _) =>
+            OutputCollection.OnOutputChanged += (object? sender, ScriptOutputChangedEventArgs _) =>
             {
                 InvokeAsync(() => this.StateHasChanged());
             };
@@ -26,6 +26,6 @@
 
     public void Dispose()
     {
-        OutputStreamService?.DisposeOnOutputChangedEventSubscriptions();
+        OutputCollection?.DisposeOnOutputChangedEventSubscriptions();
     }
 }
