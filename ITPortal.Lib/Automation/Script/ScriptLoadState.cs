@@ -11,7 +11,7 @@ public enum ScriptLoadState
 
 public static class ScriptLoadStateExtensions
 {
-    public static readonly Dictionary<ScriptLoadState, string> Colors = new()
+    public static readonly IReadOnlyDictionary<ScriptLoadState, string> Colors = new Dictionary<ScriptLoadState, string>()
     {
         { ScriptLoadState.Unloaded, StateColors.Grey  },
         { ScriptLoadState.Success,  StateColors.Green },

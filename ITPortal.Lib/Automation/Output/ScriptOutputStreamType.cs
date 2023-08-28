@@ -1,4 +1,5 @@
-﻿using ITPortal.Lib.Utilities;
+﻿using ITPortal.Lib.Automation.Job;
+using ITPortal.Lib.Utilities;
 
 namespace ITPortal.Lib.Automation.Output;
 
@@ -13,7 +14,7 @@ public enum ScriptOutputStreamType
 
 public static class ScriptOutputStreamTypeExtensions
 {
-    public static readonly Dictionary<ScriptOutputStreamType, string> Colors = new()
+    public static readonly IReadOnlyDictionary<ScriptOutputStreamType, string> Colors = new Dictionary<ScriptOutputStreamType, string>()
     {
         { ScriptOutputStreamType.Standard,    StateColors.Black  },
         { ScriptOutputStreamType.Information, StateColors.Blue   },

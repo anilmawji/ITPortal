@@ -1,4 +1,5 @@
 ﻿using ITPortal.Lib.Utilities;
+using System.Collections.ObjectModel;
 
 namespace ITPortal.Lib.Automation.Job;
 
@@ -11,7 +12,7 @@ public enum ScriptJobState
 
 public static class ScriptJobStateMethods
 {
-    public static readonly Dictionary<ScriptJobState, string> Colors = new()
+    public static readonly IReadOnlyDictionary<ScriptJobState, string> Colors = new Dictionary<ScriptJobState, string>()
     {
         { ScriptJobState.Idle,      StateColors.Grey },
         { ScriptJobState.Scheduled, StateColors.Grey },

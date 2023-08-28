@@ -12,7 +12,7 @@ public enum ScriptExecutionState
 
 public static class ScriptExecutionStateExtensions
 {
-    public static readonly Dictionary<ScriptExecutionState, string> Colors = new()
+    public static readonly IReadOnlyDictionary<ScriptExecutionState, string> Colors = new Dictionary<ScriptExecutionState, string>()
     {
         { ScriptExecutionState.Running, StateColors.Blue   },
         { ScriptExecutionState.Success, StateColors.Green  },
