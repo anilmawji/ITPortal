@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace ITPortal.Components.Shared.Models.Dialog;
+namespace ITPortal.Components.Models.Dialog;
 
 public class DialogBase : ComponentBase
 {

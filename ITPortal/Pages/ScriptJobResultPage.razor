@@ -32,12 +32,12 @@
     </MudGrid>
 
     <PageSection Title="Output">
-        <ScriptOutputContainer ScriptOutput=@Result.ScriptOutput @ref=OutputContainer />
+        <ScriptOutputTabs ScriptOutput=@Result.ScriptOutput @ref=OutputTabs />
     </PageSection>
 </PageContainer>
 
 @code {
-    ScriptOutputContainer OutputContainer;
+    ScriptOutputTabs OutputTabs;
 
     protected override void OnInitialized()
     {
@@ -57,7 +57,7 @@
 
     public void Dispose()
     {
-        OutputContainer.Dispose();
+        OutputTabs.Dispose();
         Result.DisposeOnExecutionResultReceivedEventSubscriptions();
     }
 }

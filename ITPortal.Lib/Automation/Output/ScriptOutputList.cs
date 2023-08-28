@@ -6,6 +6,7 @@ namespace ITPortal.Lib.Automation.Output;
 public abstract class ScriptOutputList
 {
     public event EventHandler<ScriptOutputChangedEventArgs>? OnOutputChanged;
+    public readonly Dictionary<ScriptOutputStreamType, bool> UsedStreamTypes = EnumHelper.ToDictionary<ScriptOutputStreamType>();
 
     private List<ScriptOutputMessage> Output { get; set; } = new();
     private ScriptOutputMessage? _previousMessage;
@@ -15,6 +16,7 @@ public abstract class ScriptOutputList
     public void Add(string? message, ScriptOutputStreamType streamType)
     {
         if (message.IsNullOrEmpty()) return;
+        UsedStreamTypes[streamType] = true;
 
         if (_previousMessage?.Data == message)
         {
@@ -42,6 +44,11 @@ public abstract class ScriptOutputList
     public IReadOnlyList<ScriptOutputMessage> Get()
     {
         return Output.AsReadOnly();
+    }
+
+    public IReadOnlyList<ScriptOutputMessage> GetFilteredByStreamType(ScriptOutputStreamType streamType)
+    {
+        return Output.Where(x => x.StreamType == streamType).ToList().AsReadOnly();
     }
 
     public void Clear()

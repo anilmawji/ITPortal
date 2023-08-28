@@ -1,6 +1,7 @@
 ﻿.output-container {
     width: 100%;
-    height: calc(100vh - 480px);
+    height: calc(100vh - 480px - 80px);
+    min-height: 200px;
     border: solid 1px #D2D2D2;
     border-radius: 8px;
     padding: 20px;

@@ -1,0 +1,40 @@
+﻿@implements IDisposable
+
+<MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+    <MudTabPanel Text="All">
+        <ScriptOutputContainer OutputList=@ScriptOutput?.Get() />
+    </MudTabPanel>
+    @if (ScriptOutput != null)
+    {
+        foreach ((ScriptOutputStreamType streamType, bool used) in ScriptOutput.UsedStreamTypes)
+        {
+            if (!used) continue;
+            IReadOnlyList<ScriptOutputMessage> filteredOutput = ScriptOutput.GetFilteredByStreamType(streamType);
+
+            <MudTabPanel Text="@streamType.ToString()">
+                <ScriptOutputContainer OutputList=@filteredOutput />
+            </MudTabPanel>
+        }
+    }
+</MudTabs>
+
+@code {
+    [Parameter, EditorRequired]
+    public ScriptOutputList? ScriptOutput { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (ScriptOutput != null)
+        {
+            ScriptOutput.OnOutputChanged += (object? sender, ScriptOutputChangedEventArgs _) =>
+            {
+                InvokeAsync(() => this.StateHasChanged());
+            };
+        }
+    }
+
+    public void Dispose()
+    {
+        ScriptOutput?.DisposeOnOutputChangedEventSubscriptions();
+    }
+}

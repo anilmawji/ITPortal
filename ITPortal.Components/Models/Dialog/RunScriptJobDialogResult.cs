@@ -1,4 +1,4 @@
-﻿namespace ITPortal.Components.Shared.Models.Dialog
+﻿namespace ITPortal.Components.Models.Dialog
 {
     public class RunScriptJobDialogResult
     {
