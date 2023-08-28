@@ -1,8 +1,8 @@
-﻿@page "/job-results/{Id:int}"
+﻿@attribute [Route(PageRoute.ScriptJobResultDetails)]
 
 @implements IDisposable
 
-@inject NavigationManager NavigationManager
+@inject INavigationService NavigationService
 
 @inherits ScriptJobResultBase
 
@@ -52,7 +52,7 @@
 
     private void GoToEditJob()
     {
-        NavigationManager.NavigateTo($"/create-job/{Result.Job.Name}");
+        NavigationService.NavigateTo(PageRoute.EditScriptJobWithName(Result.Job.Name));
     }
 
     public void Dispose()

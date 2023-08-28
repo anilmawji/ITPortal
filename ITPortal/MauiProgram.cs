@@ -39,11 +39,11 @@ public static class MauiProgram
     {
         services.AddMudServices();
         services.AddMsalAuthentication();
-        services.AddSingleton<INavigationService, NavigationService>();
+        services.AddScoped<INavigationService, NavigationService>();
         services.AddSingleton<IScriptJobService, ScriptJobService>();
-        services.AddSingleton<IGraphClientService, GraphClientService>();
+        services.AddScoped<IGraphClientService, GraphClientService>();
         services.AddGitHubServices();
 
-        services.AddSingleton<WeatherForecastService>();
+        services.AddScoped<WeatherForecastService>();
     }
 }

@@ -1,4 +1,4 @@
-﻿@inject NavigationManager NavigationManager
+﻿@inject INavigationService NavigationService
 
 @using ITPortal.Components
 
@@ -7,6 +7,6 @@
 @code {
     protected override void OnInitialized()
     {
-        NavigationManager.NavigateTo("/login");
+        NavigationService.NavigateTo(PageRoute.Login);
     }
 }

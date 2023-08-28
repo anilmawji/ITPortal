@@ -1,9 +1,9 @@
-﻿@page "/job-results"
+﻿@attribute [Route(PageRoute.ScriptJobResults)]
 
 @implements IDisposable
 
 @inject IScriptJobService ScriptJobService
-@inject NavigationManager NavigationManager
+@inject INavigationService NavigationService
 
 <PageContainer Title="PowerShell Job Results">
     <style>
@@ -21,7 +21,7 @@
 
     <div class="table-container">
         <MudTable T="ScriptJobResult" Items=@ScriptJobService.JobResults Dense="true" Hover="true" FixedHeader="true"
-                  Filter="new Func<ScriptJobResult, bool>(FilterJobResultFunc)" OnRowClick=@GoToViewJob Height="calc(100% - 90px - 10px);">
+                  Filter="new Func<ScriptJobResult, bool>(FilterJobResultFunc)" OnRowClick=@GoToJobResults Height="calc(100% - 90px - 10px);">
             <ToolBarContent>
                 <MudTextField @bind-Value=@_searchString Placeholder=@($"Search {ScriptJobService.JobResults.Count} items...") Adornment="Adornment.Start"
                               AdornmentIcon=@Icons.Material.Filled.Search IconSize="Size.Medium" Class="mt-0"></MudTextField>
@@ -71,9 +71,9 @@
         }
     }
 
-    private void GoToViewJob(TableRowClickEventArgs<ScriptJobResult> eventArgs)
+    private void GoToJobResults(TableRowClickEventArgs<ScriptJobResult> eventArgs)
     {
-        NavigationManager.NavigateTo($"job-results/{eventArgs.Item.Id}");
+        NavigationService.NavigateTo(PageRoute.ScriptJobResultDetailsWithId(eventArgs.Item.Id));
     }
 
     private bool FilterJobResultFunc(ScriptJobResult result) => DoFilterJobResultFunc(result, _searchString);

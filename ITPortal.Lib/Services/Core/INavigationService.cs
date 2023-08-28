@@ -1,4 +1,4 @@
-﻿namespace ITPortal.Lib.Services;
+﻿namespace ITPortal.Lib.Services.Core;
 
 public interface INavigationService
 {

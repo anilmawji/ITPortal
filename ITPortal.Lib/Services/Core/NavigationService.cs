@@ -14,6 +14,7 @@ public sealed class NavigationService : INavigationService, IDisposable
         _navigationManager = navigationManager;
         _navigationManager.LocationChanged += OnLocationChanged;
 
+        // Add current url to the history
         _history.Add(_navigationManager.Uri);
     }
 

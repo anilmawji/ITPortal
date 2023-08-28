@@ -1,10 +1,10 @@
-﻿@page "/login"
+﻿@attribute [Route(PageRoute.Login)]
 
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@inject NavigationManager NavigationManager
+@inject INavigationService NavigationService
 
 @attribute [AllowAnonymous]
 
@@ -28,6 +28,6 @@
 
         await provider.LogInAsync();
 
-        NavigationManager.NavigateTo("/");
+        NavigationService.NavigateTo("/");
     }
 }

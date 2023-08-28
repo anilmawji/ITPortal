@@ -1,10 +1,10 @@
-﻿@page "/jobs"
+﻿@attribute [Route(PageRoute.ScriptJobs)]
 
 @implements IDisposable
 
 @inject IScriptJobService ScriptJobService
 @inject IDialogService DialogService
-@inject NavigationManager NavigationManager
+@inject INavigationService NavigationService
 
 @*@attribute [Authorize]*@
 
@@ -139,9 +139,10 @@
             {
                 //TODO: Schedule job to run at _runDate
             }
+
             if (dialogResultData.ShouldViewJobResult)
             {
-                NavigationManager.NavigateTo($"/job-results/{jobResult.Id}");
+                NavigationService.NavigateTo(PageRoute.ScriptJobResultDetailsWithId(jobResult.Id));
             }
         }
     }
@@ -171,12 +172,12 @@
 
     private void GoToNewJob()
     {
-        NavigationManager.NavigateTo("/create-job");
+        NavigationService.NavigateTo(PageRoute.CreateScriptJob);
     }
 
     private void GoToEditJob(string jobName)
     {
-        NavigationManager.NavigateTo($"create-job/{jobName}");
+        NavigationService.NavigateTo(PageRoute.EditScriptJobWithName(jobName));
     }
 
     private bool FilterJobFunc(ScriptJob job) => DoFilterJobFunc(job, _searchString);
