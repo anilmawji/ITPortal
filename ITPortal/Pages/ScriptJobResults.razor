@@ -44,7 +44,7 @@
                 <MudTh DataLabel="Id" Style="padding-left: 30px">@context.Id</MudTh>
                 <MudTh DataLabel="Script">@context.ScriptName</MudTh>
                 <MudTh DataLabel="Status">
-                    <ChipText Color=@context.ExecutionState.GetColor() Text=@context.ExecutionState.ToString() />
+                    <ChipText Color=@context.ExecutionState.GetColor() Text=@context.ExecutionState.ToStringFast() />
                 </MudTh>
                 <MudTh DataLabel="ExecutionTime">@context.ExecutionTime</MudTh>
             </RowTemplate>

@@ -22,4 +22,15 @@ public static class ScriptLoadStateExtensions
     {
         return Colors[state];
     }
+
+    public static string ToStringFast(this ScriptLoadState state)
+    {
+        return state switch
+        {
+            ScriptLoadState.Unloaded => nameof(ScriptLoadState.Unloaded),
+            ScriptLoadState.Success => nameof(ScriptLoadState.Success),
+            ScriptLoadState.Failed => nameof(ScriptLoadState.Failed),
+            _ => throw new ArgumentOutOfRangeException(nameof(state)),
+        };
+    }
 }

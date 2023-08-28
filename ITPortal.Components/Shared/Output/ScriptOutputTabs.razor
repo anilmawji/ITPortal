@@ -9,10 +9,8 @@
         foreach ((ScriptOutputStreamType streamType, int numLines) in ScriptOutput.UsedStreamTypes)
         {
             if (numLines == 0) continue;
-            IReadOnlyList<ScriptOutputMessage> filteredOutput = ScriptOutput.GetFilteredByStreamType(streamType);
-
             <MudTabPanel Text=@streamType.ToString() Icon=@TabIcons[streamType]>
-                <ScriptOutputContainer OutputList=@filteredOutput />
+                <ScriptOutputContainer OutputList=@ScriptOutput.GetFilteredByStreamType(streamType) />
             </MudTabPanel>
         }
     }
@@ -22,13 +20,13 @@
     [Parameter, EditorRequired]
     public ScriptOutputList? ScriptOutput { get; set; }
 
-    private readonly Dictionary<ScriptOutputStreamType, string> TabIcons = new()
+    private static readonly Dictionary<ScriptOutputStreamType, string> TabIcons = new()
     {
-        { ScriptOutputStreamType.Standard,    Icons.Material.Rounded.Output   },
-        { ScriptOutputStreamType.Information, Icons.Material.Rounded.Info     },
-        { ScriptOutputStreamType.Progress,    Icons.Material.Rounded.BarChart },
-        { ScriptOutputStreamType.Warning,     Icons.Material.Rounded.Warning  },
-        { ScriptOutputStreamType.Error,       Icons.Material.Rounded.Error    },
+        { ScriptOutputStreamType.Standard,    Icons.Material.Rounded.Output              },
+        { ScriptOutputStreamType.Information, Icons.Material.Rounded.Info                },
+        { ScriptOutputStreamType.Progress,    Icons.Material.Rounded.AlignHorizontalLeft },
+        { ScriptOutputStreamType.Warning,     Icons.Material.Rounded.Warning             },
+        { ScriptOutputStreamType.Error,       Icons.Material.Rounded.Error               },
     };
 
     protected override void OnInitialized()

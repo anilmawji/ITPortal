@@ -22,8 +22,21 @@ public static class ScriptOutputStreamTypeExtensions
         { ScriptOutputStreamType.Error,       StateColors.Red    },
     };
 
-    public static string GetColor(this ScriptOutputStreamType state)
+    public static string GetColor(this ScriptOutputStreamType streamType)
     {
-        return Colors[state];
+        return Colors[streamType];
+    }
+
+    public static string ToStringFast(this ScriptOutputStreamType streamType)
+    {
+        return streamType switch
+        {
+            ScriptOutputStreamType.Standard => nameof(ScriptOutputStreamType.Standard),
+            ScriptOutputStreamType.Information => nameof(ScriptOutputStreamType.Information),
+            ScriptOutputStreamType.Progress => nameof(ScriptOutputStreamType.Progress),
+            ScriptOutputStreamType.Warning => nameof(ScriptOutputStreamType.Warning),
+            ScriptOutputStreamType.Error => nameof(ScriptOutputStreamType.Error),
+            _ => throw new ArgumentOutOfRangeException(nameof(streamType)),
+        };
     }
 }

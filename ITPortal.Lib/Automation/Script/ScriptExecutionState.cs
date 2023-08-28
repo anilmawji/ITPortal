@@ -24,4 +24,16 @@ public static class ScriptExecutionStateExtensions
     {
         return Colors[state];
     }
+
+    public static string ToStringFast(this ScriptExecutionState state)
+    {
+        return state switch
+        {
+            ScriptExecutionState.Running => nameof(ScriptExecutionState.Running),
+            ScriptExecutionState.Success => nameof(ScriptExecutionState.Success),
+            ScriptExecutionState.Stopped => nameof(ScriptExecutionState.Stopped),
+            ScriptExecutionState.Error => nameof(ScriptExecutionState.Error),
+            _ => throw new ArgumentOutOfRangeException(nameof(state)),
+        };
+    }
 }

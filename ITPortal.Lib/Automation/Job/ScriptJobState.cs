@@ -22,4 +22,15 @@ public static class ScriptJobStateMethods
     {
         return Colors[state];
     }
+
+    public static string ToStringFast(this ScriptJobState state)
+    {
+        return state switch
+        {
+            ScriptJobState.Idle => nameof(ScriptJobState.Idle),
+            ScriptJobState.Scheduled => nameof(ScriptJobState.Scheduled),
+            ScriptJobState.Running => nameof(ScriptJobState.Running),
+            _ => throw new ArgumentOutOfRangeException(nameof(state)),
+        };
+    }
 }

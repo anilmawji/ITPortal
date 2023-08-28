@@ -43,7 +43,7 @@
                     <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Description)">Description</MudTableSortLabel>
                 </MudTh>
                 <MudTh Style="text-align:right; margin-right: 50px">
-                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" @onclick="GoToNewJob">
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" @onclick=@GoToNewJob>
                         <MudText>New Job</MudText>
                     </MudButton>
                 </MudTh>
