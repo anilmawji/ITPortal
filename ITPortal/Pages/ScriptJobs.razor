@@ -23,11 +23,11 @@
     </style>
 
     <div class="table-container">
-        <MudTable T="ScriptJob" Items="@ScriptJobService.Jobs.Values" Dense="true" Hover="true" FixedHeader="true" Filter="new Func<ScriptJob, bool>(FilterJobFunc)"
+        <MudTable T="ScriptJob" Items=@ScriptJobService.Jobs.Values Dense="true" Hover="true" FixedHeader="true" Filter="new Func<ScriptJob, bool>(FilterJobFunc)"
                   Height="calc(100% - 90px - 10px);">
             <ToolBarContent>
-                <MudTextField @bind-Value="_searchString" Placeholder="@($"Search {ScriptJobService.Jobs.Values.Count} items...")" Adornment="Adornment.Start"
-                              AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                <MudTextField @bind-Value=@_searchString Placeholder=@($"Search {ScriptJobService.Jobs.Values.Count} items...") Adornment="Adornment.Start"
+                              AdornmentIcon=@Icons.Material.Filled.Search IconSize="Size.Medium" Class="mt-0"></MudTextField>
             </ToolBarContent>
             <HeaderContent>
                     <MudTh Style="padding-left: 30px">
@@ -52,28 +52,28 @@
                 <MudTh DataLabel="Name" Style="padding-left: 30px">@context.Name</MudTh>
                 <MudTh DataLabel="script">@context.Script.FileName</MudTh>
                 <MudTh DataLabel="status">
-                    <ChipText Color="@(context.State.GetColor())" Text="@context.State.ToString()" />
+                    <ChipText Color=@context.State.GetColor() Text=@context.State.ToString() />
                 </MudTh>
                 <MudTh DataLabel="Description">@context.Description.NormalizeLength(40)</MudTh>
                 <MudTh Style="text-align:right">
                     @if (context.State != ScriptJobState.Running)
                     {
-                        <MudIconButton Icon="@Icons.Material.Rounded.PlayCircle" aria-label="start" Style="margin-right: 4px"
+                        <MudIconButton Icon=@Icons.Material.Rounded.PlayCircle aria-label="start" Style="margin-right: 4px"
                                        OnClick="() => OpenRunJobDialog(context)"></MudIconButton>
                     }
                     else
                     {
-                        <MudIconButton Icon="@Icons.Material.Rounded.StopCircle" aria-label="stop" Style="margin-right: 4px"
+                        <MudIconButton Icon=@Icons.Material.Rounded.StopCircle aria-label="stop" Style="margin-right: 4px"
                                        OnClick="() => OpenCancelJobDialog(context)"></MudIconButton>
                     }
-                    <MudIconButton Icon="@Icons.Material.Filled.Edit" aria-label="edit"
+                    <MudIconButton Icon=@Icons.Material.Filled.Edit aria-label="edit"
                                    OnClick="() => GoToEditJob(context.Name)"></MudIconButton>
-                    <MudIconButton Icon="@Icons.Material.Filled.Delete" aria-label="delete"
+                    <MudIconButton Icon=@Icons.Material.Filled.Delete aria-label="delete"
                                    OnClick="() => OpenDeleteJobDialog(context.Name)"></MudIconButton>
                 </MudTh>
             </RowTemplate>
             <PagerContent>
-                <MudTablePager PageSizeOptions="@s_pageSizeOptions" />
+                <MudTablePager PageSizeOptions=@s_pageSizeOptions />
             </PagerContent>
         </MudTable>
     </div>

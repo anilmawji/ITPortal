@@ -3,13 +3,13 @@
 <MudDialog>
     <DialogContent>
         <div class="dialog-container">
-            <MudCheckBox @bind-Checked="@Result.ShouldRunJobImmediately" Color="Color.Secondary" Style="width:500px">Run Now</MudCheckBox>
+            <MudCheckBox @bind-Checked=@Result.ShouldRunJobImmediately Color="Color.Secondary" Style="width:500px">Run Now</MudCheckBox>
             @if (!Result.ShouldRunJobImmediately)
             {
                 TimeSpan time = Result.RunDate.TimeOfDay;
 
                 <MudDatePicker Label="Run Date" Variant="Variant.Filled" Margin="Margin.Dense" Required="true"
-                               PickerVariant="PickerVariant.Inline" Date="@Result.RunDate"
+                               PickerVariant="PickerVariant.Inline" Date=@Result.RunDate
                                DateChanged="(newDate) => {
                                    if (newDate != null)
                                    {
@@ -29,13 +29,13 @@
                                RequiredError="Run time is a required field" />
             }
             <div class="checkbox">
-                <MudCheckBox @bind-Checked="@Result.ShouldViewJobResult" Color="Color.Secondary">View Job</MudCheckBox>
+                <MudCheckBox @bind-Checked=@Result.ShouldViewJobResult Color="Color.Secondary">View Job</MudCheckBox>
             </div>
         </div>
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="@Color" Variant="Variant.Filled" OnClick="Submit">@SubmitButtonText</MudButton>
+        <MudButton OnClick=@Cancel>Cancel</MudButton>
+        <MudButton Color="@Color" Variant="Variant.Filled" OnClick=@Submit>@SubmitButtonText</MudButton>
     </DialogActions>
 </MudDialog>
 

@@ -11,12 +11,12 @@
 
 <MudLayout>
     <MudAppBar Elevation="0">
-        <div class="appbar-background" style="@AppbarBackgroundStyle()">
+        <div class="appbar-background" style=@AppbarBackgroundStyle()>
             <div/>
         </div>
 		<AuthorizeView>
 			<Authorized>
-				<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@DrawerToggle" />
+				<MudIconButton Icon=@Icons.Material.Filled.Menu Color="Color.Inherit" Edge="Edge.Start" OnClick=@DrawerToggle />
 			</Authorized>
 		</AuthorizeView>
         <div class="appbar-logo-container">
@@ -25,14 +25,14 @@
         </div>
         <MudSpacer />
         <LogoutDisplay />
-        <MudIconButton Icon="@Icons.Material.Filled.Brightness4"
+        <MudIconButton Icon=@Icons.Material.Filled.Brightness4
                        Color="Color.Inherit"
                        Class="nav-button"
-                       OnClick="@ThemeToggle" />
+                       OnClick=@ThemeToggle />
     </MudAppBar>
 @*	<AuthorizeView>
 		<Authorized>*@
-    <MudDrawer @bind-Open="@IsDrawerOpen" ClipMode="DrawerClipMode.Always" Elevation="1">
+    <MudDrawer @bind-Open=@IsDrawerOpen ClipMode="DrawerClipMode.Always" Elevation="1">
 				<NavMenu />
 			</MudDrawer>
 @*		</Authorized>
