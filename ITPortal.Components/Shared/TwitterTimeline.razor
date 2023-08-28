@@ -1,0 +1,32 @@
+﻿@using Microsoft.JSInterop
+
+@((MarkupString)$"<a class=\"twitter-timeline\" latest=\"true\" data-width=\"400\" data-height=\"500\" data-theme=\"light\" href=\"https://twitter.com/{ProfileLink}\"></a>")
+
+@code {
+
+    [Inject]
+    public IJSRuntime? JSRuntime { get; set; }
+
+    [Parameter]
+    public string? ProfileLink { get; set; }
+
+    [Parameter]
+    public bool DarkMode { get; set; }
+
+    [Parameter]
+    public int Width { get; set; }
+
+    [Parameter]
+    public int Height { get; set; }
+
+    [Parameter]
+    public string? DataTweetLimit { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && JSRuntime != null)
+        {
+            await JSRuntime.InvokeVoidAsync("twttr.widgets.load");
+        }
+    }
+}
