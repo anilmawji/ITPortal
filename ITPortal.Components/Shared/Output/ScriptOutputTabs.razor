@@ -1,17 +1,17 @@
 ﻿@implements IDisposable
 
 <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
-    <MudTabPanel Text="All">
+    <MudTabPanel Text="All" BadgeData="GetOutputLineCountText()" BadgeColor="Color.Primary">
         <ScriptOutputContainer OutputList=@ScriptOutput?.Get() />
     </MudTabPanel>
     @if (ScriptOutput != null)
     {
-        foreach ((ScriptOutputStreamType streamType, bool used) in ScriptOutput.UsedStreamTypes)
+        foreach ((ScriptOutputStreamType streamType, int numLines) in ScriptOutput.UsedStreamTypes)
         {
-            if (!used) continue;
+            if (numLines == 0) continue;
             IReadOnlyList<ScriptOutputMessage> filteredOutput = ScriptOutput.GetFilteredByStreamType(streamType);
 
-            <MudTabPanel Text="@streamType.ToString()">
+            <MudTabPanel Text="@streamType.ToString()" Icon=@TabIcons[streamType]>
                 <ScriptOutputContainer OutputList=@filteredOutput />
             </MudTabPanel>
         }
@@ -22,6 +22,15 @@
     [Parameter, EditorRequired]
     public ScriptOutputList? ScriptOutput { get; set; }
 
+    private readonly Dictionary<ScriptOutputStreamType, string> TabIcons = new()
+    {
+        { ScriptOutputStreamType.Standard,    Icons.Material.Rounded.Output   },
+        { ScriptOutputStreamType.Information, Icons.Material.Rounded.Info     },
+        { ScriptOutputStreamType.Progress,    Icons.Material.Rounded.BarChart },
+        { ScriptOutputStreamType.Warning,     Icons.Material.Rounded.Warning  },
+        { ScriptOutputStreamType.Error,       Icons.Material.Rounded.Error    },
+    };
+
     protected override void OnInitialized()
     {
         if (ScriptOutput != null)
@@ -31,6 +40,15 @@
                 InvokeAsync(() => this.StateHasChanged());
             };
         }
+    }
+
+    private string GetOutputLineCountText()
+    {
+        if (ScriptOutput != null)
+        {
+            return ScriptOutput.Get().Count <= 99 ? ScriptOutput.Get().Count.ToString() : "99+";
+        }
+        return "0";
     }
 
     public void Dispose()
