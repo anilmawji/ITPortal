@@ -58,12 +58,12 @@
                 <MudTh Style="text-align:right">
                     @if (context.State != ScriptJobState.Running)
                     {
-                        <MudIconButton Icon=@Icons.Material.Rounded.PlayCircle aria-label="start" Style="margin-right: 4px"
+                        <MudIconButton Icon=@Icons.Material.Filled.PlayCircle aria-label="start" Style="margin-right: 4px"
                                        OnClick="() => OpenRunJobDialog(context)"></MudIconButton>
                     }
                     else
                     {
-                        <MudIconButton Icon=@Icons.Material.Rounded.StopCircle aria-label="stop" Style="margin-right: 4px"
+                        <MudIconButton Icon=@Icons.Material.Filled.Cancel aria-label="stop" Style="margin-right: 4px"
                                        OnClick="() => OpenCancelJobDialog(context)"></MudIconButton>
                     }
                     <MudIconButton Icon=@Icons.Material.Filled.Edit aria-label="edit"
@@ -88,13 +88,9 @@
     private static readonly DialogParameters<Dialog> s_deleteJobDialogParameters = new();
     private static readonly DialogParameters<RunScriptJobDialog> s_runJobDialogParameters = new();
     private static readonly DialogParameters<Dialog> s_cancelJobDialogParameters = new();
-
     private static readonly int[] s_pageSizeOptions = { 10, 20, 30 };
 
     private string _searchString = "";
-    private DateTime _runDate;
-    private bool _shouldRunJobImmediately = true;
-    private bool _shouldViewJobResult = true;
 
     protected override void OnInitialized()
     {

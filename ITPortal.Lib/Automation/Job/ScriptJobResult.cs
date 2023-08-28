@@ -4,7 +4,7 @@ using ITPortal.Lib.Utilities;
 
 namespace ITPortal.Lib.Automation.Job;
 
-public sealed class ScriptJobResult
+public sealed class ScriptJobResult : IDisposable
 {
     public int Id { get; set; }
     public ScriptJob Job { get; set; }
@@ -12,8 +12,8 @@ public sealed class ScriptJobResult
     public string? DeviceName { get; set; }
     public DateTime ExecutionTime { get; set; }
     public ScriptOutputList ScriptOutput { get; set; }
-    public ScriptExecutionState ExecutionState { get; set; } = ScriptExecutionState.Running;
-    public event EventHandler<ScriptExecutionState>? OnExecutionResultReceived = null;
+    public ScriptExecutionState ExecutionState { get; set; }
+    public event EventHandler<ScriptExecutionState>? OnExecutionResultReceived;
 
     public ScriptJobResult(int id, ScriptJob job, string scriptName, string deviceName, DateTime executionTime, ScriptOutputList scriptOutput)
     {
@@ -34,5 +34,10 @@ public sealed class ScriptJobResult
     public bool DisposeOnExecutionResultReceivedEventSubscriptions()
     {
         return OnExecutionResultReceived.DisposeSubscriptions();
+    }
+
+    public void Dispose()
+    {
+        OnExecutionResultReceived.DisposeSubscriptions();
     }
 }

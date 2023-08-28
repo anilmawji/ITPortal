@@ -2,7 +2,7 @@
 
 namespace ITPortal.Lib.Services.Authentication;
 
-public class AuthenticatedUser
+public sealed class AuthenticatedUser
 {
     public ClaimsPrincipal Principal { get; set; }
 

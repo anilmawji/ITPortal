@@ -1,6 +1,6 @@
 ﻿namespace ITPortal.Lib.Models.GitHub;
 
-public class FileTreeModel
+public sealed class FileTreeModel
 {
     public string sha { get; set; }
     public string url { get; set; }
@@ -8,7 +8,7 @@ public class FileTreeModel
     public bool truncated { get; set; }
 }
 
-public class Tree
+public sealed class Tree
 {
     public string path { get; set; }
     public string mode { get; set; }

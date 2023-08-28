@@ -3,7 +3,7 @@ using Microsoft.Kiota.Abstractions.Authentication;
 
 namespace ITPortal.Lib.Services.Authentication;
 
-public class TokenProvider : IAccessTokenProvider
+public sealed class TokenProvider : IAccessTokenProvider
 {
     // TODO: Required as part of IAccessTokenProvider
     public AllowedHostsValidator AllowedHostsValidator => throw new NotImplementedException();

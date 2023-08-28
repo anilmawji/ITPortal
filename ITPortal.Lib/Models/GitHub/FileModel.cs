@@ -1,6 +1,6 @@
 ﻿namespace ITPortal.Lib.Models.GitHub;
 
-public class FileModel
+public sealed class FileModel
 {
     public string name { get; set; }
     public string path { get; set; }
@@ -15,7 +15,7 @@ public class FileModel
     public string encoding { get; set; }
     public _Links _links { get; set; }
 }
-public class _Links
+public sealed class _Links
 {
     public string self { get; set; }
     public string git { get; set; }

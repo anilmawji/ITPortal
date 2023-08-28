@@ -1,6 +1,6 @@
 ﻿namespace ITPortal.Components.Models.Dialog
 {
-    public class RunScriptJobDialogResult
+    public sealed class RunScriptJobDialogResult
     {
         public bool ShouldRunJobImmediately { get; set; } = true;
         public bool ShouldViewJobResult { get; set; } = true;

@@ -1,6 +1,6 @@
 ﻿namespace ITPortal.Lib.Models.GitHub;
 
-public class GitHubUserModel
+public sealed class GitHubUserModel
 {
     public string? login { get; set; }
     public int id { get; set; }

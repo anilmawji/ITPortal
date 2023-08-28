@@ -3,7 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace ITPortal.Lib.Automation.Output;
 
-public abstract class ScriptOutputList
+public abstract class ScriptOutputList : IDisposable
 {
     public event EventHandler<ScriptOutputChangedEventArgs>? OnOutputChanged;
     public readonly Dictionary<ScriptOutputStreamType, int> UsedStreamTypes = EnumHelper.ToDictionary<ScriptOutputStreamType, int>(0);
@@ -60,5 +60,10 @@ public abstract class ScriptOutputList
     public bool DisposeOnOutputChangedEventSubscriptions()
     {
         return OnOutputChanged.DisposeSubscriptions();
+    }
+
+    public void Dispose()
+    {
+        OnOutputChanged.DisposeSubscriptions();
     }
 }

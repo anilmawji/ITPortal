@@ -4,7 +4,7 @@ using System.Net.Http.Headers;
 
 namespace ITPortal.Lib.Services.Authentication.External;
 
-public class MsalAuthenticationService : IAuthenticationService
+public sealed class MsalAuthenticationService : IAuthenticationService
 {
     private readonly IPublicClientApplication? _authenticationClient;
     private readonly string[]? _scopes;

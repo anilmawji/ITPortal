@@ -1,6 +1,6 @@
 ﻿namespace ITPortal.Lib.Models.GitHub;
 
-public class RepoModel
+public sealed class RepoModel
 {
     public int id { get; set; }
     public string node_id { get; set; }

@@ -3,7 +3,7 @@ using ITPortal.Lib.Utilities;
 
 namespace ITPortal.Lib.Automation.Job;
 
-public sealed class ScriptJob
+public sealed class ScriptJob : IDisposable
 {
     public AutomationScript Script { get; set; }
     public string? Name { get; set; }
@@ -41,7 +41,7 @@ public sealed class ScriptJob
         SetState(ScriptJobState.Running);
 
         ScriptExecutionState executionResult = await Script.InvokeAsync(
-            "Script execution was cancelled",
+            "Script execution was cancelled".AsSystemMessage(),
             result.ScriptOutput,
             _cancellationTokenSource.Token
         );
@@ -71,5 +71,10 @@ public sealed class ScriptJob
     public bool DisposeOnStateChangedEventSubscriptions()
     {
         return OnStateChanged.DisposeSubscriptions();
+    }
+
+    public void Dispose()
+    {
+        OnStateChanged.DisposeSubscriptions();
     }
 }

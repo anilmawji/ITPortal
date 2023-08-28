@@ -4,7 +4,7 @@ using Microsoft.Identity.Client;
 
 namespace ITPortal.Lib.Services.Authentication.External;
 
-public class ExternalAuthStateProvider : AuthenticationStateProvider
+public sealed class ExternalAuthStateProvider : AuthenticationStateProvider
 {
     private readonly IAuthenticationService _authenticationService;
     private AuthenticatedUser _currentUser;
