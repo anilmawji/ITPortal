@@ -52,7 +52,7 @@
                 <MudTh DataLabel="Name" Style="padding-left: 30px">@context.Name</MudTh>
                 <MudTh DataLabel="script">@context.Script.FileName</MudTh>
                 <MudTh DataLabel="status">
-                    <ChipText Color=@context.State.GetColor() Text=@context.State.ToString() />
+                    <ChipText Color=@context.State.GetColor() Text=@context.State.ToStringFast() />
                 </MudTh>
                 <MudTh DataLabel="Description">@context.Description.NormalizeLength(40)</MudTh>
                 <MudTh Style="text-align:right">

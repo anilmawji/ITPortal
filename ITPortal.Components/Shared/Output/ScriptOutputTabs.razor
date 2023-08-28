@@ -9,7 +9,7 @@
         foreach ((ScriptOutputStreamType streamType, int numLines) in ScriptOutput.UsedStreamTypes)
         {
             if (numLines == 0) continue;
-            <MudTabPanel Text=@streamType.ToString() Icon=@TabIcons[streamType]>
+            <MudTabPanel Text=@streamType.ToStringFast() Icon=@TabIcons[streamType]>
                 <ScriptOutputContainer OutputList=@ScriptOutput.GetFilteredByStreamType(streamType) />
             </MudTabPanel>
         }
