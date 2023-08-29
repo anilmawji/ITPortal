@@ -37,7 +37,6 @@ public sealed class ScriptJobService : IScriptJobService
         {
             JobResults.RemoveAt(JobResults.Count - 1);
         }
-
         job.Run(result, ScriptOutputList.FormatAsSystemMessage("Script execution was cancelled"))
             .ConfigureAwait(false);
 

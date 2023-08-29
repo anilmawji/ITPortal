@@ -16,7 +16,7 @@ public abstract class ScriptOutputList : IDisposable
     public void Add(string? message, ScriptOutputStreamType streamType)
     {
         // message.IsNullOrEmpty() is not recognized by Roslyn as guarding against null....
-        if (message == null || message == "") return;
+        if (message == null || message == string.Empty) return;
 
         UsedStreamTypes[streamType]++;
 

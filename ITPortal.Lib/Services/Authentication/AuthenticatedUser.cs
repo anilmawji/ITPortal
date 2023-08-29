@@ -34,8 +34,10 @@ public sealed class AuthenticatedUser
     {
         Claim? old = GetClaimWithType(oldClaimType);
 
-        if (old == null) return false;
-
+        if (old == null)
+        {
+            return false;
+        }
         claims.Add(new Claim(newClaimType, old.Value));
         claims.Remove(old);
 
