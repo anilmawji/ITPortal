@@ -21,4 +21,17 @@ public class PageRoute
     {
         return $"{CreateScriptJob}/{jobName}";
     }
+
+    // Only applicable to routes without route parameters
+    public static string GetPageTitleFromRoute(string url)
+    {
+        return url switch
+        {
+            ScriptJobs => "PowerShell Jobs",
+            ScriptJobResults => "PowerShell Job Results",
+            CreateScriptJob => "Create Script Job",
+            DeviceInventory => "Device Inventory",
+            _ => throw new ArgumentOutOfRangeException(nameof(url)),
+        };
+    }
 }

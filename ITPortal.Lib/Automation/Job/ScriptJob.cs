@@ -34,14 +34,14 @@ public sealed class ScriptJob : IDisposable
         Description = description;
     }
 
-    public async Task Run(ScriptJobResult result)
+    public async Task Run(ScriptJobResult result, string cancellationMessage)
     {
         LatestResult = result;
         _cancellationTokenSource = new();
         SetState(ScriptJobState.Running);
 
         ScriptExecutionState executionResult = await Script.InvokeAsync(
-            "Script execution was cancelled".AsSystemMessage(),
+            cancellationMessage,
             result.ScriptOutput,
             _cancellationTokenSource.Token
         );

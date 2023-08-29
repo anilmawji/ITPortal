@@ -37,9 +37,4 @@ public static class StringExtensions
     {
         return input.Length <= maxLength ? input : input.Substring(0, maxLength);
     }
-
-    public static string AsSystemMessage(this string message)
-    {
-        return "[SYSTEM]: " + message;
-    }
 }

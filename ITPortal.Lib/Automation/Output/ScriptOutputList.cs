@@ -15,7 +15,8 @@ public abstract class ScriptOutputList : IDisposable
 
     public void Add(string? message, ScriptOutputStreamType streamType)
     {
-        if (message.IsNullOrEmpty()) return;
+        // message.IsNullOrEmpty() is not recognized by Roslyn as guarding against null....
+        if (message == null || message == "") return;
 
         UsedStreamTypes[streamType]++;
 
@@ -25,13 +26,7 @@ public abstract class ScriptOutputList : IDisposable
         }
         else
         {
-            ScriptOutputMessage psMessage = new()
-            {
-                StreamType = streamType,
-                Data = message
-            };
-            Output.Add(psMessage);
-            _previousMessage = psMessage;
+            SendOutputMessage(message, streamType);
         }
 
         ScriptOutputChangedEventArgs args = new()
@@ -40,6 +35,27 @@ public abstract class ScriptOutputList : IDisposable
             StreamType = streamType
         };
         OnOutputChanged?.Invoke(this, args);
+    }
+
+    public void SendOutputMessage(string message, ScriptOutputStreamType streamType)
+    {
+        ScriptOutputMessage outputMessage = new()
+        {
+            StreamType = streamType,
+            Data = message
+        };
+        Output.Add(outputMessage);
+        _previousMessage = outputMessage;
+    }
+
+    public void SendSystemMessage(string message, ScriptOutputStreamType streamType)
+    {
+        SendOutputMessage(FormatAsSystemMessage(message), streamType);
+    }
+
+    public static string FormatAsSystemMessage(string message)
+    {
+        return "[SYSTEM]: " + message;
     }
 
     public IReadOnlyList<ScriptOutputMessage> Get()
