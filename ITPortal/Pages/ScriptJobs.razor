@@ -98,7 +98,7 @@
         {
             job.OnStateChanged += (object sender, ScriptJobState newState) =>
             {
-                InvokeAsync(() => this.StateHasChanged());
+                InvokeAsync(this.StateHasChanged);
             };
         }
     }
@@ -142,7 +142,7 @@
 
             if (dialogResultData.ShouldViewJobResult)
             {
-                NavigationService.NavigateTo(PageRoute.ScriptJobResultDetailsWithId(jobResult.Id));
+                NavigationService.NavigateTo(new PageInfo("/jobs", "PowerShell Jobs"), new PageInfo($"/job-results/{jobResult.Id}", $"Result {jobResult.Id}"));
             }
         }
     }
@@ -172,12 +172,12 @@
 
     private void GoToNewJob()
     {
-        NavigationService.NavigateTo(PageRoute.CreateScriptJob);
+        NavigationService.NavigateTo(new PageInfo("/jobs", "PowerShell Jobs"), new PageInfo("/create-job", "New Job"));
     }
 
     private void GoToEditJob(string jobName)
     {
-        NavigationService.NavigateTo(PageRoute.EditScriptJobWithName(jobName));
+        NavigationService.NavigateTo(new PageInfo("/jobs", "PowerShell Jobs"), new PageInfo($"/create-job/{jobName}", $"Edit Job {jobName}"));
     }
 
     private bool FilterJobFunc(ScriptJob job) => DoFilterJobFunc(job, _searchString);
