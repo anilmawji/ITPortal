@@ -6,7 +6,7 @@
 @*@attribute [Authorize]*@
 
 @inject IScriptJobService ScriptJobService
-@inject INavigationService NavigationService
+@inject NavigationManager NavigationManager
 
 <PageContainer Title="PowerShell Jobs" NestedTitle=@_headerTitle PreviousPage="/jobs">
     <MudForm @ref=@_jobForm @bind-IsValid=@_canSaveJob @bind-Errors=@_errors>
@@ -317,7 +317,7 @@
 
     private void GoToJobs()
     {
-        NavigationService.NavigateTo(PageRoute.ScriptJobs);
+        NavigationManager.NavigateTo(PageRoute.ScriptJobs);
     }
 
     private async Task TrySaveJob()

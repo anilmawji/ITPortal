@@ -1,5 +1,4 @@
 ﻿using ITPortal.Lib.Utilities;
-using System.Collections.ObjectModel;
 
 namespace ITPortal.Lib.Automation.Job;
 
@@ -28,9 +27,9 @@ public static class ScriptJobStateMethods
     {
         return state switch
         {
-            ScriptJobState.Idle => nameof(ScriptJobState.Idle),
+            ScriptJobState.Idle      => nameof(ScriptJobState.Idle),
             ScriptJobState.Scheduled => nameof(ScriptJobState.Scheduled),
-            ScriptJobState.Running => nameof(ScriptJobState.Running),
+            ScriptJobState.Running   => nameof(ScriptJobState.Running),
             _ => throw new ArgumentOutOfRangeException(nameof(state)),
         };
     }

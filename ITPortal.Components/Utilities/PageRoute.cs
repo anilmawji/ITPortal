@@ -21,20 +21,4 @@ public class PageRoute
     {
         return $"{CreateScriptJob}/{jobName}";
     }
-
-    // Only applicable to routes without route parameters
-    // If providing a URL directly from NavigationManager, remember to trim off the base URI first
-    public static string GetPageTitleFromRoute(string url)
-    {
-        if (url == string.Empty) return url;
-
-        return url switch
-        {
-            ScriptJobs => "PowerShell Jobs",
-            ScriptJobResults => "PowerShell Job Results",
-            CreateScriptJob => "Create Script Job",
-            DeviceInventory => "Device Inventory",
-            _ => string.Empty,
-        }; ;
-    }
 }

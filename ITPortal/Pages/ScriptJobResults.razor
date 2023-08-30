@@ -3,7 +3,7 @@
 @implements IDisposable
 
 @inject IScriptJobService ScriptJobService
-@inject INavigationService NavigationService
+@inject NavigationManager NavigationManager
 
 <PageContainer Title="PowerShell Job Results">
     <style>
@@ -66,14 +66,14 @@
         {
             result.OnExecutionResultReceived += (object sender, ScriptExecutionState newState) =>
             {
-                InvokeAsync(() => this.StateHasChanged());
+                InvokeAsync(this.StateHasChanged);
             };
         }
     }
 
     private void GoToJobResults(TableRowClickEventArgs<ScriptJobResult> eventArgs)
     {
-        NavigationService.NavigateTo(PageRoute.ScriptJobResultDetailsWithId(eventArgs.Item.Id));
+        NavigationManager.NavigateTo(PageRoute.ScriptJobResultDetailsWithId(eventArgs.Item.Id));
     }
 
     private bool FilterJobResultFunc(ScriptJobResult result) => DoFilterJobResultFunc(result, _searchString);

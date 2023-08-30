@@ -2,7 +2,7 @@
 
 @implements IDisposable
 
-@inject INavigationService NavigationService
+@inject NavigationManager NavigationManager
 
 @inherits ScriptJobResultBase
 
@@ -46,13 +46,13 @@
 
         Result.OnExecutionResultReceived += (object sender, ScriptExecutionState newState) =>
         {
-            InvokeAsync(() => this.StateHasChanged());
+            InvokeAsync(this.StateHasChanged);
         };
     }
 
     private void GoToEditJob()
     {
-        NavigationService.NavigateTo(PageRoute.EditScriptJobWithName(Result.Job.Name));
+        NavigationManager.NavigateTo(PageRoute.EditScriptJobWithName(Result.Job.Name));
     }
 
     public void Dispose()

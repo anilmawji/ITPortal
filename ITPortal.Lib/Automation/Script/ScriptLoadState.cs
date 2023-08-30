@@ -28,8 +28,8 @@ public static class ScriptLoadStateExtensions
         return state switch
         {
             ScriptLoadState.Unloaded => nameof(ScriptLoadState.Unloaded),
-            ScriptLoadState.Success => nameof(ScriptLoadState.Success),
-            ScriptLoadState.Failed => nameof(ScriptLoadState.Failed),
+            ScriptLoadState.Success  => nameof(ScriptLoadState.Success),
+            ScriptLoadState.Failed   => nameof(ScriptLoadState.Failed),
             _ => throw new ArgumentOutOfRangeException(nameof(state)),
         };
     }

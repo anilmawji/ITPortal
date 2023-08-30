@@ -1,5 +1,4 @@
-﻿using ITPortal.Lib.Automation.Job;
-using ITPortal.Lib.Utilities;
+﻿using ITPortal.Lib.Utilities;
 
 namespace ITPortal.Lib.Automation.Output;
 
@@ -32,11 +31,11 @@ public static class ScriptOutputStreamTypeExtensions
     {
         return streamType switch
         {
-            ScriptOutputStreamType.Standard => nameof(ScriptOutputStreamType.Standard),
+            ScriptOutputStreamType.Standard    => nameof(ScriptOutputStreamType.Standard),
             ScriptOutputStreamType.Information => nameof(ScriptOutputStreamType.Information),
-            ScriptOutputStreamType.Progress => nameof(ScriptOutputStreamType.Progress),
-            ScriptOutputStreamType.Warning => nameof(ScriptOutputStreamType.Warning),
-            ScriptOutputStreamType.Error => nameof(ScriptOutputStreamType.Error),
+            ScriptOutputStreamType.Progress    => nameof(ScriptOutputStreamType.Progress),
+            ScriptOutputStreamType.Warning     => nameof(ScriptOutputStreamType.Warning),
+            ScriptOutputStreamType.Error       => nameof(ScriptOutputStreamType.Error),
             _ => throw new ArgumentOutOfRangeException(nameof(streamType)),
         };
     }

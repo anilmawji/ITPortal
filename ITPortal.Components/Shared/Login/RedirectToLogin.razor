@@ -1,12 +1,14 @@
-﻿@inject INavigationService NavigationService
+﻿@inject NavigationManager NavigationManager
 
 @using ITPortal.Components
 
-<div class="loader loader-bouncing"><span>Redirecting...</span></div>
+<div class="loader loader-bouncing">
+    <span>Redirecting...</span>
+</div>
 
 @code {
     protected override void OnInitialized()
     {
-        NavigationService.NavigateTo(PageRoute.Login);
+        NavigationManager.NavigateTo(PageRoute.Login);
     }
 }

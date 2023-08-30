@@ -4,7 +4,7 @@
 @using Microsoft.AspNetCore.Components.Authorization
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@inject INavigationService NavigationService
+@inject NavigationManager NavigationManager
 
 @attribute [AllowAnonymous]
 
@@ -28,6 +28,6 @@
 
         await provider.LogInAsync();
 
-        NavigationService.NavigateTo("/");
+        NavigationManager.NavigateTo("/");
     }
 }

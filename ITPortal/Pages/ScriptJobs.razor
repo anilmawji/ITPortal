@@ -4,7 +4,7 @@
 
 @inject IScriptJobService ScriptJobService
 @inject IDialogService DialogService
-@inject INavigationService NavigationService
+@inject NavigationManager NavigationManager
 
 @*@attribute [Authorize]*@
 
@@ -142,7 +142,7 @@
 
             if (dialogResultData.ShouldViewJobResult)
             {
-                NavigationService.NavigateTo(new PageInfo("/jobs", "PowerShell Jobs"), new PageInfo($"/job-results/{jobResult.Id}", $"Result {jobResult.Id}"));
+                NavigationManager.NavigateTo(PageRoute.ScriptJobResultDetailsWithId(jobResult.Id));
             }
         }
     }
@@ -172,12 +172,12 @@
 
     private void GoToNewJob()
     {
-        NavigationService.NavigateTo(new PageInfo("/jobs", "PowerShell Jobs"), new PageInfo("/create-job", "New Job"));
+        NavigationManager.NavigateTo(PageRoute.CreateScriptJob);
     }
 
     private void GoToEditJob(string jobName)
     {
-        NavigationService.NavigateTo(new PageInfo("/jobs", "PowerShell Jobs"), new PageInfo($"/create-job/{jobName}", $"Edit Job {jobName}"));
+        NavigationManager.NavigateTo(PageRoute.EditScriptJobWithName(jobName));
     }
 
     private bool FilterJobFunc(ScriptJob job) => DoFilterJobFunc(job, _searchString);
