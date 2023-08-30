@@ -13,7 +13,7 @@ public sealed class ScriptJobResult : IDisposable
     public DateTime ExecutionTime { get; set; }
     public ScriptOutputList ScriptOutput { get; set; }
     public ScriptExecutionState ExecutionState { get; set; }
-    public event EventHandler<ScriptExecutionState>? OnExecutionResultReceived;
+    public event EventHandler<ScriptExecutionState>? ExecutionResultReceived;
 
     public ScriptJobResult(int id, ScriptJob job, string scriptName, string deviceName, DateTime executionTime, ScriptOutputList scriptOutput)
     {
@@ -26,18 +26,18 @@ public sealed class ScriptJobResult : IDisposable
         ScriptOutput = scriptOutput;
     }
 
-    internal void InvokeOnExecutionResultReceived(ScriptExecutionState newState)
+    internal void InvokeExecutionResultReceived(ScriptExecutionState newState)
     {
-        OnExecutionResultReceived?.Invoke(this, newState);
+        ExecutionResultReceived?.Invoke(this, newState);
     }
 
-    public bool DisposeOnExecutionResultReceivedEventSubscriptions()
+    public bool DisposeExecutionResultReceivedEventSubscriptions()
     {
-        return OnExecutionResultReceived.DisposeSubscriptions();
+        return ExecutionResultReceived.DisposeSubscriptions();
     }
 
     public void Dispose()
     {
-        OnExecutionResultReceived.DisposeSubscriptions();
+        ExecutionResultReceived.DisposeSubscriptions();
     }
 }

@@ -12,7 +12,7 @@ public sealed class ScriptJob : IDisposable
     public DateTime CreationTime { get; private set; }
     public ScriptJobResult? LatestResult { get; private set; }
 
-    public event EventHandler<ScriptJobState>? OnStateChanged;
+    public event EventHandler<ScriptJobState>? StateChanged;
 
     private CancellationTokenSource? _cancellationTokenSource;
 
@@ -45,7 +45,7 @@ public sealed class ScriptJob : IDisposable
             result.ScriptOutput,
             _cancellationTokenSource.Token
         );
-        result.InvokeOnExecutionResultReceived(executionResult);
+        result.InvokeExecutionResultReceived(executionResult);
         result.ExecutionState = executionResult;
 
         SetState(ScriptJobState.Idle);
@@ -65,16 +65,16 @@ public sealed class ScriptJob : IDisposable
     private void SetState(ScriptJobState state)
     {
         State = state;
-        OnStateChanged?.Invoke(this, State);
+        StateChanged?.Invoke(this, State);
     }
 
-    public bool DisposeOnStateChangedEventSubscriptions()
+    public bool DisposeStateChangedEventSubscriptions()
     {
-        return OnStateChanged.DisposeSubscriptions();
+        return StateChanged.DisposeSubscriptions();
     }
 
     public void Dispose()
     {
-        OnStateChanged.DisposeSubscriptions();
+        StateChanged.DisposeSubscriptions();
     }
 }

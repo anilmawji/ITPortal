@@ -31,12 +31,14 @@ public sealed class ScriptJobService : IScriptJobService
             DateTime.Now,
             scriptOutput
         );
-        JobResults.Add(result);
+
         // Cap the results list to store only the most recent results
-        if (JobResults.Count > MaxResults)
+        if (JobResults.Count == MaxResults)
         {
-            JobResults.RemoveAt(JobResults.Count - 1);
+            JobResults.RemoveAt(0);
         }
+        JobResults.Add(result);
+
         job.Run(result, ScriptOutputList.FormatAsSystemMessage("Script execution was cancelled"))
             .ConfigureAwait(false);
 

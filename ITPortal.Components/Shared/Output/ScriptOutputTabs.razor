@@ -33,9 +33,9 @@
     {
         if (ScriptOutput != null)
         {
-            ScriptOutput.OnOutputChanged += (object? sender, ScriptOutputChangedEventArgs _) =>
+            ScriptOutput.OutputChanged += (object? sender, ScriptOutputChangedEventArgs _) =>
             {
-                InvokeAsync(() => this.StateHasChanged());
+                InvokeAsync(this.StateHasChanged);
             };
         }
     }
@@ -51,6 +51,6 @@
 
     public void Dispose()
     {
-        ScriptOutput?.DisposeOnOutputChangedEventSubscriptions();
+        ScriptOutput?.DisposeOutputChangedEventSubscriptions();
     }
 }

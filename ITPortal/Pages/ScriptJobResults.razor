@@ -64,7 +64,7 @@
     {
         foreach (ScriptJobResult result in ScriptJobService.JobResults)
         {
-            result.OnExecutionResultReceived += (object sender, ScriptExecutionState newState) =>
+            result.ExecutionResultReceived += (object sender, ScriptExecutionState newState) =>
             {
                 InvokeAsync(this.StateHasChanged);
             };
@@ -90,7 +90,7 @@
     {
         foreach (ScriptJobResult result in ScriptJobService.JobResults)
         {
-            result.DisposeOnExecutionResultReceivedEventSubscriptions();
+            result.DisposeExecutionResultReceivedEventSubscriptions();
         }
     }
 }

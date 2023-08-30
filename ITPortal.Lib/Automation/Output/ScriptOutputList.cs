@@ -5,7 +5,7 @@ namespace ITPortal.Lib.Automation.Output;
 
 public abstract class ScriptOutputList : IDisposable
 {
-    public event EventHandler<ScriptOutputChangedEventArgs>? OnOutputChanged;
+    public event EventHandler<ScriptOutputChangedEventArgs>? OutputChanged;
     public readonly Dictionary<ScriptOutputStreamType, int> UsedStreamTypes = EnumHelper.ToDictionary<ScriptOutputStreamType, int>(0);
 
     private List<ScriptOutputMessage> Output { get; set; } = new();
@@ -34,7 +34,7 @@ public abstract class ScriptOutputList : IDisposable
             Output = Output,
             StreamType = streamType
         };
-        OnOutputChanged?.Invoke(this, args);
+        OutputChanged?.Invoke(this, args);
     }
 
     public void SendOutputMessage(string message, ScriptOutputStreamType streamType)
@@ -73,13 +73,13 @@ public abstract class ScriptOutputList : IDisposable
         Output.Clear();
     }
 
-    public bool DisposeOnOutputChangedEventSubscriptions()
+    public bool DisposeOutputChangedEventSubscriptions()
     {
-        return OnOutputChanged.DisposeSubscriptions();
+        return OutputChanged.DisposeSubscriptions();
     }
 
     public void Dispose()
     {
-        OnOutputChanged.DisposeSubscriptions();
+        OutputChanged.DisposeSubscriptions();
     }
 }

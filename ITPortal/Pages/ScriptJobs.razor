@@ -96,7 +96,7 @@
     {
         foreach (ScriptJob job in ScriptJobService.Jobs.Values)
         {
-            job.OnStateChanged += (object sender, ScriptJobState newState) =>
+            job.StateChanged += (object sender, ScriptJobState newState) =>
             {
                 InvokeAsync(this.StateHasChanged);
             };
@@ -195,7 +195,7 @@
     {
         foreach (ScriptJob job in ScriptJobService.Jobs.Values)
         {
-            job.DisposeOnStateChangedEventSubscriptions();
+            job.DisposeStateChangedEventSubscriptions();
         }
     }
 }

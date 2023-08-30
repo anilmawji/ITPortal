@@ -44,7 +44,7 @@
         // Very important to make sure ScriptJobResultBase is populated
         base.OnInitialized();
 
-        Result.OnExecutionResultReceived += (object sender, ScriptExecutionState newState) =>
+        Result.ExecutionResultReceived += (object sender, ScriptExecutionState newState) =>
         {
             InvokeAsync(this.StateHasChanged);
         };
@@ -58,6 +58,6 @@
     public void Dispose()
     {
         OutputTabs.Dispose();
-        Result.DisposeOnExecutionResultReceivedEventSubscriptions();
+        Result.DisposeExecutionResultReceivedEventSubscriptions();
     }
 }
