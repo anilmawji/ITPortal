@@ -1,0 +1,20 @@
+﻿@implements IDisposable
+
+<ChipText Color=@ScriptJob.State.GetColor() Text=@ScriptJob.State.ToStringFast() />
+
+@code {
+    [Parameter, EditorRequired]
+    public ScriptJob ScriptJob { get; set; } = null!;
+
+    protected override void OnInitialized()
+    {
+        ScriptJob.StateChanged += OnStateChanged;
+    }
+
+    private void OnStateChanged(object? sender, ScriptJobState newState) => this.StateHasChanged();
+
+    public void Dispose()
+    {
+        ScriptJob.StateChanged -= OnStateChanged;
+    }
+}

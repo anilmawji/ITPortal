@@ -68,11 +68,6 @@ public sealed class ScriptJob : IDisposable
         StateChanged?.Invoke(this, State);
     }
 
-    public bool DisposeStateChangedEventSubscriptions()
-    {
-        return StateChanged.DisposeSubscriptions();
-    }
-
     public void Dispose()
     {
         StateChanged.DisposeSubscriptions();

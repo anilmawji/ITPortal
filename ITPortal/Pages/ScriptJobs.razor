@@ -1,7 +1,5 @@
 ﻿@attribute [Route(PageRoute.ScriptJobs)]
 
-@implements IDisposable
-
 @inject IScriptJobService ScriptJobService
 @inject IDialogService DialogService
 @inject NavigationManager NavigationManager
@@ -52,7 +50,7 @@
                 <MudTh DataLabel="Name" Style="padding-left: 30px">@context.Name</MudTh>
                 <MudTh DataLabel="script">@context.Script.FileName</MudTh>
                 <MudTh DataLabel="status">
-                    <ChipText Color=@context.State.GetColor() Text=@context.State.ToStringFast() />
+                    <ScriptJobStateChipText ScriptJob=@context />
                 </MudTh>
                 <MudTh DataLabel="Description">@context.Description.NormalizeLength(40)</MudTh>
                 <MudTh Style="text-align:right">
@@ -92,17 +90,6 @@
 
     private string _searchString = "";
 
-    protected override void OnInitialized()
-    {
-        foreach (ScriptJob job in ScriptJobService.Jobs.Values)
-        {
-            job.StateChanged += (object sender, ScriptJobState newState) =>
-            {
-                InvokeAsync(this.StateHasChanged);
-            };
-        }
-    }
-
     protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)
@@ -133,7 +120,7 @@
 
             if (dialogResultData.ShouldRunJobImmediately)
             {
-                
+
             }
             else
             {
@@ -189,13 +176,5 @@
                     || job.Script.FileName.Contains(searchString, StringComparison.OrdinalIgnoreCase)
                     || job.State.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase)
                     || job.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase);
-    }
-
-    public void Dispose()
-    {
-        foreach (ScriptJob job in ScriptJobService.Jobs.Values)
-        {
-            job.DisposeStateChangedEventSubscriptions();
-        }
     }
 }

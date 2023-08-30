@@ -18,7 +18,7 @@
 
 @code {
     [Parameter, EditorRequired]
-    public ScriptOutputList? ScriptOutput { get; set; }
+    public ScriptOutputList ScriptOutput { get; set; } = null!;
 
     private static readonly Dictionary<ScriptOutputStreamType, string> TabIcons = new()
     {
@@ -33,11 +33,13 @@
     {
         if (ScriptOutput != null)
         {
-            ScriptOutput.OutputChanged += (object? sender, ScriptOutputChangedEventArgs _) =>
-            {
-                InvokeAsync(this.StateHasChanged);
-            };
+            ScriptOutput.OutputChanged += OnOutputChanged;
         }
+    }
+
+    private void OnOutputChanged(object? sender, ScriptOutputChangedEventArgs _)
+    {
+        InvokeAsync(this.StateHasChanged);
     }
 
     private string GetOutputLineCountText()
@@ -51,6 +53,6 @@
 
     public void Dispose()
     {
-        ScriptOutput?.DisposeOutputChangedEventSubscriptions();
+        ScriptOutput.OutputChanged -= OnOutputChanged;
     }
 }

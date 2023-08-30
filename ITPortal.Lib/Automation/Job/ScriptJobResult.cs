@@ -31,11 +31,6 @@ public sealed class ScriptJobResult : IDisposable
         ExecutionResultReceived?.Invoke(this, newState);
     }
 
-    public bool DisposeExecutionResultReceivedEventSubscriptions()
-    {
-        return ExecutionResultReceived.DisposeSubscriptions();
-    }
-
     public void Dispose()
     {
         ExecutionResultReceived.DisposeSubscriptions();

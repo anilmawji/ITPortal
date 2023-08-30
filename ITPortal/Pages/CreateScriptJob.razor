@@ -22,23 +22,8 @@
         </PageSection>
 
         <PageSection Title="Script">
-            <div class="choose-file-container">
-                <MudButton @onclick=@PickAndLoadScript Variant="Variant.Filled" Size="Size.Small">
-                    <MudText>Choose File</MudText>
-                </MudButton>
-                @if (_job.Script.IsLoaded())
-                {
-                    <span class="file-label">
-                        @_job.Script.FileName
-                    </span>
-                }
-                else if (_job.Script.IsUnloaded())
-                {
-                    <span class="file-label">
-                        No file selected
-                    </span>
-                }
-            </div>
+            <ChooseFileButton OnClick=@PickAndLoadScript FileName=@(_job.Script.IsLoaded() ? _job.Script.FileName : null) />
+
             @if (_job.Script.IsLoaded())
             {
                 <p class="scroll script-content">
@@ -86,16 +71,9 @@
                             // Cannot use two-way binding for these since parameter.Value is an object and must be casted to the correct type
                             @if (parameter.DesiredType == typeof(string))
                             {
-                                // Provide a larger input field depending on the parameter name
-                                int numLines = 1;
-                                foreach (string trigger in s_extendedInputFieldTriggers)
-                                {
-                                    if (parameter.Name.Equals(trigger, StringComparison.OrdinalIgnoreCase))
-                                    {
-                                        numLines = 10;
-                                        break;
-                                    }
-                                }
+                                // Provide a larger input field depending on the name of the parameter
+                                int numLines = ParameterRequiresExendedInputField(parameter) ? 10 : 1;
+
                                 <div class="input-line">
                                     <MudTextField T="string" Label=@parameterName Lines=@numLines Variant="Variant.Filled" Margin="Margin.Dense"
                                                   Required=@parameter.Mandatory Text=@((string)parameter.Value) TextChanged="(text) => parameter.Value = text"
@@ -281,6 +259,11 @@
         {
             yield return "Job description must be less than 100 characters in length";
         }
+    }
+
+    private bool ParameterRequiresExendedInputField(ScriptParameter parameter)
+    {
+        return s_extendedInputFieldTriggers.Contains(parameter.Name);
     }
 
     private async void PickAndLoadScript()

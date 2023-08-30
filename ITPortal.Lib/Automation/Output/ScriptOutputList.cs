@@ -73,11 +73,6 @@ public abstract class ScriptOutputList : IDisposable
         Output.Clear();
     }
 
-    public bool DisposeOutputChangedEventSubscriptions()
-    {
-        return OutputChanged.DisposeSubscriptions();
-    }
-
     public void Dispose()
     {
         OutputChanged.DisposeSubscriptions();

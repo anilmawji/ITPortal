@@ -1,7 +1,5 @@
 ﻿@attribute [Route(PageRoute.ScriptJobResults)]
 
-@implements IDisposable
-
 @inject IScriptJobService ScriptJobService
 @inject NavigationManager NavigationManager
 
@@ -44,7 +42,7 @@
                 <MudTh DataLabel="Id" Style="padding-left: 30px">@context.Id</MudTh>
                 <MudTh DataLabel="Script">@context.ScriptName</MudTh>
                 <MudTh DataLabel="Status">
-                    <ChipText Color=@context.ExecutionState.GetColor() Text=@context.ExecutionState.ToStringFast() />
+                    <ScriptJobResultExecutionStateChipText ScriptJobResult=@context/>
                 </MudTh>
                 <MudTh DataLabel="ExecutionTime">@context.ExecutionTime</MudTh>
             </RowTemplate>
@@ -60,17 +58,6 @@
 
     private string _searchString = "";
 
-    protected override void OnInitialized()
-    {
-        foreach (ScriptJobResult result in ScriptJobService.JobResults)
-        {
-            result.ExecutionResultReceived += (object sender, ScriptExecutionState newState) =>
-            {
-                InvokeAsync(this.StateHasChanged);
-            };
-        }
-    }
-
     private void GoToJobResults(TableRowClickEventArgs<ScriptJobResult> eventArgs)
     {
         NavigationManager.NavigateTo(PageRoute.ScriptJobResultDetailsWithId(eventArgs.Item.Id));
@@ -84,13 +71,5 @@
                     || result.Id.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase)
                     || result.ScriptName.Contains(searchString, StringComparison.OrdinalIgnoreCase)
                     || result.ExecutionState.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase);
-    }
-
-    public void Dispose()
-    {
-        foreach (ScriptJobResult result in ScriptJobService.JobResults)
-        {
-            result.DisposeExecutionResultReceivedEventSubscriptions();
-        }
     }
 }

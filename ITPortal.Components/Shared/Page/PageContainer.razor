@@ -24,6 +24,6 @@
     [Parameter]
     public string? NestedTitle { get; set; }
 
-    [ParameterAttribute]
-    public RenderFragment? ChildContent { get; set; }
+    [Parameter, EditorRequired]
+    public RenderFragment ChildContent { get; set; } = null!;
 }

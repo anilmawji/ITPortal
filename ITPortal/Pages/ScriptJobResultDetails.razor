@@ -10,7 +10,7 @@
     <div class="script-title">
         <p>Script: @Result.ScriptName</p>
         <div class="title-chip">
-            <ChipText Color=@Result.ExecutionState.GetColor() Text=@Result.ExecutionState.ToStringFast() />
+            <ScriptJobResultExecutionStateChipText ScriptJobResult=@Result />
         </div>
     </div>
     <div class="job-details">
@@ -43,11 +43,6 @@
     {
         // Very important to make sure ScriptJobResultBase is populated
         base.OnInitialized();
-
-        Result.ExecutionResultReceived += (object sender, ScriptExecutionState newState) =>
-        {
-            InvokeAsync(this.StateHasChanged);
-        };
     }
 
     private void GoToEditJob()
@@ -58,6 +53,5 @@
     public void Dispose()
     {
         OutputTabs.Dispose();
-        Result.DisposeExecutionResultReceivedEventSubscriptions();
     }
 }

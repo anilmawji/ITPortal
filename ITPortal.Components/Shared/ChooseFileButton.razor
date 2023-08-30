@@ -1,5 +1,25 @@
-﻿<h3>ChooseFileButton</h3>
+﻿<div class="choose-file-container">
+    <MudButton @onclick=@OnClick Variant="Variant.Filled" Size="Size.Small">
+        <MudText>Choose File</MudText>
+    </MudButton>
+    @if (FileName != null)
+    {
+        <span class="file-label">
+            @FileName
+        </span>
+    }
+    else
+    {
+        <span class="file-label">
+            No file selected
+        </span>
+    }
+</div>
 
 @code {
+    [Parameter]
+    public string? FileName { get; set; }
 
+    [Parameter, EditorRequired]
+    public Action OnClick { get; set; } = null!;
 }
