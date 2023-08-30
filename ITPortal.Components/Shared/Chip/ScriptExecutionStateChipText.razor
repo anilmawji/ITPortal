@@ -1,0 +1,31 @@
+﻿@implements IDisposable
+
+<ChipText Color=@Result.ExecutionState.GetColor() Text=@Result.ExecutionState.ToStringFast() />
+
+@code {
+    [Parameter, EditorRequired]
+    public ScriptJobResult Result { get; set; } = null!;
+
+    [Parameter]
+    public Action? OnResultReceived { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Result.ExecutionResultReceived += OnExecutionResultReceived;
+    }
+
+    private void OnExecutionResultReceived(object? sender, ScriptExecutionState newState)
+    {
+        if (OnResultReceived != null)
+        {
+            System.Diagnostics.Debug.WriteLine("ok cool");
+            OnResultReceived?.Invoke();
+        }
+        InvokeAsync(this.StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        Result.ExecutionResultReceived -= OnExecutionResultReceived;
+    }
+}

@@ -50,7 +50,7 @@
                 <MudTh DataLabel="Name" Style="padding-left: 30px">@context.Name</MudTh>
                 <MudTh DataLabel="script">@context.Script.FileName</MudTh>
                 <MudTh DataLabel="status">
-                    <ScriptJobStateChipText ScriptJob=@context />
+                    <ScriptJobStateChipText Job=@context />
                 </MudTh>
                 <MudTh DataLabel="Description">@context.Description.NormalizeLength(40)</MudTh>
                 <MudTh Style="text-align:right">

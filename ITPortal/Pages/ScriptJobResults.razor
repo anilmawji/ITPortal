@@ -1,5 +1,7 @@
 ﻿@attribute [Route(PageRoute.ScriptJobResults)]
 
+@implements IDisposable
+
 @inject IScriptJobService ScriptJobService
 @inject NavigationManager NavigationManager
 
@@ -32,6 +34,9 @@
                     <MudTableSortLabel SortBy="new Func<ScriptJobResult, object>(x=>x.ScriptName)">Script</MudTableSortLabel>
                 </MudTh>
                 <MudTh>
+                    <MudTableSortLabel SortBy="new Func<ScriptJobResult, object>(x=>x.DeviceName)">Device</MudTableSortLabel>
+                </MudTh>
+                <MudTh>
                     <MudTableSortLabel SortBy="new Func<ScriptJobResult, object>(x=>x.ExecutionState)">Status</MudTableSortLabel>
                 </MudTh>
                 <MudTh>
@@ -41,22 +46,33 @@
             <RowTemplate>
                 <MudTh DataLabel="Id" Style="padding-left: 30px">@context.Id</MudTh>
                 <MudTh DataLabel="Script">@context.ScriptName</MudTh>
+                <MudTh DataLabel="Device">@context.DeviceName</MudTh>
                 <MudTh DataLabel="Status">
-                    <ScriptJobResultExecutionStateChipText ScriptJobResult=@context/>
+                    <ScriptExecutionStateChipText Result=@context />
                 </MudTh>
                 <MudTh DataLabel="ExecutionTime">@context.ExecutionTime</MudTh>
             </RowTemplate>
             <PagerContent>
-                <MudTablePager PageSizeOptions=@_pageSizeOptions />
+                <MudTablePager PageSizeOptions=@s_pageSizeOptions />
             </PagerContent>
         </MudTable>
     </div>
 </PageContainer>
 
 @code {
-    private static readonly int[] _pageSizeOptions = { 10, 20, 30 };
+    private static readonly int[] s_pageSizeOptions = { 10, 20, 30 };
 
     private string _searchString = "";
+
+    protected override void OnInitialized()
+    {
+        foreach (ScriptJobResult result in ScriptJobService.JobResults)
+        {
+            result.ExecutionResultReceived += OnExecutionResultReceived;
+        }
+    }
+
+    private void OnExecutionResultReceived(object sender, ScriptExecutionState newState) => this.StateHasChanged();
 
     private void GoToJobResults(TableRowClickEventArgs<ScriptJobResult> eventArgs)
     {
@@ -71,5 +87,13 @@
                     || result.Id.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase)
                     || result.ScriptName.Contains(searchString, StringComparison.OrdinalIgnoreCase)
                     || result.ExecutionState.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase);
+    }
+
+    public void Dispose()
+    {
+        foreach (ScriptJobResult result in ScriptJobService.JobResults)
+        {
+            result.ExecutionResultReceived -= OnExecutionResultReceived;
+        }
     }
 }

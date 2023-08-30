@@ -1,7 +1,5 @@
 ﻿@attribute [Route(PageRoute.ScriptJobResultDetails)]
 
-@implements IDisposable
-
 @inject NavigationManager NavigationManager
 
 @inherits ScriptJobResultBase
@@ -10,7 +8,7 @@
     <div class="script-title">
         <p>Script: @Result.ScriptName</p>
         <div class="title-chip">
-            <ScriptJobResultExecutionStateChipText ScriptJobResult=@Result />
+            <ScriptExecutionStateChipText Result=@Result OnResultReceived=@(() => InvokeAsync(this.StateHasChanged))/>
         </div>
     </div>
     <div class="job-details">
