@@ -18,8 +18,7 @@
     {
         if (OnResultReceived != null)
         {
-            System.Diagnostics.Debug.WriteLine("ok cool");
-            OnResultReceived?.Invoke();
+            OnResultReceived.Invoke();
         }
         InvokeAsync(this.StateHasChanged);
     }

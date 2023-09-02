@@ -5,20 +5,11 @@
         {
             ScriptOutputMessage message = OutputList.ElementAt(i);
 
-            @if (message.StreamType == ScriptOutputStreamType.Standard)
-            {
-                <div class="output-message">
-                    <MudText>
-                        @(message.Data)
-                    </MudText>
-                </div>
-            }
-            else
-            {
-                <div class="output-message" style="color:@message.StreamType.GetColor()">
+            <div class="output-message" style=@(message.StreamType != ScriptOutputStreamType.Standard ? $"color:{message.StreamType.GetColor()}" : "")>
+                <MudText>
                     @(message.Data)
-                </div>
-            }
+                </MudText>
+            </div>
         }
     }
 </div>

@@ -27,6 +27,8 @@ public abstract class AutomationScript
 
     public abstract Task<ScriptExecutionState> InvokeAsync(string cancellationMessage, ScriptOutputList scriptOutput, CancellationToken cancellationToken);
 
+    public abstract bool LoadParameters();
+
     public virtual bool LoadFromFile(string filePath)
     {
         ArgumentNullException.ThrowIfNull(filePath, nameof(filePath));
@@ -52,7 +54,7 @@ public abstract class AutomationScript
             ContentString = string.Join("\n", Content);
             LoadState = ScriptLoadState.Success;
 
-            return true;
+            return LoadParameters();
         }
         catch (IOException)
         {

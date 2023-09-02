@@ -21,11 +21,12 @@ public sealed class ScriptJobService : IScriptJobService
 
     public ScriptJobResult RunJob(ScriptJob job, ScriptOutputList scriptOutput)
     {
+        ArgumentNullException.ThrowIfNull(job.Name, nameof(job.Name));
         ArgumentNullException.ThrowIfNull(job.Script.FileName, nameof(job.Script.FileName));
 
         ScriptJobResult result = new(
             _nextResultId++,
-            job,
+            job.Name,
             job.Script.FileName,
             job.Script.DeviceName,
             DateTime.Now,

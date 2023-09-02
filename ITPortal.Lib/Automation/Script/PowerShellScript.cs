@@ -37,25 +37,7 @@ public sealed class PowerShellScript : AutomationScript
         return initialPowerShellState;
     }
 
-    public override bool LoadFromFile(string filePath)
-    {
-        if (!base.LoadFromFile(filePath))
-        {
-            return false;
-        }
-        return LoadParameters();
-    }
-
-    public override bool Refresh()
-    {
-        if (!base.Refresh())
-        {
-            return false;
-        }
-        return LoadParameters();
-    }
-
-    public bool LoadParameters()
+    public override bool LoadParameters()
     {
         if (!IsLoaded())
         {

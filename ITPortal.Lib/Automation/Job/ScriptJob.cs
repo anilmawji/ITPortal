@@ -19,14 +19,14 @@ public sealed class ScriptJob : IDisposable
     public ScriptJob(AutomationScript script)
     {
         Script = script;
+        State = ScriptJobState.Idle;
+        CreationTime = DateTime.Now;
     }
 
     public ScriptJob(AutomationScript script, string name) : this(script)
     {
         Script = script;
         Name = name;
-        State = ScriptJobState.Idle;
-        CreationTime = DateTime.Now;
     }
 
     public ScriptJob(AutomationScript script, string name, string description) : this(script, name)
