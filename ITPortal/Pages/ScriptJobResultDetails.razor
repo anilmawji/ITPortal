@@ -17,7 +17,7 @@
     </div>
     <MudGrid Spacing="2">
         <MudItem>
-            <MudButton @onclick=@(() => Result.Job.TryCancel()) Variant="Variant.Filled" Color="Color.Secondary"
+            <MudButton @onclick=@(() => Job.TryCancel()) Variant="Variant.Filled" Color="Color.Secondary"
                        Style="color:white" Disabled=@(Result.ExecutionState != ScriptExecutionState.Running)>
                 <MudText>Cancel</MudText>
             </MudButton>
@@ -35,17 +35,20 @@
 </PageContainer>
 
 @code {
+    ScriptJob Job;
     ScriptOutputTabs OutputTabs;
 
     protected override void OnInitialized()
     {
         // Very important to make sure ScriptJobResultBase is populated
         base.OnInitialized();
+
+        Job = ScriptJobService.Jobs[Result.JobName];
     }
 
     private void GoToEditJob()
     {
-        NavigationManager.NavigateTo(PageRoute.EditScriptJobWithName(Result.Job.Name));
+        NavigationManager.NavigateTo(PageRoute.EditScriptJobWithName(Job.Name));
     }
 
     public void Dispose()

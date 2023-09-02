@@ -2,6 +2,7 @@
 @attribute [Route(PageRoute.EditScriptJob)]
 
 @using Microsoft.AspNetCore.Authorization;
+@using System.Text.Json;
 
 @*@attribute [Authorize]*@
 
@@ -69,7 +70,7 @@
                             string requiredError = parameterName + " is a required field";
 
                             // Cannot use two-way binding for these since parameter.Value is an object and must be casted to the correct type
-                            @if (parameter.DesiredType == typeof(string))
+                            @if (parameter.HasDesiredType(typeof(string)))
                             {
                                 // Provide a larger input field depending on the name of the parameter
                                 int numLines = ParameterRequiresExendedInputField(parameter) ? 10 : 1;
@@ -80,7 +81,7 @@
                                                   RequiredError=@requiredError />
                                 </div>
                             }
-                            else if (parameter.DesiredType == typeof(int))
+                            else if (parameter.HasDesiredType(typeof(int)))
                             {
                                 <div class="small-input-line">
                                     <MudNumericField T="int" Label=@parameterName Variant="Variant.Filled" Margin="Margin.Dense" Required=@parameter.Mandatory
@@ -88,7 +89,7 @@
                                                      RequiredError=@requiredError />
                                 </div>
                             }
-                            else if (parameter.DesiredType == typeof(bool))
+                            else if (parameter.HasDesiredType(typeof(bool)))
                             {
                                 <div class="small-input-line">
                                     <MudSwitch T="bool" Label=@parameterName Required=@parameter.Mandatory Color="Color.Secondary"
@@ -96,7 +97,7 @@
                                                RequiredError=@requiredError />
                                 </div>
                             }
-                            else if (parameter.DesiredType == typeof(DateTime))
+                            else if (parameter.HasDesiredType(typeof(DateTime)))
                             {
                                 // No need to explicitly update "date" since it references parameter.Value which is being updated every time the date changes
                                 DateTime date = (DateTime)parameter.Value;
@@ -115,7 +116,7 @@
                                                     RequiredError=@requiredError />
                                 </div>
                             }
-                            else if (parameter.DesiredType == typeof(string[]))
+                            else if (parameter.HasDesiredType(typeof(string[])))
                             {
                                 <div class="input-line">
                                     <MudExtensions.MudChipField T="string" Label=@parameterName Margin="Margin.Dense" Required=@parameter.Mandatory
@@ -124,7 +125,7 @@
                                                                 Variant="Variant.Filled" RequiredError=@requiredError />
                                 </div>
                             }
-                            else if (parameter.DesiredType == typeof(int[]))
+                            else if (parameter.HasDesiredType(typeof(int[])))
                             {
                                 <div class="input-line">
                                     <MudExtensions.MudChipField T="int" Label=@parameterName Margin="Margin.Dense" Required=@parameter.Mandatory
@@ -133,7 +134,7 @@
                                                                 Variant="Variant.Filled" RequiredError=@requiredError />
                                 </div>
                             }
-                            else if (parameter.DesiredType == typeof(bool[]))
+                            else if (parameter.HasDesiredType(typeof(bool[])))
                             {
                                 <div class="input-line">
                                     <MudExtensions.MudChipField T="bool" Label=@parameterName Margin="Margin.Dense" Required=@parameter.Mandatory
@@ -313,6 +314,8 @@
             {
                 ScriptJobService.AddJob(_job);
             }
+            string text = JsonSerializer.Serialize(_job, ScriptJobJsonContext.Default.ScriptJob);
+
             GoToJobs();
         }
     }

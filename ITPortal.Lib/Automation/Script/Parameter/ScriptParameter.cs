@@ -56,6 +56,11 @@ public sealed class ScriptParameter
         return "Unknown";
     }
 
+    public bool HasDesiredType(Type type)
+    {
+        return DesiredTypeName == type.Name;
+    }
+
     public Type? GetValueType()
     {
         return Value?.GetType();
