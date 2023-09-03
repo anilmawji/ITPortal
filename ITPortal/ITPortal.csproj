@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <!-- <TargetFrameworks>net6.0-maccatalyst</TargetFrameworks> -->
-        <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net6.0-windows10.0.19041.0</TargetFrameworks>
+        <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net7.0-windows10.0.19041.0</TargetFrameworks>
         <!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
         <!-- <TargetFrameworks>$(TargetFrameworks);net6.0-tizen</TargetFrameworks> -->
         <OutputType>Exe</OutputType>
@@ -52,11 +52,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <MauiImage Remove="Resources\Images\arcurve_logo.png" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Remove="Resources\Images\arcurve_logo.png" />
+      <MauiImage Update="Resources\Images\arcurve_it_portal_logo.png" BaseSize="208,208" />
     </ItemGroup>
 
     <ItemGroup>
@@ -64,9 +60,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="CodeBeam.MudBlazor.Extensions" Version="6.5.8" />
-      <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.20" />
-      <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.10" />
+      <PackageReference Include="CodeBeam.MudBlazor.Extensions" Version="6.5.9" />
+      <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="7.0.1" />
+      <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.3.6" />
       <PackageReference Include="MudBlazor" Version="6.9.0" />
     </ItemGroup>
 
