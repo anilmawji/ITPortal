@@ -29,12 +29,15 @@ public sealed class ScriptParameter
                 // The default value for DateTime given by C# sucks (1/1/1001)
                 return DateTime.Today;
             }
-            else if (desiredType == typeof(SwitchParameter))
+            else if (desiredType == typeof(bool) || desiredType == typeof(SwitchParameter))
             {
                 return false;
             }
+            else if (desiredType == typeof(int) || desiredType == typeof(float) || desiredType == typeof(double))
+            {
+                return FormatterServices.GetUninitializedObject(desiredType);
+            }
             // This is what Microsoft's codebase uses to get default values for value types at runtime
-            return FormatterServices.GetUninitializedObject(desiredType);
         }
         // Prepare default values for reference types
         else

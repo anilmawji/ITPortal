@@ -1,5 +1,4 @@
 ﻿using ITPortal.Lib.Utilities;
-using Microsoft.IdentityModel.Tokens;
 
 namespace ITPortal.Lib.Automation.Output;
 

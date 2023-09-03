@@ -89,7 +89,8 @@
                                                      RequiredError=@requiredError />
                                 </div>
                             }
-                            else if (parameter.HasDesiredType(typeof(bool)))
+                            // Avoid importing System.Management.Automation to dodge name conflict between SwitchParameter and ParameterAttribute
+                            else if (parameter.HasDesiredType(typeof(bool)) || parameter.HasDesiredType(typeof(System.Management.Automation.SwitchParameter)))
                             {
                                 <div class="small-input-line">
                                     <MudSwitch T="bool" Label=@parameterName Required=@parameter.Mandatory Color="Color.Secondary"
@@ -228,8 +229,6 @@
             ScriptJobService.Jobs.TryGetValue(JobName, out _job);
             _headerTitle = $"Edit Job \"{JobName}\"";
             _initialJobName = _job.Name;
-
-            _job.Script.Refresh();
         }
     }
 
@@ -314,7 +313,7 @@
             {
                 ScriptJobService.AddJob(_job);
             }
-            string text = JsonSerializer.Serialize(_job, ScriptJobJsonContext.Default.ScriptJob);
+            string text = JsonSerializer.Serialize(_job, ScriptJobContext.Default.ScriptJob);
 
             GoToJobs();
         }

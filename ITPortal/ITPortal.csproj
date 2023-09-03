@@ -52,10 +52,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <MauiImage Update="Resources\Images\arcurve_it_portal_logo.png" BaseSize="208,208" />
-    </ItemGroup>
-
-    <ItemGroup>
       <MauiAsset Include="wwwroot\images\arcurve_logo.png" />
     </ItemGroup>
 
