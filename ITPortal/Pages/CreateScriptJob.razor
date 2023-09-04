@@ -62,7 +62,7 @@
         {
             <PageSection Title="Parameters">
                 <div class="input-group">
-                    @if (_job.Script.Parameters.Parameters.Any())
+                    @if (_job.Script.Parameters.Any())
                     {
                         @foreach (ScriptParameter parameter in _job.Script.Parameters)
                         {
@@ -321,7 +321,7 @@
 
             System.Diagnostics.Debug.WriteLine(text2);
             System.Diagnostics.Debug.WriteLine(_job2.Script is PowerShellScript);
-            System.Diagnostics.Debug.WriteLine(_job2.Script.Parameters is PowerShellParameterList);
+            System.Diagnostics.Debug.WriteLine(_job2.Script.Parameters is List<ScriptParameter>);
 
             GoToJobs();
         }

@@ -1,6 +1,5 @@
 ﻿using ITPortal.Lib.Automation.Output;
 using ITPortal.Lib.Automation.Script.Parameter;
-using ITPortal.Lib.Script.Parameter;
 using System.Management.Automation;
 using System.Management.Automation.Language;
 using System.Management.Automation.Runspaces;
@@ -28,7 +27,7 @@ public sealed class PowerShellScript : AutomationScript
     }
 
     [JsonConstructor]
-    public PowerShellScript(string filePath, string fileName, string[] content, string deviceName, ScriptParameterList parameters)
+    public PowerShellScript(string filePath, string fileName, string[] content, string deviceName, List<ScriptParameter> parameters)
         : base(filePath, fileName, content, deviceName, parameters)
     {
         _initialPowerShellState = NewInitialSessionState();
@@ -61,16 +60,16 @@ public sealed class PowerShellScript : AutomationScript
             return false;
         }
 
-        if (scriptAst.ParamBlock != null)
+        foreach (ParameterAst parameter in scriptAst.ParamBlock.Parameters)
         {
-            Parameters = new PowerShellParameterList(scriptAst.ParamBlock.Parameters);
+            AddParameter(parameter);
         }
-        else
-        {
-            Parameters = new PowerShellParameterList();
-        }
-
         return true;
+    }
+
+    public void AddParameter(ParameterAst parameter)
+    {
+        Parameters.Add(new ScriptParameter(parameter.Name.VariablePath.ToString(), parameter.StaticType, parameter.IsMandatory()));
     }
 
     public override async Task<ScriptExecutionState> InvokeAsync(string cancellationMessage, ScriptOutputList scriptOutput, CancellationToken cancellationToken)
@@ -94,7 +93,7 @@ public sealed class PowerShellScript : AutomationScript
             using PowerShell shell = PowerShell.Create(_initialPowerShellState);
             shell.AddScript(ContentString);
 
-            if (Parameters.Parameters.Any())
+            if (Parameters.Any())
             {
                 RegisterParameters(shell);
             }

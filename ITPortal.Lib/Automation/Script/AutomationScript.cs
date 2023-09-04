@@ -1,5 +1,5 @@
 ﻿using ITPortal.Lib.Automation.Output;
-using ITPortal.Lib.Script.Parameter;
+using ITPortal.Lib.Automation.Script.Parameter;
 using System.Text.Json.Serialization;
 
 namespace ITPortal.Lib.Automation.Script;
@@ -15,7 +15,7 @@ public abstract class AutomationScript
     public string? ContentString { get; protected set; }
     public string DeviceName { get; set; } = "Localhost";
     public ScriptLoadState LoadState { get; protected set; }
-    public ScriptParameterList Parameters { get; protected set; } = new();
+    public List<ScriptParameter> Parameters { get; protected set; } = new();
 
     public AutomationScript() { }
 
@@ -29,7 +29,7 @@ public abstract class AutomationScript
         DeviceName = deviceName;
     }
 
-    protected AutomationScript(string filePath, string fileName, string[] content, string deviceName, ScriptParameterList parameters)
+    protected AutomationScript(string filePath, string fileName, string[] content, string deviceName, List<ScriptParameter> parameters)
     {
         FilePath = filePath;
         FileName = fileName;
@@ -42,6 +42,11 @@ public abstract class AutomationScript
     public abstract Task<ScriptExecutionState> InvokeAsync(string cancellationMessage, ScriptOutputList scriptOutput, CancellationToken cancellationToken);
 
     public abstract bool LoadParameters();
+
+    public void AddParameter(string parameterName, Type parameterType, bool mandatory = false)
+    {
+        Parameters.Add(new ScriptParameter(parameterName, parameterType, mandatory));
+    }
 
     public virtual bool LoadFromFile(string filePath)
     {
