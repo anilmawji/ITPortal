@@ -7,18 +7,24 @@ namespace ITPortal.Lib.Automation.Script;
 [JsonDerivedType(typeof(PowerShellScript), typeDiscriminator: "psScript")]
 public abstract class AutomationScript
 {
-    public string? FilePath { get; protected set; }
-    public string? FileName { get; protected set; }
-    public string[]? Content { get; protected set; }
+    public string? FilePath { get; private set; }
+    public string? FileName { get; private set; }
+    public string[] Content { get; private set; }
 
     [JsonIgnore]
-    public string? ContentString { get; protected set; }
+    public string ContentString { get; private set; }
+    public List<ScriptParameter> Parameters { get; private set; }
     public ScriptLoadState LoadState { get; protected set; }
-    public List<ScriptParameter> Parameters { get; protected set; } = new();
 
-    public AutomationScript() { }
+    public AutomationScript()
+    {
+        FileName = string.Empty;
+        Content = Array.Empty<string>();
+        ContentString = string.Empty;
+        Parameters = new List<ScriptParameter>();
+    }
 
-    public AutomationScript(string filePath)
+    public AutomationScript(string filePath) : this()
     {
         LoadFromFile(filePath);
     }
@@ -28,8 +34,13 @@ public abstract class AutomationScript
         FilePath = filePath;
         FileName = fileName;
         Content = content;
-        ContentString = string.Join("\n", Content);
+        ContentString = GetContentString();
         Parameters = parameters;
+    }
+
+    private string GetContentString()
+    {
+        return string.Join("\n", Content);
     }
 
     public abstract Task<ScriptExecutionState> InvokeAsync(string deviceName, ScriptOutputList scriptOutput, string cancellationMessage, CancellationToken cancellationToken);
@@ -63,7 +74,7 @@ public abstract class AutomationScript
         try
         {
             Content = File.ReadAllLines(filePath);
-            ContentString = string.Join("\n", Content);
+            ContentString = GetContentString();
             LoadState = ScriptLoadState.Success;
 
             return LoadParameters();
@@ -90,8 +101,8 @@ public abstract class AutomationScript
         LoadState = ScriptLoadState.Unloaded;
         FilePath = null;
         FileName = null;
-        Content = null;
-        ContentString = null;
+        Content = Array.Empty<string>();
+        ContentString = string.Empty;
     }
 
     public bool IsUnloaded()
@@ -109,7 +120,7 @@ public abstract class AutomationScript
         return LoadState == ScriptLoadState.Failed;
     }
     
-    public override string? ToString()
+    public override string ToString()
     {
         return ContentString;
     }

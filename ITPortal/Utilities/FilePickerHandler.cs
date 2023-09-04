@@ -16,7 +16,7 @@ public sealed class FilePickerHandler
 
             foreach (string fileType in options.FileTypes.Value)
             {
-                if (IsFileOfType(result, fileType))
+                if (result.FileName.EndsWith(fileType, StringComparison.OrdinalIgnoreCase))
                 {
                     return result;
                 }
@@ -27,10 +27,5 @@ public sealed class FilePickerHandler
         {
             return null;
         }
-    }
-
-    private static bool IsFileOfType(FileResult result, string fileType)
-    {
-        return result.FileName.EndsWith(fileType, StringComparison.OrdinalIgnoreCase);
     }
 }
