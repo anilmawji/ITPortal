@@ -304,17 +304,15 @@
         {
             if (_creatingNewJob)
             {
-                if (_newJobName != string.Empty && _newJobName != _initialJobName)
+                if (ShouldUpdateJobName())
                 {
                     _job.Name = _newJobName;
                 }
                 ScriptJobService.AddJob(_job);
             }
-            else if (_newJobName != string.Empty && _newJobName != _initialJobName)
+            else if (ShouldUpdateJobName())
             {
-                System.Diagnostics.Debug.WriteLine(ScriptJobService.TryUpdateJobName(_job, _newJobName));
-                System.Diagnostics.Debug.WriteLine("old: " + _initialJobName);
-                System.Diagnostics.Debug.WriteLine("new: " + _newJobName);
+                ScriptJobService.UpdateJobName(_job, _newJobName);
             }
             //string text = JsonSerializer.Serialize(_job, ScriptJobContext.Default.ScriptJob);
             ////System.Diagnostics.Debug.WriteLine(text);
@@ -328,5 +326,10 @@
 
             GoToJobs();
         }
+    }
+
+    private bool ShouldUpdateJobName()
+    {
+        return _newJobName != string.Empty && _newJobName != _initialJobName;
     }
 }

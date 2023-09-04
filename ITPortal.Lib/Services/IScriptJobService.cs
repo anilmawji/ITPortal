@@ -10,7 +10,7 @@ public interface IScriptJobService
 
     public void AddJob(ScriptJob job);
     public string GenerateUniqueDefaultJobName();
-    public bool TryUpdateJobName(ScriptJob job, string newJobName);
+    public bool UpdateJobName(ScriptJob job, string newJobName);
     public ScriptJobResult RunJob(ScriptJob job, string deviceName, ScriptOutputList scriptOutput);
     public ScriptJobResult GetJobResult(int jobResultId);
     public bool HasJob(string jobName);

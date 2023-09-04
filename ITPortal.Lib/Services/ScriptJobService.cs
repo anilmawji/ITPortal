@@ -28,7 +28,7 @@ public sealed class ScriptJobService : IScriptJobService
         return name;
     }
 
-    public bool TryUpdateJobName(ScriptJob job, string newJobName)
+    public bool UpdateJobName(ScriptJob job, string newJobName)
     {
         if (!Jobs.Remove(job.Name))
         {
