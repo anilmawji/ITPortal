@@ -12,6 +12,16 @@ public sealed class ScriptJobService : IScriptJobService
 
     private int _nextResultId = 0;
 
+    public ScriptJobService()
+    {
+        System.Diagnostics.Debug.WriteLine("deserialize stuff here");
+    }
+
+    public void DeserializeJobs()
+    {
+
+    }
+
     public void AddJob(ScriptJob job)
     {
         Jobs.Add(job.Name, job);

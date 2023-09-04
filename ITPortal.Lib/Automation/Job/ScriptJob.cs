@@ -62,6 +62,21 @@ public sealed class ScriptJob : IDisposable
         StateChanged?.Invoke(this, State);
     }
 
+    public bool IsIdle()
+    {
+        return State == ScriptJobState.Idle;
+    }
+
+    public bool IsScheduled()
+    {
+        return State == ScriptJobState.Scheduled;
+    }
+
+    public bool IsRunning()
+    {
+        return State == ScriptJobState.Running;
+    }
+
     public void Dispose()
     {
         StateChanged.DisposeSubscriptions();

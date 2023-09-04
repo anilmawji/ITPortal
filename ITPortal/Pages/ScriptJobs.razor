@@ -65,7 +65,7 @@
                                        OnClick="() => OpenCancelJobDialog(context)"></MudIconButton>
                     }
                     <MudIconButton Icon=@Icons.Material.Filled.Edit aria-label="edit"
-                                   OnClick="() => GoToEditJob(context.Name)"></MudIconButton>
+                                   OnClick="() => TryGoToEditJob(context)"></MudIconButton>
                     <MudIconButton Icon=@Icons.Material.Filled.Delete aria-label="delete"
                                    OnClick="() => OpenDeleteJobDialog(context.Name)"></MudIconButton>
                 </MudTh>
@@ -162,9 +162,11 @@
         NavigationManager.NavigateTo(PageRoute.CreateScriptJob);
     }
 
-    private void GoToEditJob(string jobName)
+    private void TryGoToEditJob(ScriptJob job)
     {
-        NavigationManager.NavigateTo(PageRoute.EditScriptJobWithName(jobName));
+        if (job.IsRunning()) return;
+
+        NavigationManager.NavigateTo(PageRoute.EditScriptJobWithName(job.Name));
     }
 
     private bool FilterJobFunc(ScriptJob job) => DoFilterJobFunc(job, _searchString);
