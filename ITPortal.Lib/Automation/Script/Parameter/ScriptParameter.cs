@@ -8,57 +8,57 @@ public sealed class ScriptParameter
 {
     public string Name { get; set; }
     public object Value { get; set; }
-    public string DesiredTypeName { get; private set; }
+    public string TypeName { get; private set; }
     public bool Mandatory { get; private set; }
 
-    public ScriptParameter(string name, Type desiredType, bool mandatory = false)
+    public ScriptParameter(string name, Type type, bool mandatory = false)
     {
         Name = name;
-        Value = GetDefaultValue(desiredType);
-        DesiredTypeName = desiredType.Name;
+        Value = GetDefaultValue(type);
+        TypeName = type.Name;
         Mandatory = mandatory;
     }
 
     [JsonConstructor]
-    public ScriptParameter(string name, object value, string desiredTypeName, bool mandatory)
+    public ScriptParameter(string name, object value, string typeName, bool mandatory)
     {
         Name = name;
         Value = value;
-        DesiredTypeName = desiredTypeName;
+        TypeName = typeName;
         Mandatory = mandatory;
     }
 
-    public static object GetDefaultValue(Type desiredType)
+    private static object GetDefaultValue(Type type)
     {
         // It's important to check IsValueType before calling GetUninitializedObject
         // GetUninitializedObject is valid for reference types, but it will not return null
-        if (desiredType.IsValueType)
+        if (type.IsValueType)
         {
-            if (desiredType == typeof(DateTime))
+            if (type == typeof(DateTime))
             {
                 // Override default value for DateTime (1/1/1001)
                 return DateTime.Today;
             }
-            else if (desiredType == typeof(bool) || desiredType == typeof(SwitchParameter))
+            else if (type == typeof(bool) || type == typeof(SwitchParameter))
             {
                 return false;
             }
-            else if (desiredType == typeof(int) || desiredType == typeof(float) || desiredType == typeof(double))
+            else if (type == typeof(int) || type == typeof(float) || type == typeof(double))
             {
                 // This is what Microsoft's codebase uses to get default values for value types at runtime
-                return FormatterServices.GetUninitializedObject(desiredType);
+                return FormatterServices.GetUninitializedObject(type);
             }
         }
         // Prepare default values for reference types
         else
         {
-            if (desiredType == typeof(string))
+            if (type == typeof(string))
             {
                 return string.Empty;
             }
-            else if (desiredType.IsArray)
+            else if (type.IsArray)
             {
-                if (desiredType.GetElementType() == null)
+                if (type.GetElementType() == null)
                 {
                     return "Unknown";
                 }
@@ -69,14 +69,9 @@ public sealed class ScriptParameter
         return "Unknown";
     }
 
-    public bool HasDesiredType(Type type)
+    public bool IsType(Type type)
     {
-        return DesiredTypeName == type.Name;
-    }
-
-    public Type? GetValueType()
-    {
-        return Value?.GetType();
+        return TypeName == type.Name;
     }
 
     public override string? ToString()
