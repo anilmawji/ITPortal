@@ -7,15 +7,15 @@ namespace ITPortal.Lib.Automation.Job;
 
 public sealed class ScriptJobResult : IDisposable
 {
-    public int Id { get; set; }
-    public string? JobName { get; set; }
-    public string? ScriptName { get; set; }
-    public string? DeviceName { get; set; }
-    public DateTime ExecutionTime { get; set; }
-    public ScriptOutputList ScriptOutput { get; set; }
+    public int Id { get; private set; }
+    public string JobName { get; private set; }
+    public string ScriptName { get; private set; }
+    public string DeviceName { get; private set; }
+    public DateTime ExecutionTime { get; private set; }
+    public ScriptOutputList ScriptOutput { get; private set; }
 
     [JsonIgnore]
-    public ScriptExecutionState ExecutionState { get; set; }
+    public ScriptExecutionState ExecutionState { get; private set; }
     public event EventHandler<ScriptExecutionState>? ExecutionResultReceived;
 
     [JsonConstructor]
@@ -32,6 +32,7 @@ public sealed class ScriptJobResult : IDisposable
 
     internal void InvokeExecutionResultReceived(ScriptExecutionState newState)
     {
+        ExecutionState = newState;
         ExecutionResultReceived?.Invoke(this, newState);
     }
 

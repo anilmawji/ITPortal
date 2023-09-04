@@ -47,7 +47,6 @@ public sealed class ScriptJob : IDisposable
             _cancellationTokenSource.Token
         );
         result.InvokeExecutionResultReceived(executionResult);
-        result.ExecutionState = executionResult;
 
         SetState(ScriptJobState.Idle);
     }
