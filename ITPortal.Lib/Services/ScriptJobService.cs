@@ -28,6 +28,18 @@ public sealed class ScriptJobService : IScriptJobService
         return name;
     }
 
+    public bool TryUpdateJobName(ScriptJob job, string newJobName)
+    {
+        if (!Jobs.Remove(job.Name))
+        {
+            return false;
+        }
+        job.Name = newJobName;
+        Jobs.Add(newJobName, job);
+
+        return true;
+    }
+
     public ScriptJobResult RunJob(ScriptJob job, string deviceName, ScriptOutputList scriptOutput)
     {
         ArgumentNullException.ThrowIfNull(job.Script.FileName, nameof(job.Script.FileName));

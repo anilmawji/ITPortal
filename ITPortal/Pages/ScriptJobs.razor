@@ -164,6 +164,7 @@
 
     private void GoToEditJob(string jobName)
     {
+        System.Diagnostics.Debug.WriteLine(jobName);
         NavigationManager.NavigateTo(PageRoute.EditScriptJobWithName(jobName));
     }
 

@@ -13,7 +13,7 @@
     <MudForm @ref=@_jobForm @bind-IsValid=@_canSaveJob @bind-Errors=@_errors>
         <PageSection Title="Job Details">
             <div class="input-line">
-                <MudTextField T="string" @bind-Value=@_currentJobName Label="Name" Variant="Variant.Filled" Margin="Margin.Dense"
+                <MudTextField T="string" @bind-Value=@_newJobName Label="Name" Variant="Variant.Filled" Margin="Margin.Dense"
                               Validation=@(new Func<string, IEnumerable<string>>(ValidateJobName)) Placeholder=@_initialJobName />
             </div>
             <div class="input-line">
@@ -205,7 +205,7 @@
 
     private ScriptJob _job;
     private string _initialJobName;
-    private string _currentJobName = string.Empty;
+    private string _newJobName;
     private bool _creatingNewJob;
     private bool _canSaveJob;
 
@@ -213,6 +213,7 @@
     {
         if (JobName == null)
         {
+            _newJobName = string.Empty;
             _initialJobName = ScriptJobService.GenerateUniqueDefaultJobName();
             _job = new ScriptJob(new PowerShellScript(), _initialJobName);
             _headerTitle = "New Job";
@@ -220,8 +221,10 @@
         }
         else
         {
-            _initialJobName = _job.Name;
+            _initialJobName = JobName;
+            _newJobName = _initialJobName;
             ScriptJobService.Jobs.TryGetValue(JobName, out _job);
+            System.Diagnostics.Debug.WriteLine("Found job: " + _job.Name);
             _headerTitle = $"Edit Job \"{JobName}\"";
         }
     }
@@ -299,21 +302,29 @@
 
         if (_canSaveJob)
         {
-            _job.Name = string.IsNullOrEmpty(_currentJobName) ? _initialJobName : _currentJobName;
-
             if (_creatingNewJob)
             {
+                if (_newJobName != string.Empty && _newJobName != _initialJobName)
+                {
+                    _job.Name = _newJobName;
+                }
                 ScriptJobService.AddJob(_job);
             }
-            string text = JsonSerializer.Serialize(_job, ScriptJobContext.Default.ScriptJob);
-            //System.Diagnostics.Debug.WriteLine(text);
-            ScriptJob _job2 = JsonSerializer.Deserialize<ScriptJob>(text, ScriptJobContext.Default.ScriptJob);
+            else if (_newJobName != string.Empty && _newJobName != _initialJobName)
+            {
+                System.Diagnostics.Debug.WriteLine(ScriptJobService.TryUpdateJobName(_job, _newJobName));
+                System.Diagnostics.Debug.WriteLine("old: " + _initialJobName);
+                System.Diagnostics.Debug.WriteLine("new: " + _newJobName);
+            }
+            //string text = JsonSerializer.Serialize(_job, ScriptJobContext.Default.ScriptJob);
+            ////System.Diagnostics.Debug.WriteLine(text);
+            //ScriptJob _job2 = JsonSerializer.Deserialize<ScriptJob>(text, ScriptJobContext.Default.ScriptJob);
 
-            string text2 = JsonSerializer.Serialize(_job2, ScriptJobContext.Default.ScriptJob);
+            //string text2 = JsonSerializer.Serialize(_job2, ScriptJobContext.Default.ScriptJob);
 
-            System.Diagnostics.Debug.WriteLine(text2);
-            System.Diagnostics.Debug.WriteLine(_job2.Script is PowerShellScript);
-            System.Diagnostics.Debug.WriteLine(_job2.Script.Parameters is List<ScriptParameter>);
+            //System.Diagnostics.Debug.WriteLine(text2);
+            //System.Diagnostics.Debug.WriteLine(_job2.Script is PowerShellScript);
+            //System.Diagnostics.Debug.WriteLine(_job2.Script.Parameters is List<ScriptParameter>);
 
             GoToJobs();
         }
