@@ -19,7 +19,7 @@ public sealed class ScriptJobService : IScriptJobService
         Jobs.Add(job.Name, job);
     }
 
-    public ScriptJobResult RunJob(ScriptJob job, ScriptOutputList scriptOutput)
+    public ScriptJobResult RunJob(ScriptJob job, string deviceName, ScriptOutputList scriptOutput)
     {
         ArgumentNullException.ThrowIfNull(job.Name, nameof(job.Name));
         ArgumentNullException.ThrowIfNull(job.Script.FileName, nameof(job.Script.FileName));
@@ -28,7 +28,7 @@ public sealed class ScriptJobService : IScriptJobService
             _nextResultId++,
             job.Name,
             job.Script.FileName,
-            job.Script.DeviceName,
+            deviceName,
             DateTime.Now,
             scriptOutput
         );
@@ -40,7 +40,7 @@ public sealed class ScriptJobService : IScriptJobService
             JobResults.RemoveAt(0);
         }
 
-        job.Run(result, ScriptOutputList.FormatAsSystemMessage("Script execution was cancelled"))
+        job.Run(deviceName, result, ScriptOutputList.FormatAsSystemMessage("Script execution was cancelled"))
             .ConfigureAwait(false);
 
         return result;

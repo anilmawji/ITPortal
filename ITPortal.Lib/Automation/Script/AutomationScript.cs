@@ -13,7 +13,6 @@ public abstract class AutomationScript
 
     [JsonIgnore]
     public string? ContentString { get; protected set; }
-    public string DeviceName { get; set; } = "Localhost";
     public ScriptLoadState LoadState { get; protected set; }
     public List<ScriptParameter> Parameters { get; protected set; } = new();
 
@@ -24,22 +23,16 @@ public abstract class AutomationScript
         LoadFromFile(filePath);
     }
 
-    public AutomationScript(string filePath, string deviceName) : this(filePath)
-    {
-        DeviceName = deviceName;
-    }
-
-    protected AutomationScript(string filePath, string fileName, string[] content, string deviceName, List<ScriptParameter> parameters)
+    protected AutomationScript(string filePath, string fileName, string[] content, List<ScriptParameter> parameters)
     {
         FilePath = filePath;
         FileName = fileName;
         Content = content;
         ContentString = string.Join("\n", Content);
-        DeviceName = deviceName;
         Parameters = parameters;
     }
 
-    public abstract Task<ScriptExecutionState> InvokeAsync(string cancellationMessage, ScriptOutputList scriptOutput, CancellationToken cancellationToken);
+    public abstract Task<ScriptExecutionState> InvokeAsync(string deviceName, ScriptOutputList scriptOutput, string cancellationMessage, CancellationToken cancellationToken);
 
     public abstract bool LoadParameters();
 

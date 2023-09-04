@@ -159,13 +159,6 @@
         }
 
         <PageSection>
-            <div class="input-group device-selection">
-                <div class="input-line">
-                    <MudSelect T="string" @bind-Value=@_job.Script.DeviceName Label="Device" Variant="Variant.Filled" Margin="Margin.Dense" Required="true">
-                        <MudSelectItem Value=@LocalhostDevice />
-                    </MudSelect>
-                </div>
-            </div>
             <ErrorList Errors="@_errors" />
             <div class="create-job-buttons">
                 <MudGrid Spacing="2">
@@ -203,7 +196,6 @@
     };
     private static readonly string[] s_extendedInputFieldTriggers = { "body", "description", "message" };
 
-    private const string LocalhostDevice = "Localhost";
     private const char Delimiter = ' ';
     private const int ChipsMaxWidth = 80;
 

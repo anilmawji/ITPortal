@@ -35,14 +35,15 @@ public sealed class ScriptJob : IDisposable
         Description = description;
     }
 
-    public async Task Run(ScriptJobResult result, string cancellationMessage)
+    public async Task Run(string deviceName, ScriptJobResult result, string cancellationMessage)
     {
         _cancellationTokenSource = new();
         SetState(ScriptJobState.Running);
 
         ScriptExecutionState executionResult = await Script.InvokeAsync(
-            cancellationMessage,
+            deviceName,
             result.ScriptOutput,
+            cancellationMessage,
             _cancellationTokenSource.Token
         );
         result.InvokeExecutionResultReceived(executionResult);

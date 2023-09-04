@@ -21,14 +21,9 @@ public sealed class PowerShellScript : AutomationScript
         _initialPowerShellState = NewInitialSessionState();
     }
 
-    public PowerShellScript(string filePath, string deviceName) : base(filePath, deviceName)
-    {
-        _initialPowerShellState = NewInitialSessionState();
-    }
-
     [JsonConstructor]
-    public PowerShellScript(string filePath, string fileName, string[] content, string deviceName, List<ScriptParameter> parameters)
-        : base(filePath, fileName, content, deviceName, parameters)
+    public PowerShellScript(string filePath, string fileName, string[] content, List<ScriptParameter> parameters)
+        : base(filePath, fileName, content, parameters)
     {
         _initialPowerShellState = NewInitialSessionState();
     }
@@ -37,7 +32,7 @@ public sealed class PowerShellScript : AutomationScript
     {
         // CreateDefault() only loads the commands necessary to host PowerShell, CreateDefault2() loads all available commands
         InitialSessionState initialPowerShellState = InitialSessionState.CreateDefault();
-        // Limit script execution to one thread
+        // Allow multiple threads in the PS session
         initialPowerShellState.ApartmentState = ApartmentState.MTA;
         // Set execution policy of the PS session
         initialPowerShellState.ExecutionPolicy = Microsoft.PowerShell.ExecutionPolicy.Bypass;
@@ -60,9 +55,12 @@ public sealed class PowerShellScript : AutomationScript
             return false;
         }
 
-        foreach (ParameterAst parameter in scriptAst.ParamBlock.Parameters)
+        if (scriptAst.ParamBlock != null)
         {
-            AddParameter(parameter);
+            foreach (ParameterAst parameter in scriptAst.ParamBlock.Parameters)
+            {
+                AddParameter(parameter);
+            }
         }
         return true;
     }
@@ -72,7 +70,7 @@ public sealed class PowerShellScript : AutomationScript
         Parameters.Add(new ScriptParameter(parameter.Name.VariablePath.ToString(), parameter.StaticType, parameter.IsMandatory()));
     }
 
-    public override async Task<ScriptExecutionState> InvokeAsync(string cancellationMessage, ScriptOutputList scriptOutput, CancellationToken cancellationToken)
+    public override async Task<ScriptExecutionState> InvokeAsync(string deviceName, ScriptOutputList scriptOutput, string cancellationMessage, CancellationToken cancellationToken)
     {
         // Check if a pre-cancelled token was given
         if (cancellationToken.IsCancellationRequested)

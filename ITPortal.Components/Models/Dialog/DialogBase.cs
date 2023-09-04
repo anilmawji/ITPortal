@@ -6,7 +6,7 @@ namespace ITPortal.Components.Models.Dialog;
 public class DialogBase : ComponentBase
 {
     [CascadingParameter, EditorRequired]
-    public MudDialogInstance? MudDialog { get; set; }
+    public MudDialogInstance MudDialog { get; set; } = null!;
 
     [Parameter]
     public RenderFragment? ChildContent { get; set; }

@@ -9,7 +9,7 @@ public interface IScriptJobService
     public List<ScriptJobResult> JobResults { get; set; }
 
     public void AddJob(ScriptJob job);
-    public ScriptJobResult RunJob(ScriptJob job, ScriptOutputList scriptOutput);
+    public ScriptJobResult RunJob(ScriptJob job, string deviceName, ScriptOutputList scriptOutput);
     public ScriptJobResult GetJobResult(int jobResultId);
     public bool HasJob(string jobName);
 }

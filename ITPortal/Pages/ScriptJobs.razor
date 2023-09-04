@@ -116,7 +116,7 @@
         if (!dialogResult.Canceled)
         {
             RunScriptJobDialogResult dialogResultData = dialogResult.Data as RunScriptJobDialogResult;
-            ScriptJobResult jobResult = ScriptJobService.RunJob(job, new PowerShellScriptOutputList());
+            ScriptJobResult jobResult = ScriptJobService.RunJob(job, dialogResultData.DeviceName, new PowerShellScriptOutputList());
 
             if (dialogResultData.ShouldRunJobImmediately)
             {

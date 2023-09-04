@@ -1,5 +1,9 @@
 ﻿.dialog-container {
-    height: calc(100vh - 200px);
-    min-height: 180px;
-    max-height: 200px;
+    height: calc(100vh - 180px);
+    min-height: 230px;
+    max-height: 260px;
+}
+
+.input-line {
+    margin-bottom: 10px;
 }
