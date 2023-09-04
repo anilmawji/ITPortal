@@ -1,21 +1,31 @@
 ﻿using System.Management.Automation;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace ITPortal.Lib.Automation.Script.Parameter;
 
 public sealed class ScriptParameter
 {
-    public string Name { get; }
-    public object? Value { get; set; }
-    public bool Mandatory { get; }
+    public string Name { get; set; }
+    public object Value { get; set; }
     public string DesiredTypeName { get; private set; }
+    public bool Mandatory { get; private set; }
 
     public ScriptParameter(string name, Type desiredType, bool mandatory = false)
     {
         Name = name;
-        Mandatory = mandatory;
         Value = GetDefaultValue(desiredType);
         DesiredTypeName = desiredType.Name;
+        Mandatory = mandatory;
+    }
+
+    [JsonConstructor]
+    public ScriptParameter(string name, object value, string desiredTypeName, bool mandatory)
+    {
+        Name = name;
+        Value = value;
+        DesiredTypeName = desiredTypeName;
+        Mandatory = mandatory;
     }
 
     public static object GetDefaultValue(Type desiredType)
@@ -26,7 +36,7 @@ public sealed class ScriptParameter
         {
             if (desiredType == typeof(DateTime))
             {
-                // The default value for DateTime given by C# sucks (1/1/1001)
+                // Override default value for DateTime (1/1/1001)
                 return DateTime.Today;
             }
             else if (desiredType == typeof(bool) || desiredType == typeof(SwitchParameter))
@@ -35,9 +45,9 @@ public sealed class ScriptParameter
             }
             else if (desiredType == typeof(int) || desiredType == typeof(float) || desiredType == typeof(double))
             {
+                // This is what Microsoft's codebase uses to get default values for value types at runtime
                 return FormatterServices.GetUninitializedObject(desiredType);
             }
-            // This is what Microsoft's codebase uses to get default values for value types at runtime
         }
         // Prepare default values for reference types
         else

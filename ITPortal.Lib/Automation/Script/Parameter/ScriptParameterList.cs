@@ -1,12 +1,20 @@
 ﻿using ITPortal.Lib.Automation.Script.Parameter;
-using System.Collections;
+using System.Text.Json.Serialization;
 
 namespace ITPortal.Lib.Script.Parameter;
 
-// Extends from IEnumerable instead of List<PSParameter> to force caller to interact with the list through exposed methods only
-public class ScriptParameterList : IEnumerable<ScriptParameter>
+[JsonDerivedType(typeof(PowerShellParameterList), typeDiscriminator: "psList")]
+public class ScriptParameterList
 {
     public List<ScriptParameter> Parameters { get; private set; } = new();
+
+    public ScriptParameterList() { }
+
+    [JsonConstructor]
+    public ScriptParameterList(List<ScriptParameter> parameters)
+    {
+        Parameters = parameters;
+    }
 
     public void Add(string parameterName, Type parameterType, bool mandatory = false)
     {
@@ -14,11 +22,6 @@ public class ScriptParameterList : IEnumerable<ScriptParameter>
     }
 
     public IEnumerator<ScriptParameter> GetEnumerator()
-    {
-        return Parameters.GetEnumerator();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
     {
         return Parameters.GetEnumerator();
     }

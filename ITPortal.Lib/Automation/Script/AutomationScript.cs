@@ -1,15 +1,19 @@
 ﻿using ITPortal.Lib.Automation.Output;
 using ITPortal.Lib.Script.Parameter;
+using System.Text.Json.Serialization;
 
 namespace ITPortal.Lib.Automation.Script;
 
+[JsonDerivedType(typeof(PowerShellScript), typeDiscriminator: "psScript")]
 public abstract class AutomationScript
 {
-    public string DeviceName { get; set; } = "Localhost";
     public string? FilePath { get; protected set; }
     public string? FileName { get; protected set; }
     public string[]? Content { get; protected set; }
+
+    [JsonIgnore]
     public string? ContentString { get; protected set; }
+    public string DeviceName { get; set; } = "Localhost";
     public ScriptLoadState LoadState { get; protected set; }
     public ScriptParameterList Parameters { get; protected set; } = new();
 
@@ -23,6 +27,16 @@ public abstract class AutomationScript
     public AutomationScript(string filePath, string deviceName) : this(filePath)
     {
         DeviceName = deviceName;
+    }
+
+    protected AutomationScript(string filePath, string fileName, string[] content, string deviceName, ScriptParameterList parameters)
+    {
+        FilePath = filePath;
+        FileName = fileName;
+        Content = content;
+        ContentString = string.Join("\n", Content);
+        DeviceName = deviceName;
+        Parameters = parameters;
     }
 
     public abstract Task<ScriptExecutionState> InvokeAsync(string cancellationMessage, ScriptOutputList scriptOutput, CancellationToken cancellationToken);

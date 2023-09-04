@@ -1,5 +1,6 @@
 ﻿using ITPortal.Lib.Automation.Script;
 using ITPortal.Lib.Utilities;
+using System.Text.Json.Serialization;
 
 namespace ITPortal.Lib.Automation.Job;
 
@@ -8,9 +9,10 @@ public sealed class ScriptJob : IDisposable
     public AutomationScript Script { get; set; }
     public string? Name { get; set; }
     public string Description { get; set; } = string.Empty;
+
+    [JsonIgnore]
     public ScriptJobState State { get; private set; }
     public DateTime CreationTime { get; private set; }
-    public ScriptJobResult? LatestResult { get; private set; }
 
     public event EventHandler<ScriptJobState>? StateChanged;
 
@@ -19,16 +21,15 @@ public sealed class ScriptJob : IDisposable
     public ScriptJob(AutomationScript script)
     {
         Script = script;
-        State = ScriptJobState.Idle;
         CreationTime = DateTime.Now;
     }
 
     public ScriptJob(AutomationScript script, string name) : this(script)
     {
-        Script = script;
         Name = name;
     }
 
+    [JsonConstructor]
     public ScriptJob(AutomationScript script, string name, string description) : this(script, name)
     {
         Description = description;
@@ -36,7 +37,6 @@ public sealed class ScriptJob : IDisposable
 
     public async Task Run(ScriptJobResult result, string cancellationMessage)
     {
-        LatestResult = result;
         _cancellationTokenSource = new();
         SetState(ScriptJobState.Running);
 

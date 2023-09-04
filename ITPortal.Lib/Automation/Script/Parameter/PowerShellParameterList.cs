@@ -1,13 +1,17 @@
 ﻿using ITPortal.Lib.Script.Parameter;
 using System.Management.Automation.Language;
+using System.Text.Json.Serialization;
 
 namespace ITPortal.Lib.Automation.Script.Parameter;
 
-public sealed class PowershellParameterList : ScriptParameterList
+public sealed class PowerShellParameterList : ScriptParameterList
 {
-    public PowershellParameterList() { }
+    public PowerShellParameterList() { }
 
-    public PowershellParameterList(IEnumerable<ParameterAst> parameters)
+    [JsonConstructor]
+    public PowerShellParameterList(List<ScriptParameter> parameters) : base(parameters) { }
+
+    public PowerShellParameterList(IEnumerable<ParameterAst> parameters)
     {
         foreach (ParameterAst parameter in parameters)
         {

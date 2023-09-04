@@ -62,7 +62,7 @@
         {
             <PageSection Title="Parameters">
                 <div class="input-group">
-                    @if (_job.Script.Parameters.Count() > 0)
+                    @if (_job.Script.Parameters.Parameters.Any())
                     {
                         @foreach (ScriptParameter parameter in _job.Script.Parameters)
                         {
@@ -314,6 +314,14 @@
                 ScriptJobService.AddJob(_job);
             }
             string text = JsonSerializer.Serialize(_job, ScriptJobContext.Default.ScriptJob);
+            //System.Diagnostics.Debug.WriteLine(text);
+            ScriptJob _job2 = JsonSerializer.Deserialize<ScriptJob>(text, ScriptJobContext.Default.ScriptJob);
+
+            string text2 = JsonSerializer.Serialize(_job2, ScriptJobContext.Default.ScriptJob);
+
+            System.Diagnostics.Debug.WriteLine(text2);
+            System.Diagnostics.Debug.WriteLine(_job2.Script is PowerShellScript);
+            System.Diagnostics.Debug.WriteLine(_job2.Script.Parameters is PowerShellParameterList);
 
             GoToJobs();
         }

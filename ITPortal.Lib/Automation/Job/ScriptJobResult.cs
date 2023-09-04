@@ -1,6 +1,7 @@
 ﻿using ITPortal.Lib.Automation.Output;
 using ITPortal.Lib.Automation.Script;
 using ITPortal.Lib.Utilities;
+using System.Text.Json.Serialization;
 
 namespace ITPortal.Lib.Automation.Job;
 
@@ -12,9 +13,12 @@ public sealed class ScriptJobResult : IDisposable
     public string? DeviceName { get; set; }
     public DateTime ExecutionTime { get; set; }
     public ScriptOutputList ScriptOutput { get; set; }
+
+    [JsonIgnore]
     public ScriptExecutionState ExecutionState { get; set; }
     public event EventHandler<ScriptExecutionState>? ExecutionResultReceived;
 
+    [JsonConstructor]
     public ScriptJobResult(int id, string jobName, string scriptName, string deviceName, DateTime executionTime, ScriptOutputList scriptOutput)
     {
         Id = id;

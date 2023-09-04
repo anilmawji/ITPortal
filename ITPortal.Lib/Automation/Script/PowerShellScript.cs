@@ -1,8 +1,10 @@
 ﻿using ITPortal.Lib.Automation.Output;
 using ITPortal.Lib.Automation.Script.Parameter;
+using ITPortal.Lib.Script.Parameter;
 using System.Management.Automation;
 using System.Management.Automation.Language;
 using System.Management.Automation.Runspaces;
+using System.Text.Json.Serialization;
 
 namespace ITPortal.Lib.Automation.Script;
 
@@ -21,6 +23,13 @@ public sealed class PowerShellScript : AutomationScript
     }
 
     public PowerShellScript(string filePath, string deviceName) : base(filePath, deviceName)
+    {
+        _initialPowerShellState = NewInitialSessionState();
+    }
+
+    [JsonConstructor]
+    public PowerShellScript(string filePath, string fileName, string[] content, string deviceName, ScriptParameterList parameters)
+        : base(filePath, fileName, content, deviceName, parameters)
     {
         _initialPowerShellState = NewInitialSessionState();
     }
@@ -54,11 +63,11 @@ public sealed class PowerShellScript : AutomationScript
 
         if (scriptAst.ParamBlock != null)
         {
-            Parameters = new PowershellParameterList(scriptAst.ParamBlock.Parameters);
+            Parameters = new PowerShellParameterList(scriptAst.ParamBlock.Parameters);
         }
         else
         {
-            Parameters = new PowershellParameterList();
+            Parameters = new PowerShellParameterList();
         }
 
         return true;
@@ -66,6 +75,7 @@ public sealed class PowerShellScript : AutomationScript
 
     public override async Task<ScriptExecutionState> InvokeAsync(string cancellationMessage, ScriptOutputList scriptOutput, CancellationToken cancellationToken)
     {
+        // Check if a pre-cancelled token was given
         if (cancellationToken.IsCancellationRequested)
         {
             scriptOutput.Add(cancellationMessage, ScriptOutputStreamType.Warning);
@@ -75,16 +85,16 @@ public sealed class PowerShellScript : AutomationScript
 
         if (!IsLoaded())
         {
-            throw new InvalidOperationException("Attempt to invoke a script that was not loaded");
+            throw new InvalidOperationException("Cannot invoke a script that has not been loaded");
         }
 
         try
         {
-            // "using" relies on compiler to dispose of shell when method is popped from call stack
+            // "using" relies on compiler to dispose of shell when try-catch block is exited
             using PowerShell shell = PowerShell.Create(_initialPowerShellState);
             shell.AddScript(ContentString);
 
-            if (Parameters.Any())
+            if (Parameters.Parameters.Any())
             {
                 RegisterParameters(shell);
             }
