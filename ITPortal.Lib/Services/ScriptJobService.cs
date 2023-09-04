@@ -14,14 +14,22 @@ public sealed class ScriptJobService : IScriptJobService
 
     public void AddJob(ScriptJob job)
     {
-        ArgumentNullException.ThrowIfNull(job.Name, nameof(job.Name));
-
         Jobs.Add(job.Name, job);
+    }
+
+    public string GenerateUniqueDefaultJobName()
+    {
+        string name = $"Job({Jobs.Count})";
+
+        while (HasJob(name))
+        {
+            name += "(1)";
+        }
+        return name;
     }
 
     public ScriptJobResult RunJob(ScriptJob job, string deviceName, ScriptOutputList scriptOutput)
     {
-        ArgumentNullException.ThrowIfNull(job.Name, nameof(job.Name));
         ArgumentNullException.ThrowIfNull(job.Script.FileName, nameof(job.Script.FileName));
 
         ScriptJobResult result = new(
@@ -53,6 +61,6 @@ public sealed class ScriptJobService : IScriptJobService
 
     public bool HasJob(string jobName)
     {
-        return Jobs.GetValueOrDefault(jobName) != default(ScriptJob?);
+        return Jobs.GetValueOrDefault(jobName) != default(ScriptJob);
     }
 }

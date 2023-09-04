@@ -13,8 +13,8 @@
     <MudForm @ref=@_jobForm @bind-IsValid=@_canSaveJob @bind-Errors=@_errors>
         <PageSection Title="Job Details">
             <div class="input-line">
-                <MudTextField T="string" @bind-Value=@_job.Name Label="Name" Variant="Variant.Filled" Margin="Margin.Dense"
-                              Validation=@(new Func<string, IEnumerable<string>>(ValidateJobName)) />
+                <MudTextField T="string" @bind-Value=@_currentJobName Label="Name" Variant="Variant.Filled" Margin="Margin.Dense"
+                              Validation=@(new Func<string, IEnumerable<string>>(ValidateJobName)) Placeholder=@_initialJobName />
             </div>
             <div class="input-line">
                 <MudTextField T="string" @bind-Value=@_job.Description Label="Description" Variant="Variant.Filled" Margin="Margin.Dense"
@@ -205,6 +205,7 @@
 
     private ScriptJob _job;
     private string _initialJobName;
+    private string _currentJobName = string.Empty;
     private bool _creatingNewJob;
     private bool _canSaveJob;
 
@@ -212,26 +213,23 @@
     {
         if (JobName == null)
         {
-            _job = new ScriptJob(new PowerShellScript());
+            _initialJobName = ScriptJobService.GenerateUniqueDefaultJobName();
+            _job = new ScriptJob(new PowerShellScript(), _initialJobName);
             _headerTitle = "New Job";
             _creatingNewJob = true;
         }
         else
         {
+            _initialJobName = _job.Name;
             ScriptJobService.Jobs.TryGetValue(JobName, out _job);
             _headerTitle = $"Edit Job \"{JobName}\"";
-            _initialJobName = _job.Name;
         }
     }
 
     private IEnumerable<string> ValidateJobName(string jobName)
     {
-        if (string.IsNullOrWhiteSpace(jobName))
-        {
-            yield return "Job name is a required field";
-            yield break;
-        }
-        if (jobName.Length < 3)
+        // If the current job name is blank, the default job name will be used upon form submission
+        if (jobName.Length < 3 && jobName.Length > 0)
         {
             yield return "Job name must be at least 3 characters in length";
         }
@@ -301,6 +299,8 @@
 
         if (_canSaveJob)
         {
+            _job.Name = string.IsNullOrEmpty(_currentJobName) ? _initialJobName : _currentJobName;
+
             if (_creatingNewJob)
             {
                 ScriptJobService.AddJob(_job);

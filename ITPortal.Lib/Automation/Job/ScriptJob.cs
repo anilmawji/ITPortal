@@ -6,38 +6,31 @@ namespace ITPortal.Lib.Automation.Job;
 
 public sealed class ScriptJob : IDisposable
 {
+    // TODO : change to private set
     public AutomationScript Script { get; set; }
-    public string? Name { get; set; }
-    public string Description { get; set; } = string.Empty;
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public DateTime CreationTime { get; private set; }
 
     [JsonIgnore]
     public ScriptJobState State { get; private set; }
-    public DateTime CreationTime { get; private set; }
-
     public event EventHandler<ScriptJobState>? StateChanged;
 
-    private CancellationTokenSource? _cancellationTokenSource;
+    private CancellationTokenSource _cancellationTokenSource = new();
 
-    public ScriptJob(AutomationScript script)
+    [JsonConstructor]
+    public ScriptJob(AutomationScript script, string name, string description)
     {
         Script = script;
+        Name = name;
+        Description = description;
         CreationTime = DateTime.Now;
     }
 
-    public ScriptJob(AutomationScript script, string name) : this(script)
-    {
-        Name = name;
-    }
-
-    [JsonConstructor]
-    public ScriptJob(AutomationScript script, string name, string description) : this(script, name)
-    {
-        Description = description;
-    }
+    public ScriptJob(AutomationScript script, string name) : this(script, name, string.Empty) { }
 
     public async Task Run(string deviceName, ScriptJobResult result, string cancellationMessage)
     {
-        _cancellationTokenSource = new();
         SetState(ScriptJobState.Running);
 
         ScriptExecutionState executionResult = await Script.InvokeAsync(
@@ -47,6 +40,7 @@ public sealed class ScriptJob : IDisposable
             _cancellationTokenSource.Token
         );
         result.InvokeExecutionResultReceived(executionResult);
+        _cancellationTokenSource = new();
 
         SetState(ScriptJobState.Idle);
     }
