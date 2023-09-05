@@ -312,7 +312,7 @@
         }
         else if (ShouldUpdateJobName())
         {
-            string oldJobFilePath = Path.Combine(FileHelper.ScriptJobsFolderPath, _job.Name, ".json");
+            string oldJobFilePath = Path.Combine(FileHelper.ScriptJobsFolderPath, _job.Name + ".json");
 
             if (File.Exists(oldJobFilePath))
             {
@@ -329,7 +329,7 @@
         }
         try
         {
-            File.WriteAllText(_job.ToJsonString(), Path.Combine(FileHelper.ScriptJobsFolderPath, _job.Name, ".json"));
+            File.WriteAllText(Path.Combine(FileHelper.ScriptJobsFolderPath, _job.Name + ".json"), _job.ToJsonString());
         }
         catch (Exception e)
         {
