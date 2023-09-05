@@ -6,15 +6,6 @@ public sealed class FileHelper
 {
     public static readonly string ScriptJobsFolderPath = Path.Combine(FileSystem.Current.AppDataDirectory, "jobs");
 
-    public static bool TryDeleteFile(string filePath)
-    {
-        if (!File.Exists(filePath)) return false;
-
-        File.Delete(filePath);
-
-        return true;
-    }
-
     public static async Task<FileResult> PickFile(PickOptions options)
     {
         try
@@ -43,6 +34,6 @@ public sealed class FileHelper
 
     public static void OpenFileWithDefaultProgram(string filePath)
     {
-        using Process process = Process.Start("explorer", "\"" + filePath + "\"");
+        using Process process = Process.Start("explorer", filePath);
     }
 }

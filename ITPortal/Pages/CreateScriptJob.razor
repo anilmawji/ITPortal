@@ -310,11 +310,31 @@
             }
             ScriptJobService.AddJob(_job);
         }
-        else if (ShouldUpdateJobName() && FileHelper.TryDeleteFile(Path.Combine(FileHelper.ScriptJobsFolderPath, _job.Name + ".json")))
+        else if (ShouldUpdateJobName())
         {
+            string oldJobFilePath = Path.Combine(FileHelper.ScriptJobsFolderPath, _job.Name, ".json");
+
+            if (File.Exists(oldJobFilePath))
+            {
+                try
+                {
+                    File.Delete(oldJobFilePath);
+                }
+                catch (Exception e)
+                {
+                    System.Diagnostics.Debug.WriteLine(e.Message);
+                }
+            }
             ScriptJobService.UpdateJobName(_job, _newJobName);
         }
-        File.WriteAllText(_job.ToJsonString(), Path.Combine(FileHelper.ScriptJobsFolderPath, _job.Name + ".json"));
+        try
+        {
+            File.WriteAllText(_job.ToJsonString(), Path.Combine(FileHelper.ScriptJobsFolderPath, _job.Name, ".json"));
+        }
+        catch (Exception e)
+        {
+            System.Diagnostics.Debug.WriteLine(e.Message);
+        }
 
         GoToJobs();
     }
