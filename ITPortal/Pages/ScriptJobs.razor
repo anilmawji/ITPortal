@@ -94,7 +94,7 @@
     {
         if (firstRender)
         {
-            LoadSavedScriptJobs();
+            InvokeAsync(LoadSavedScriptJobs);
 
             s_deleteJobDialogParameters.Add(dialog => dialog.ContentText, "Are you sure you want to delete this script job? This action cannot be undone.");
             s_deleteJobDialogParameters.Add(dialog => dialog.SubmitButtonText, "Delete");
@@ -112,8 +112,11 @@
 
     private void LoadSavedScriptJobs()
     {
-        FileHelper.TryCreateAppDataDirectory(Path.Combine(FileSystem.Current.AppDataDirectory, "jobs"));
-        IEnumerable<string> filePaths = Directory.EnumerateFiles(Path.Combine(FileSystem.Current.AppDataDirectory, "jobs"));
+        DirectoryInfo info = Directory.CreateDirectory(FileHelper.ScriptJobsFolderPath);
+        // Jobs folder has just been created; no jobs to load
+        if (!info.Exists) return;
+
+        IEnumerable<string> filePaths = Directory.EnumerateFiles(FileHelper.ScriptJobsFolderPath);
 
         foreach (string path in filePaths)
         {

@@ -4,38 +4,15 @@ namespace ITPortal.Utilities;
 
 public sealed class FileHelper
 {
-    // fileName must include the file's name and the file extension
-    public static void WriteTextToAppDataFile(string jsonText, string filePath)
+    public static readonly string ScriptJobsFolderPath = Path.Combine(FileSystem.Current.AppDataDirectory, "jobs");
+
+    public static bool TryDeleteFile(string filePath)
     {
-        string fullPath = Path.Combine(FileSystem.Current.AppDataDirectory, filePath);
+        if (!File.Exists(filePath)) return false;
 
-        File.WriteAllText(fullPath, jsonText);
-    }
-
-    // fileName must include the file's name and the file extension
-    public static string ReadTextFromAppDataFile(string filePath)
-    {
-        string fullPath = Path.Combine(FileSystem.Current.AppDataDirectory, filePath);
-
-        return File.ReadAllText(fullPath);
-    }
-
-    public static bool TryDeleteAppDataFile(string filePath)
-    {
-        string fullPath = Path.Combine(FileSystem.Current.AppDataDirectory, filePath);
-
-        if (!File.Exists(fullPath)) return false;
-
-        File.Delete(fullPath);
+        File.Delete(filePath);
 
         return true;
-    }
-
-    public static DirectoryInfo TryCreateAppDataDirectory(string directoryPath)
-    {
-        string fullPath = Path.Combine(FileSystem.Current.AppDataDirectory, directoryPath);
-
-        return Directory.CreateDirectory(fullPath);
     }
 
     public static async Task<FileResult> PickFile(PickOptions options)

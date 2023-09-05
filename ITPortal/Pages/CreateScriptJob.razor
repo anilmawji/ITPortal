@@ -23,7 +23,7 @@
         </PageSection>
 
         <PageSection Title="Script">
-            <ChooseFileButton OnClick=@PickAndLoadScript FileName=@(_job.Script.IsLoaded() ? _job.Script.FileName : null) />
+            <ChooseFileButton OnClick=@PickAndLoadScript FileName=@_job.Script.FileName />
 
             @if (_job.Script.IsLoaded())
             {
@@ -310,11 +310,11 @@
             }
             ScriptJobService.AddJob(_job);
         }
-        else if (ShouldUpdateJobName() && FileHelper.TryDeleteAppDataFile(Path.Combine("jobs", _job.Name + ".json")))
+        else if (ShouldUpdateJobName() && FileHelper.TryDeleteFile(Path.Combine(FileHelper.ScriptJobsFolderPath, _job.Name + ".json")))
         {
             ScriptJobService.UpdateJobName(_job, _newJobName);
         }
-        FileHelper.WriteTextToAppDataFile(_job.ToJsonString(), Path.Combine("jobs", _job.Name + ".json"));
+        File.WriteAllText(_job.ToJsonString(), Path.Combine(FileHelper.ScriptJobsFolderPath, _job.Name + ".json"));
 
         GoToJobs();
     }
