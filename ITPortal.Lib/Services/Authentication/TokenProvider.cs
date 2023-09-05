@@ -22,13 +22,10 @@ public sealed class TokenProvider : IAccessTokenProvider
     {
         AuthenticationResult? authResult = await _authenticationService.AcquireTokenSilentAsync();
 
-        string? token = authResult?.AccessToken;
-
-        // Token is never null, null check is to avoid nullability warning
-        if (token == null)
+        if (authResult == null)
         {
             return string.Empty;
         }
-        return token;
+        return authResult.AccessToken;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using ITPortal.Lib.Automation.Script;
 using ITPortal.Lib.Utilities;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace ITPortal.Lib.Automation.Job;
@@ -60,6 +61,16 @@ public sealed class ScriptJob : IDisposable
     {
         State = state;
         StateChanged?.Invoke(this, State);
+    }
+
+    public string ToJsonString()
+    {
+        return JsonSerializer.Serialize(this, ScriptJobContext.Default.ScriptJob);
+    }
+
+    public static ScriptJob? FromJsonString(string text)
+    {
+        return JsonSerializer.Deserialize(text, ScriptJobContext.Default.ScriptJob);
     }
 
     public bool IsIdle()

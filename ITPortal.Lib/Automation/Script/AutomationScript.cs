@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace ITPortal.Lib.Automation.Script;
 
-[JsonDerivedType(typeof(PowerShellScript), typeDiscriminator: "psScript")]
+[JsonDerivedType(typeof(PowerShellScript), typeDiscriminator: "powershell")]
 public abstract class AutomationScript
 {
     public string? FilePath { get; private set; }

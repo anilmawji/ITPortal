@@ -1,4 +1,4 @@
-﻿namespace ITPortal.Components.Utilities;
+﻿namespace ITPortal.Utilities;
 
 public class PageRoute
 {
