@@ -5,24 +5,24 @@ namespace ITPortal.Utilities;
 public sealed class FileHelper
 {
     // fileName must include the file's name and the file extension
-    public static void WriteTextToAppDataFile(string jsonText, string fileName)
+    public static void WriteTextToAppDataFile(string jsonText, string filePath)
     {
-        string fullPath = Path.Combine(FileSystem.Current.AppDataDirectory, fileName);
+        string fullPath = Path.Combine(FileSystem.Current.AppDataDirectory, filePath);
 
         File.WriteAllText(fullPath, jsonText);
     }
 
     // fileName must include the file's name and the file extension
-    public static string ReadTextFromAppDataFile(string fileName)
+    public static string ReadTextFromAppDataFile(string filePath)
     {
-        string fullPath = Path.Combine(FileSystem.Current.AppDataDirectory, fileName);
+        string fullPath = Path.Combine(FileSystem.Current.AppDataDirectory, filePath);
 
         return File.ReadAllText(fullPath);
     }
 
-    public static bool TryDeleteAppDataFile(string fileName)
+    public static bool TryDeleteAppDataFile(string filePath)
     {
-        string fullPath = Path.Combine(FileSystem.Current.AppDataDirectory, fileName);
+        string fullPath = Path.Combine(FileSystem.Current.AppDataDirectory, filePath);
 
         if (!File.Exists(fullPath)) return false;
 
@@ -31,9 +31,9 @@ public sealed class FileHelper
         return true;
     }
 
-    public static DirectoryInfo CreateAppDataDirectory(string directoryName)
+    public static DirectoryInfo TryCreateAppDataDirectory(string directoryPath)
     {
-        string fullPath = Path.Combine(FileSystem.Current.AppDataDirectory, directoryName);
+        string fullPath = Path.Combine(FileSystem.Current.AppDataDirectory, directoryPath);
 
         return Directory.CreateDirectory(fullPath);
     }

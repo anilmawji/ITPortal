@@ -8,7 +8,7 @@ namespace ITPortal.Lib.Automation.Job;
 public sealed class ScriptJob : IDisposable
 {
     // TODO : change to private set
-    public AutomationScript Script { get; set; }
+    public AutomationScript Script { get; private set; }
     public string Name { get; set; }
     public string Description { get; set; }
     public DateTime CreationTime { get; private set; }
@@ -20,15 +20,15 @@ public sealed class ScriptJob : IDisposable
     private CancellationTokenSource _cancellationTokenSource = new();
 
     [JsonConstructor]
-    public ScriptJob(AutomationScript script, string name, string description)
+    public ScriptJob(AutomationScript script, string name, string description, DateTime creationTime)
     {
         Script = script;
         Name = name;
         Description = description;
-        CreationTime = DateTime.Now;
+        CreationTime = creationTime;
     }
 
-    public ScriptJob(AutomationScript script, string name) : this(script, name, string.Empty) { }
+    public ScriptJob(AutomationScript script, string name) : this(script, name, string.Empty, DateTime.Now) { }
 
     public async Task Run(string deviceName, ScriptJobResult result, string cancellationMessage)
     {

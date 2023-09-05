@@ -310,11 +310,11 @@
             }
             ScriptJobService.AddJob(_job);
         }
-        else if (ShouldUpdateJobName() && FileHelper.TryDeleteAppDataFile(_job.Name + ".json"))
+        else if (ShouldUpdateJobName() && FileHelper.TryDeleteAppDataFile(Path.Combine("jobs", _job.Name + ".json")))
         {
             ScriptJobService.UpdateJobName(_job, _newJobName);
         }
-        FileHelper.WriteTextToAppDataFile(_job.ToJsonString(), _job.Name + ".json");
+        FileHelper.WriteTextToAppDataFile(_job.ToJsonString(), Path.Combine("jobs", _job.Name + ".json"));
 
         GoToJobs();
     }

@@ -66,6 +66,24 @@ public sealed class ScriptJobService : IScriptJobService
         return result;
     }
 
+    public bool LoadScriptJobFromJsonFile(string filePath)
+    {
+        string jsonText = File.ReadAllText(filePath);
+        ScriptJob? job = ScriptJob.FromJsonString(jsonText);
+
+        if (job == null || HasJob(job.Name))
+        {
+            return false;
+        }
+        if (job.Script.FilePath != null)
+        {
+            job.Script.LoadFromFile(job.Script.FilePath);
+        }
+        AddJob(job);
+
+        return true;
+    }
+
     public ScriptJobResult GetJobResult(int jobResultId)
     {
         return JobResults.ElementAt(jobResultId);

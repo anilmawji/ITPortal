@@ -12,6 +12,7 @@ public interface IScriptJobService
     public string GenerateUniqueDefaultJobName();
     public bool UpdateJobName(ScriptJob job, string newJobName);
     public ScriptJobResult RunJob(ScriptJob job, string deviceName, ScriptOutputList scriptOutput);
+    public bool LoadScriptJobFromJsonFile(string filePath);
     public ScriptJobResult GetJobResult(int jobResultId);
     public bool HasJob(string jobName);
 }

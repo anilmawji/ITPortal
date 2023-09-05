@@ -94,7 +94,7 @@
     {
         if (firstRender)
         {
-            LoadScriptJobsFromDisk();
+            LoadSavedScriptJobs();
 
             s_deleteJobDialogParameters.Add(dialog => dialog.ContentText, "Are you sure you want to delete this script job? This action cannot be undone.");
             s_deleteJobDialogParameters.Add(dialog => dialog.SubmitButtonText, "Delete");
@@ -110,10 +110,16 @@
         }
     }
 
-    private void LoadScriptJobsFromDisk()
+    private void LoadSavedScriptJobs()
     {
-        //ScriptJob.FromJsonString()
-        //FileHelper.ReadTextFromAppDataFile(, _job.Name + ".json");
+        FileHelper.TryCreateAppDataDirectory(Path.Combine(FileSystem.Current.AppDataDirectory, "jobs"));
+        IEnumerable<string> filePaths = Directory.EnumerateFiles(Path.Combine(FileSystem.Current.AppDataDirectory, "jobs"));
+
+        foreach (string path in filePaths)
+        {
+            ScriptJobService.LoadScriptJobFromJsonFile(path);
+        }
+        this.StateHasChanged();
     }
 
     private async void OpenRunJobDialog(ScriptJob job)
