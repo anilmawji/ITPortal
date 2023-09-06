@@ -23,9 +23,10 @@ public static class DependencyInjectionExtensions
     public static IServiceCollection AddMsalAuthentication(this IServiceCollection serviceCollection)
     {
         serviceCollection.TryAddAuthorizationCore();
+        serviceCollection.TryAddTransient<AzureAdSettings>();
         serviceCollection.TryAddScoped<AuthenticationStateProvider, ExternalAuthStateProvider>();
-        serviceCollection.AddSingleton<IAuthenticationService, MsalAuthenticationService>();
         serviceCollection.TryAddSingleton<IAccessTokenProvider, TokenProvider>();
+        serviceCollection.AddSingleton<IAuthenticationService, MsalAuthenticationService>();
 
         return serviceCollection;
     }

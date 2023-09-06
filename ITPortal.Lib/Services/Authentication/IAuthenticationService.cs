@@ -4,7 +4,9 @@ namespace ITPortal.Lib.Services.Authentication;
 
 public interface IAuthenticationService
 {
-    public Task<AuthenticationResult?> AcquireTokenSilentAsync();
+    public Task AuthenticateRequestAsync(HttpRequestMessage request, CancellationToken cancellationToken);
 
-    public Task<AuthenticationResult?> AcquireTokenInteractiveAsync();
+    public Task<AuthenticationResult?> AcquireTokenSilentAsync(CancellationToken cancellationToken);
+
+    public Task<AuthenticationResult?> AcquireTokenInteractiveAsync(CancellationToken cancellationToken);
 }

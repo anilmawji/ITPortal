@@ -25,14 +25,14 @@ public sealed class ExternalAuthStateProvider : AuthenticationStateProvider
     public override Task<AuthenticationState> GetAuthenticationStateAsync() =>
         Task.FromResult(new AuthenticationState(_currentUser.Principal));
 
-    public async Task LogInAsync()
+    public async Task LogInAsync(CancellationToken cancellationToken = default)
     {
-        SetAuthenticationStateAsync(await LoginWithExternalProviderAsync());
+        SetAuthenticationStateAsync(await LoginWithExternalProviderAsync(cancellationToken));
     }
 
-    private async Task<AuthenticatedUser> LoginWithExternalProviderAsync()
+    private async Task<AuthenticatedUser> LoginWithExternalProviderAsync(CancellationToken cancellationToken = default)
     {
-        AuthenticationResult? authResult = await _authenticationService.AcquireTokenInteractiveAsync();
+        AuthenticationResult? authResult = await _authenticationService.AcquireTokenInteractiveAsync(cancellationToken);
 
         if (authResult == null)
         {

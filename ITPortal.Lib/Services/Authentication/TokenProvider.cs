@@ -20,7 +20,7 @@ public sealed class TokenProvider : IAccessTokenProvider
         Dictionary<string, object>? additionalAuthenticationContext = null,
         CancellationToken cancellationToken = default)
     {
-        AuthenticationResult? authResult = await _authenticationService.AcquireTokenSilentAsync();
+        AuthenticationResult? authResult = await _authenticationService.AcquireTokenSilentAsync(cancellationToken);
 
         if (authResult == null)
         {

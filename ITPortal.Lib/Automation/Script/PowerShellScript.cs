@@ -30,7 +30,7 @@ public sealed class PowerShellScript : AutomationScript
 
     private static InitialSessionState NewInitialSessionState()
     {
-        // CreateDefault() only loads the commands necessary to host PowerShell, CreateDefault2() loads all available commands
+        // CreateDefault2() only loads the commands necessary to host PowerShell, CreateDefault() loads all build-in commands
         InitialSessionState initialPowerShellState = InitialSessionState.CreateDefault();
         // Allow multiple threads in the PS session
         initialPowerShellState.ApartmentState = ApartmentState.MTA;
@@ -119,7 +119,7 @@ public sealed class PowerShellScript : AutomationScript
         }
         catch (Exception e)
         {
-            scriptOutput.Add(e.Message + "\n" + e.InnerException?.StackTrace, ScriptOutputStreamType.Error);
+            scriptOutput.Add(e.Message, ScriptOutputStreamType.Error);
 
             return ScriptExecutionState.Error;
         }
