@@ -1,11 +1,12 @@
 ﻿using ITPortal.Lib.Utilities;
+using Microsoft.IdentityModel.Tokens;
 
 namespace ITPortal.Lib.Automation.Output;
 
 public abstract class ScriptOutputList : IDisposable
 {
     public event EventHandler<ScriptOutputChangedEventArgs>? OutputChanged;
-    public readonly Dictionary<ScriptOutputStreamType, int> UsedStreamTypes = EnumHelper.ToDictionary<ScriptOutputStreamType, int>(0);
+    public readonly Dictionary<ScriptOutputStreamType, int> StreamLineCounts = EnumHelper.ToDictionary<ScriptOutputStreamType, int>(0);
 
     private List<ScriptOutputMessage> Output { get; set; } = new();
     private ScriptOutputMessage? _previousMessage;
@@ -14,42 +15,29 @@ public abstract class ScriptOutputList : IDisposable
 
     public void Add(string? message, ScriptOutputStreamType streamType)
     {
-        // message.IsNullOrEmpty() is not recognized by Roslyn as guarding against null....
-        if (message == null || message == string.Empty) return;
+        if (message.IsNullOrEmpty()) return;
 
-        UsedStreamTypes[streamType]++;
+        StreamLineCounts[streamType]++;
 
         if (_previousMessage?.Data == message)
         {
-            Output.Last().Data += ".";
+            Output.Last().Data += Environment.NewLine + ".";
         }
         else
         {
-            SendOutputMessage(message, streamType);
+            ScriptOutputMessage outputMessage = new()
+            {
+                StreamType = streamType,
+                Data = message
+            };
+            Output.Add(outputMessage);
+            _previousMessage = outputMessage;
         }
-
-        ScriptOutputChangedEventArgs args = new()
+        OutputChanged?.Invoke(this, new ScriptOutputChangedEventArgs()
         {
             Output = Output,
             StreamType = streamType
-        };
-        OutputChanged?.Invoke(this, args);
-    }
-
-    public void SendOutputMessage(string message, ScriptOutputStreamType streamType)
-    {
-        ScriptOutputMessage outputMessage = new()
-        {
-            StreamType = streamType,
-            Data = message
-        };
-        Output.Add(outputMessage);
-        _previousMessage = outputMessage;
-    }
-
-    public void SendSystemMessage(string message, ScriptOutputStreamType streamType)
-    {
-        SendOutputMessage(FormatAsSystemMessage(message), streamType);
+        });
     }
 
     public static string FormatAsSystemMessage(string message)
@@ -57,14 +45,16 @@ public abstract class ScriptOutputList : IDisposable
         return "[SYSTEM]: " + message;
     }
 
-    public IReadOnlyList<ScriptOutputMessage> Get()
+    public IReadOnlyList<ScriptOutputMessage> GetMessages()
     {
         return Output.AsReadOnly();
     }
 
-    public IReadOnlyList<ScriptOutputMessage> GetFilteredByStreamType(ScriptOutputStreamType streamType)
+    public IReadOnlyList<ScriptOutputMessage> GetMessagesFilteredByStream(ScriptOutputStreamType streamType)
     {
-        return Output.Where(x => x.StreamType == streamType).ToList().AsReadOnly();
+        return Output.Where(x => x.StreamType == streamType)
+            .ToList()
+            .AsReadOnly();
     }
 
     public void Clear()

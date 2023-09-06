@@ -79,7 +79,6 @@ public sealed class PowerShellScript : AutomationScript
 
             return ScriptExecutionState.Stopped;
         }
-
         if (!IsLoaded())
         {
             throw new InvalidOperationException("Cannot invoke a script that has not been loaded");
@@ -95,7 +94,7 @@ public sealed class PowerShellScript : AutomationScript
             {
                 RegisterParameters(shell);
             }
-            PSDataCollection<PSObject> standardOutputStream = RegisterOutputStreams(shell, scriptOutput);
+            PSDataCollection<PSObject> standardOutputStream = RegisterOutputStreams(shell, (PowerShellScriptOutputList)scriptOutput);
 
             // Use Task.Factory to opt for the newer async/await keywords
             // Moves away from the old IAsyncResult functionality still used by the PowerShell API
@@ -106,6 +105,10 @@ public sealed class PowerShellScript : AutomationScript
             await shellTask.WaitAsync(cancellationToken)
                 .ConfigureAwait(false);
 
+            if (shell.HadErrors)
+            {
+                return ScriptExecutionState.Error;
+            }
             return ScriptExecutionState.Success;
         }
         catch (OperationCanceledException)
@@ -116,7 +119,7 @@ public sealed class PowerShellScript : AutomationScript
         }
         catch (Exception e)
         {
-            scriptOutput.Add(e.Message, ScriptOutputStreamType.Error);
+            scriptOutput.Add(e.Message + "\n" + e.InnerException?.StackTrace, ScriptOutputStreamType.Error);
 
             return ScriptExecutionState.Error;
         }
@@ -138,8 +141,16 @@ public sealed class PowerShellScript : AutomationScript
         scriptOutput.SubscribeToOutputStream(shell.Streams.Information, ScriptOutputStreamType.Information);
         scriptOutput.SubscribeToOutputStream(shell.Streams.Progress, ScriptOutputStreamType.Progress);
         scriptOutput.SubscribeToOutputStream(shell.Streams.Warning, ScriptOutputStreamType.Warning);
-        scriptOutput.SubscribeToOutputStream(shell.Streams.Error, ScriptOutputStreamType.Error);
 
+        if (scriptOutput is PowerShellScriptOutputList psScriptOutput)
+        {
+            // Provide more detailed PowerShell-specific errors
+            psScriptOutput.SubscribeToErrorOutputStream(shell.Streams.Error);
+        }
+        else
+        {
+            scriptOutput.SubscribeToOutputStream(shell.Streams.Error, ScriptOutputStreamType.Error);
+        }
         return standardOutputStream;
     }
 }

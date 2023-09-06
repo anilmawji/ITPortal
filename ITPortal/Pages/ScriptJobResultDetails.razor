@@ -18,12 +18,12 @@
     <MudGrid Spacing="2">
         <MudItem>
             <MudButton @onclick=@(() => Job.TryCancel()) Variant="Variant.Filled" Color="Color.Secondary"
-                       Style="color:white" Disabled=@(Result.ExecutionState != ScriptExecutionState.Running)>
+                       Style="color:white" Disabled=@(Job == null || Result.ExecutionState != ScriptExecutionState.Running)>
                 <MudText>Cancel</MudText>
             </MudButton>
         </MudItem>
         <MudItem>
-            <MudButton @onclick=@GoToEditJob Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
+            <MudButton @onclick=@GoToEditJob Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" Disabled=@(Job == null)>
                 <MudText>Edit Job</MudText>
             </MudButton>
         </MudItem>
@@ -43,12 +43,18 @@
         // Very important to make sure ScriptJobResultBase is populated
         base.OnInitialized();
 
-        Job = ScriptJobService.Jobs[Result.JobName];
+        if (ScriptJobService.HasJob(Result.JobName))
+        {
+            Job = ScriptJobService.Jobs[Result.JobName];
+        }
     }
 
     private void GoToEditJob()
     {
-        NavigationManager.NavigateTo(PageRoute.EditScriptJobWithName(Job.Name));
+        if (Job != null)
+        {
+            NavigationManager.NavigateTo(PageRoute.EditScriptJobWithName(Job.Name));
+        }
     }
 
     public void Dispose()
