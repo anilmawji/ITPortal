@@ -59,7 +59,6 @@ public sealed class ScriptJobService : IScriptJobService
         {
             JobResults.RemoveAt(0);
         }
-
         job.Run(deviceName, result, ScriptOutputList.FormatAsSystemMessage("Script execution was cancelled"))
             .ConfigureAwait(false);
 

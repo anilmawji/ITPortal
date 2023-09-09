@@ -30,7 +30,7 @@ public sealed class ScriptJob : IDisposable
 
     public ScriptJob(AutomationScript script, string name) : this(script, name, string.Empty, DateTime.Now) { }
 
-    public async Task Run(string deviceName, ScriptJobResult result, string cancellationMessage)
+    public async Task<ScriptExecutionState> Run(string deviceName, ScriptJobResult result, string cancellationMessage)
     {
         SetState(ScriptJobState.Running);
 
@@ -40,21 +40,20 @@ public sealed class ScriptJob : IDisposable
             cancellationMessage,
             _cancellationTokenSource.Token
         );
+        SetState(ScriptJobState.Idle);
         result.InvokeExecutionResultReceived(executionResult);
         _cancellationTokenSource = new();
 
-        SetState(ScriptJobState.Idle);
+        return executionResult;
     }
 
-    public bool TryCancel()
+    public void Cancel()
     {
         if (State == ScriptJobState.Running)
         {
             _cancellationTokenSource?.Cancel();
-
-            return true;
+            SetState(ScriptJobState.Idle);
         }
-        return false;
     }
 
     private void SetState(ScriptJobState state)

@@ -83,7 +83,6 @@ public sealed class PowerShellScript : AutomationScript
         {
             throw new InvalidOperationException("Cannot invoke a script that has not been loaded");
         }
-
         try
         {
             // "using" relies on compiler to dispose of shell when try-catch block is exited
