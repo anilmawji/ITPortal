@@ -1,10 +1,9 @@
 ﻿@attribute [Route(PageRoute.ScriptJobs)]
+@attribute [Authorize]
 
 @inject IScriptJobService ScriptJobService
 @inject IDialogService DialogService
 @inject NavigationManager NavigationManager
-
-@*@attribute [Authorize]*@
 
 <PageContainer Title="PowerShell Jobs">
     <style>

@@ -30,13 +30,13 @@
                        Class="nav-button"
                        OnClick=@ThemeToggle />
     </MudAppBar>
-@*	<AuthorizeView>
-		<Authorized>*@
-    <MudDrawer @bind-Open=@IsDrawerOpen ClipMode="DrawerClipMode.Always" Elevation="1">
+	<AuthorizeView>
+		<Authorized>
+            <MudDrawer @bind-Open=@IsDrawerOpen ClipMode="DrawerClipMode.Always" Elevation="1">
 				<NavMenu />
 			</MudDrawer>
-@*		</Authorized>
-	</AuthorizeView>*@
+		</Authorized>
+	</AuthorizeView>
     <MudMainContent>
         @Body
     </MudMainContent>

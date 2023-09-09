@@ -1,10 +1,8 @@
 ﻿@attribute [Route(PageRoute.CreateScriptJob)]
 @attribute [Route(PageRoute.EditScriptJob)]
+@attribute [Authorize]
 
-@using Microsoft.AspNetCore.Authorization;
 @using System.Text.Json;
-
-@*@attribute [Authorize]*@
 
 @inject IScriptJobService ScriptJobService
 @inject NavigationManager NavigationManager
