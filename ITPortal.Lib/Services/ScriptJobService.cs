@@ -40,11 +40,16 @@ public sealed class ScriptJobService : IScriptJobService
 
     private void AddJobResult(ScriptJobResult result)
     {
-        JobResults.Add(result.Id, result);
         if (result.Id < _firstResultId || _firstResultId == -1)
         {
             _firstResultId = result.Id;
         }
+        if (result.Id > _nextResultId)
+        {
+            _nextResultId = result.Id + 1;
+        }
+        JobResults.Add(result.Id, result);
+
         if (JobResults.Count > MaxResults)
         {
             // Cap the results list to store only the most recent results
