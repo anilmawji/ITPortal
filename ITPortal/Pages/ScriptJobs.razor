@@ -95,8 +95,11 @@
         if (firstRender)
         {
             InitializeDialogParameters();
-            ScriptJobService.LoadScriptJobs(FileHelper.ScriptJobsPath);
-            this.StateHasChanged();
+            InvokeAsync(() =>
+            {
+                ScriptJobService.LoadScriptJobs(FileHelper.ScriptJobsPath);
+                this.StateHasChanged();
+            });
         }
     }
 
@@ -125,7 +128,7 @@
             var dialogResultData = dialogResult.Data as RunScriptJobDialogResult;
 
             ScriptJobResult jobResult = ScriptJobService.RunJob(job, dialogResultData.DeviceName, new PowerShellScriptOutputList());
-            FileHelper.TryCreateFile(Guid.NewGuid().ToString() + ".json", FileHelper.ScriptJobResultsPath, jobResult.ToJsonString());
+            FileHelper.TryCreateFile(jobResult.Id.ToString() + ".json", FileHelper.ScriptJobResultsPath, jobResult.ToJsonString());
 
             if (dialogResultData.ShouldRunJobImmediately)
             {

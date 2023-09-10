@@ -31,28 +31,6 @@ public sealed class ScriptJob : IDisposable
 
     public ScriptJob(AutomationScript script, string name) : this(script, name, string.Empty, DateTime.Now) { }
 
-    public static ScriptJob? TryLoadFromJsonFile(string filePath)
-    {
-        try
-        {
-            string jsonText = File.ReadAllText(filePath);
-            ScriptJob? job = JsonSerializer.Deserialize(jsonText, ScriptJobContext.Default.ScriptJob);
-
-            if (job == null || !Path.GetFileName(filePath).Contains(job.Name))
-            {
-                return null;
-            }
-            if (job.Script.FilePath != null)
-            {
-                job.Script.LoadFromFile(job.Script.FilePath, false);
-            }
-            return job;
-        }
-        catch (Exception)
-        {
-            return null;
-        }
-    }
     public async Task<ScriptExecutionState> Run(string deviceName, ScriptJobResult result, string cancellationMessage)
     {
         SetState(ScriptJobState.Running);
@@ -84,6 +62,29 @@ public sealed class ScriptJob : IDisposable
     {
         State = state;
         StateChanged?.Invoke(this, State);
+    }
+
+    public static ScriptJob? TryLoadFromJsonFile(string filePath)
+    {
+        try
+        {
+            string jsonText = File.ReadAllText(filePath);
+            ScriptJob? job = JsonSerializer.Deserialize(jsonText, ScriptJobContext.Default.ScriptJob);
+
+            if (job == null || !Path.GetFileName(filePath).Contains(job.Name))
+            {
+                return null;
+            }
+            if (job.Script.FilePath != null)
+            {
+                job.Script.LoadFromFile(job.Script.FilePath, false);
+            }
+            return job;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
     }
 
     public string ToJsonString()

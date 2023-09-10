@@ -20,7 +20,7 @@
     </style>
 
     <div class="table-container">
-        <MudTable T="ScriptJobResult" Items=@ScriptJobService.JobResults Dense="true" Hover="true" FixedHeader="true"
+        <MudTable T="ScriptJobResult" Items=@ScriptJobService.JobResults.Values Dense="true" Hover="true" FixedHeader="true"
                   Filter="new Func<ScriptJobResult, bool>(FilterJobResultFunc)" OnRowClick=@GoToJobResults Height="calc(100% - 90px - 10px);">
             <ToolBarContent>
                 <MudTextField @bind-Value=@_searchString Placeholder=@($"Search {ScriptJobService.JobResults.Count} items...") Adornment="Adornment.Start"
@@ -66,7 +66,7 @@
 
     protected override void OnInitialized()
     {
-        foreach (ScriptJobResult result in ScriptJobService.JobResults)
+        foreach (ScriptJobResult result in ScriptJobService.JobResults.Values)
         {
             result.ExecutionResultReceived += OnExecutionResultReceived;
         }
@@ -76,8 +76,11 @@
     {
         if (firstRender)
         {
-            ScriptJobService.LoadScriptJobResults(FileHelper.ScriptJobResultsPath);
-            this.StateHasChanged();
+            InvokeAsync(() =>
+            {
+                ScriptJobService.LoadScriptJobResults(FileHelper.ScriptJobResultsPath);
+                this.StateHasChanged();
+            });
         }
     }
 
@@ -100,7 +103,7 @@
 
     public void Dispose()
     {
-        foreach (ScriptJobResult result in ScriptJobService.JobResults)
+        foreach (ScriptJobResult result in ScriptJobService.JobResults.Values)
         {
             result.ExecutionResultReceived -= OnExecutionResultReceived;
         }

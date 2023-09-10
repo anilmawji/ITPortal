@@ -37,11 +37,7 @@ public abstract class ScriptOutputList : IDisposable
         }
         else
         {
-            ScriptOutputMessage outputMessage = new()
-            {
-                StreamType = streamType,
-                Data = message
-            };
+            ScriptOutputMessage outputMessage = new(streamType, message);
             Output.Add(outputMessage);
             _previousMessage = outputMessage;
         }

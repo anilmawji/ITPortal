@@ -105,14 +105,6 @@ public abstract class AutomationScript
         ContentString = string.Empty;
     }
 
-    public void ConvertParametersToArray()
-    {
-        foreach (ScriptParameter parameter in Parameters)
-        {
-
-        }
-    }
-
     public bool IsUnloaded()
     {
         return LoadState == ScriptLoadState.Unloaded;

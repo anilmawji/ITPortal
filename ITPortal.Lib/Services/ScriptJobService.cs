@@ -8,13 +8,48 @@ public sealed class ScriptJobService : IScriptJobService
     public const int MaxResults = 50;
 
     public Dictionary<string, ScriptJob> Jobs { get; set; } = new();
-    public List<ScriptJobResult> JobResults { get; set; } = new();
+    public Dictionary<int, ScriptJobResult> JobResults { get; set; } = new();
 
     private int _nextResultId = 0;
+    private int _firstResultId = -1;
 
     public void AddJob(ScriptJob job)
     {
         Jobs.Add(job.Name, job);
+    }
+
+    public ScriptJobResult RunJob(ScriptJob job, string deviceName, ScriptOutputList scriptOutput)
+    {
+        ArgumentNullException.ThrowIfNull(job.Script.FileName, nameof(job.Script.FileName));
+
+        ScriptJobResult result = new(
+            _nextResultId++,
+            job.Name,
+            job.Script.FileName,
+            deviceName,
+            DateTime.Now,
+            scriptOutput
+        );
+        AddJobResult(result);
+
+        job.Run(deviceName, result, ScriptOutputList.FormatAsSystemMessage("Script execution was cancelled"))
+            .ConfigureAwait(false);
+
+        return result;
+    }
+
+    private void AddJobResult(ScriptJobResult result)
+    {
+        JobResults.Add(result.Id, result);
+        if (result.Id < _firstResultId || _firstResultId == -1)
+        {
+            _firstResultId = result.Id;
+        }
+        if (JobResults.Count > MaxResults)
+        {
+            // Cap the results list to store only the most recent results
+            JobResults.Remove(_firstResultId);
+        }
     }
 
     public string GetUniqueDefaultJobName()
@@ -38,31 +73,6 @@ public sealed class ScriptJobService : IScriptJobService
         AddJob(job);
 
         return true;
-    }
-
-    public ScriptJobResult RunJob(ScriptJob job, string deviceName, ScriptOutputList scriptOutput)
-    {
-        ArgumentNullException.ThrowIfNull(job.Script.FileName, nameof(job.Script.FileName));
-
-        ScriptJobResult result = new(
-            _nextResultId++,
-            job.Name,
-            job.Script.FileName,
-            deviceName,
-            DateTime.Now,
-            scriptOutput
-        );
-
-        JobResults.Add(result);
-        // Cap the results list to store only the most recent results
-        if (JobResults.Count > MaxResults)
-        {
-            JobResults.RemoveAt(0);
-        }
-        job.Run(deviceName, result, ScriptOutputList.FormatAsSystemMessage("Script execution was cancelled"))
-            .ConfigureAwait(false);
-
-        return result;
     }
 
     public void LoadScriptJobs(string folderPath)
@@ -96,18 +106,26 @@ public sealed class ScriptJobService : IScriptJobService
 
         foreach (string path in filePaths)
         {
+            try
+            {
+                int resultId = int.Parse(Path.GetFileNameWithoutExtension(path));
+
+                if (JobResults.ContainsKey(resultId))
+                {
+                    return;
+                }
+            }
+            catch (Exception)
+            {
+                return;
+            }
             ScriptJobResult? result = ScriptJobResult.TryLoadFromJsonFile(path);
 
             if (result != null)
             {
-                JobResults.Add(result);
+                AddJobResult(result);
             }
         }
-    }
-
-    public ScriptJobResult GetJobResult(int jobResultId)
-    {
-        return JobResults.ElementAt(jobResultId);
     }
 
     public bool HasJob(string jobName)

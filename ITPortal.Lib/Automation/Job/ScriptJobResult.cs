@@ -31,6 +31,12 @@ public sealed class ScriptJobResult : IDisposable
         ScriptOutput = scriptOutput;
     }
 
+    internal void InvokeExecutionResultReceived(ScriptExecutionState newState)
+    {
+        ExecutionState = newState;
+        ExecutionResultReceived?.Invoke(this, newState);
+    }
+
     public static ScriptJobResult? TryLoadFromJsonFile(string filePath)
     {
         try
@@ -44,12 +50,6 @@ public sealed class ScriptJobResult : IDisposable
         {
             return null;
         }
-    }
-
-    internal void InvokeExecutionResultReceived(ScriptExecutionState newState)
-    {
-        ExecutionState = newState;
-        ExecutionResultReceived?.Invoke(this, newState);
     }
 
     public string ToJsonString()

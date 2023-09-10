@@ -6,7 +6,7 @@ namespace ITPortal.Lib.Services;
 public interface IScriptJobService
 {
     public Dictionary<string, ScriptJob> Jobs { get; set; }
-    public List<ScriptJobResult> JobResults { get; set; }
+    public Dictionary<int, ScriptJobResult> JobResults { get; set; }
 
     public void AddJob(ScriptJob job);
     public string GetUniqueDefaultJobName();
@@ -14,6 +14,5 @@ public interface IScriptJobService
     public ScriptJobResult RunJob(ScriptJob job, string deviceName, ScriptOutputList scriptOutput);
     public void LoadScriptJobs(string folderPath);
     public void LoadScriptJobResults(string folderPath);
-    public ScriptJobResult GetJobResult(int jobResultId);
     public bool HasJob(string jobName);
 }
