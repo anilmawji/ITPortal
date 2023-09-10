@@ -19,7 +19,7 @@
 </style>
 
 <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
-    <MudTabPanel Text="All Output" BadgeData=@GetOutputLineCountText()>
+    <MudTabPanel Text="All Output" BadgeData=@GetOutputLineCountText(ScriptOutput.GetMessages())>
         <ScriptOutputContainer OutputList=@ScriptOutput?.GetMessages() />
     </MudTabPanel>
     @if (ScriptOutput != null)
@@ -27,8 +27,10 @@
         foreach ((ScriptOutputStreamType streamType, int numLines) in ScriptOutput.StreamLineCounts)
         {
             if (numLines == 0) continue;
-            <MudTabPanel Text=@GetTabName(streamType) Icon=@TabIcons[streamType]>
-                <ScriptOutputContainer OutputList=@ScriptOutput.GetMessagesFilteredByStream(streamType) />
+            IReadOnlyList<ScriptOutputMessage> messages = ScriptOutput.GetMessagesFilteredByStream(streamType);
+
+            <MudTabPanel Text=@GetTabName(streamType) Icon=@TabIcons[streamType] BadgeData=@GetOutputLineCountText(messages)>
+                <ScriptOutputContainer OutputList=@messages />
             </MudTabPanel>
         }
     }
@@ -60,11 +62,11 @@
         InvokeAsync(this.StateHasChanged);
     }
 
-    private string GetOutputLineCountText()
+    private string GetOutputLineCountText(IReadOnlyList<ScriptOutputMessage> messages)
     {
         if (ScriptOutput != null)
         {
-            int numMessages = ScriptOutput.GetMessages().Count;
+            int numMessages = messages.Count;
 
             return numMessages <= 99 ? numMessages.ToString() : "99+";
         }

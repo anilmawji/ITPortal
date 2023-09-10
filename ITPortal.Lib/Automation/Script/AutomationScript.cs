@@ -26,7 +26,7 @@ public abstract class AutomationScript
 
     public AutomationScript(string filePath) : this()
     {
-        LoadFromFile(filePath);
+        LoadFromFile(filePath, true);
     }
 
     protected AutomationScript(string filePath, string fileName, string[] content, List<ScriptParameter> parameters)
@@ -52,7 +52,7 @@ public abstract class AutomationScript
         Parameters.Add(new ScriptParameter(parameterName, parameterType, mandatory));
     }
 
-    public virtual bool LoadFromFile(string filePath)
+    public virtual bool LoadFromFile(string filePath, bool loadParameters)
     {
         ArgumentNullException.ThrowIfNull(filePath, nameof(filePath));
 
@@ -66,10 +66,10 @@ public abstract class AutomationScript
         }
         FilePath = filePath;
 
-        return DoLoadFromFile(FilePath);
+        return DoLoadFromFile(FilePath, loadParameters);
     }
 
-    private bool DoLoadFromFile(string filePath)
+    private bool DoLoadFromFile(string filePath, bool loadParameters)
     {
         try
         {
@@ -77,7 +77,7 @@ public abstract class AutomationScript
             ContentString = GetContentString();
             LoadState = ScriptLoadState.Success;
 
-            return LoadParameters();
+            return !loadParameters || LoadParameters();
         }
         catch (IOException)
         {
@@ -91,7 +91,7 @@ public abstract class AutomationScript
     {
         if (FilePath != null && LoadState == ScriptLoadState.Success)
         {
-            return DoLoadFromFile(FilePath);
+            return DoLoadFromFile(FilePath, true);
         }
         return false;
     }
@@ -103,6 +103,14 @@ public abstract class AutomationScript
         FileName = null;
         Content = Array.Empty<string>();
         ContentString = string.Empty;
+    }
+
+    public void ConvertParametersToArray()
+    {
+        foreach (ScriptParameter parameter in Parameters)
+        {
+
+        }
     }
 
     public bool IsUnloaded()

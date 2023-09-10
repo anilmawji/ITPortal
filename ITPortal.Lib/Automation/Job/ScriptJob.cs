@@ -12,6 +12,7 @@ public sealed class ScriptJob : IDisposable
     public string Name { get; set; }
     public string Description { get; set; }
     public DateTime CreationTime { get; private set; }
+    public List<ScriptJobResult> Results { get; private set; } = new();
 
     [JsonIgnore]
     public ScriptJobState State { get; private set; }
@@ -41,7 +42,9 @@ public sealed class ScriptJob : IDisposable
             _cancellationTokenSource.Token
         );
         SetState(ScriptJobState.Idle);
+
         result.InvokeExecutionResultReceived(executionResult);
+        Results.Add(result);
         _cancellationTokenSource = new();
 
         return executionResult;
@@ -69,7 +72,14 @@ public sealed class ScriptJob : IDisposable
 
     public static ScriptJob? FromJsonString(string text)
     {
-        return JsonSerializer.Deserialize(text, ScriptJobContext.Default.ScriptJob);
+        try
+        {
+            return JsonSerializer.Deserialize(text, ScriptJobContext.Default.ScriptJob);
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
     }
 
     public bool IsIdle()

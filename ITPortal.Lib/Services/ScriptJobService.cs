@@ -76,7 +76,7 @@ public sealed class ScriptJobService : IScriptJobService
         }
         if (job.Script.FilePath != null)
         {
-            job.Script.LoadFromFile(job.Script.FilePath);
+            job.Script.LoadFromFile(job.Script.FilePath, false);
         }
         AddJob(job);
 

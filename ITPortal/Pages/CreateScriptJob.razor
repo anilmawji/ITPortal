@@ -84,8 +84,8 @@
                             else if (parameter.IsType(typeof(int)))
                             {
                                 <div class="small-input-line">
-                                    <MudNumericField T="int" Label=@parameterName Variant="Variant.Filled" Margin="Margin.Dense" Required=@parameter.Mandatory
-                                                     Value=@((int)parameter.Value) ValueChanged="(num) => parameter.Value = num"
+                                    <MudNumericField T="int" Label=@parameterName Variant="Variant.Filled" Margin="Margin.Dense"
+                                                     Required=@parameter.Mandatory Value=@((int)parameter.Value) ValueChanged="(num) => parameter.Value = num"
                                                      RequiredError=@requiredError />
                                 </div>
                             }
@@ -265,7 +265,7 @@
 
         if (fileResult != null)
         {
-            _job.Script.LoadFromFile(fileResult.FullPath);
+            _job.Script.LoadFromFile(fileResult.FullPath, true);
             this.StateHasChanged();
         }
     }
