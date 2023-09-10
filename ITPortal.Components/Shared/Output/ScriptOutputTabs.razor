@@ -29,7 +29,7 @@
             if (numLines == 0) continue;
             IReadOnlyList<ScriptOutputMessage> messages = ScriptOutput.GetMessagesFilteredByStream(streamType);
 
-            <MudTabPanel Text=@GetTabName(streamType) Icon=@TabIcons[streamType] BadgeData=@GetOutputLineCountText(messages)>
+            <MudTabPanel Text=@GetTabName(streamType) Icon=@TabIcons[streamType]>
                 <ScriptOutputContainer OutputList=@messages />
             </MudTabPanel>
         }
@@ -62,6 +62,15 @@
         InvokeAsync(this.StateHasChanged);
     }
 
+    private string GetTabName(ScriptOutputStreamType streamType)
+    {
+        if (streamType == ScriptOutputStreamType.Warning || streamType == ScriptOutputStreamType.Error)
+        {
+            return streamType.ToStringFast() + "S";
+        }
+        return streamType.ToStringFast();
+    }
+
     private string GetOutputLineCountText(IReadOnlyList<ScriptOutputMessage> messages)
     {
         if (ScriptOutput != null)
@@ -70,16 +79,7 @@
 
             return numMessages <= 99 ? numMessages.ToString() : "99+";
         }
-        return string.Empty;
-    }
-
-    private string GetTabName(ScriptOutputStreamType streamType)
-    {
-        if (streamType == ScriptOutputStreamType.Warning || streamType == ScriptOutputStreamType.Error)
-        {
-            return streamType.ToStringFast() + "S";
-        }
-        return streamType.ToStringFast();
+        return "0";
     }
 
     public void Dispose()
