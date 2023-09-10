@@ -17,7 +17,7 @@ public sealed class ScriptJobService : IScriptJobService
         Jobs.Add(job.Name, job);
     }
 
-    public string GenerateUniqueDefaultJobName()
+    public string GetUniqueDefaultJobName()
     {
         string name = $"Job({Jobs.Count})";
 
@@ -35,7 +35,7 @@ public sealed class ScriptJobService : IScriptJobService
             return false;
         }
         job.Name = newJobName;
-        Jobs.Add(newJobName, job);
+        AddJob(job);
 
         return true;
     }
@@ -65,22 +65,44 @@ public sealed class ScriptJobService : IScriptJobService
         return result;
     }
 
-    public bool LoadScriptJobFromJsonFile(string filePath)
+    public void LoadScriptJobs(string folderPath)
     {
-        string jsonText = File.ReadAllText(filePath);
-        ScriptJob? job = ScriptJob.FromJsonString(jsonText);
+        DirectoryInfo info = Directory.CreateDirectory(folderPath);
+        // Jobs folder has just been created; no jobs to load
+        if (!info.Exists) return;
 
-        if (job == null || HasJob(job.Name))
-        {
-            return false;
-        }
-        if (job.Script.FilePath != null)
-        {
-            job.Script.LoadFromFile(job.Script.FilePath, false);
-        }
-        AddJob(job);
+        IEnumerable<string> filePaths = Directory.EnumerateFiles(folderPath);
 
-        return true;
+        foreach (string path in filePaths)
+        {
+            if (HasJob(Path.GetFileNameWithoutExtension(path))) continue;
+
+            ScriptJob? job = ScriptJob.TryLoadFromJsonFile(path);
+
+            if (job != null)
+            {
+                AddJob(job);
+            }
+        }
+    }
+
+    public void LoadScriptJobResults(string folderPath)
+    {
+        DirectoryInfo info = Directory.CreateDirectory(folderPath);
+        // Jobs folder has just been created; no jobs to load
+        if (!info.Exists) return;
+
+        IEnumerable<string> filePaths = Directory.EnumerateFiles(folderPath);
+
+        foreach (string path in filePaths)
+        {
+            ScriptJobResult? result = ScriptJobResult.TryLoadFromJsonFile(path);
+
+            if (result != null)
+            {
+                JobResults.Add(result);
+            }
+        }
     }
 
     public ScriptJobResult GetJobResult(int jobResultId)

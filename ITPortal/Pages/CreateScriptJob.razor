@@ -214,7 +214,7 @@
         if (JobName == null)
         {
             _newJobName = string.Empty;
-            _initialJobName = ScriptJobService.GenerateUniqueDefaultJobName();
+            _initialJobName = ScriptJobService.GetUniqueDefaultJobName();
             _job = new ScriptJob(new PowerShellScript(), _initialJobName);
             _headerTitle = "New Job";
             _creatingNewJob = true;
@@ -224,7 +224,6 @@
             _initialJobName = JobName;
             _newJobName = _initialJobName;
             ScriptJobService.Jobs.TryGetValue(JobName, out _job);
-            System.Diagnostics.Debug.WriteLine("Found job: " + _job.Name);
             _headerTitle = $"Edit Job \"{JobName}\"";
         }
     }

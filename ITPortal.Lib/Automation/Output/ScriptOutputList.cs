@@ -1,15 +1,27 @@
 ﻿using ITPortal.Lib.Utilities;
 using Microsoft.IdentityModel.Tokens;
+using System.Text.Json.Serialization;
 
 namespace ITPortal.Lib.Automation.Output;
 
+[JsonDerivedType(typeof(PowerShellScriptOutputList), typeDiscriminator: "powershell")]
 public abstract class ScriptOutputList : IDisposable
 {
-    public event EventHandler<ScriptOutputChangedEventArgs>? OutputChanged;
     public readonly Dictionary<ScriptOutputStreamType, int> StreamLineCounts = EnumHelper.ToDictionary<ScriptOutputStreamType, int>(0);
+    public event EventHandler<ScriptOutputChangedEventArgs>? OutputChanged;
 
-    private List<ScriptOutputMessage> Output { get; set; } = new();
+    private List<ScriptOutputMessage> Output { get; set; }
+
+    [JsonIgnore]
     private ScriptOutputMessage? _previousMessage;
+
+    public ScriptOutputList()
+    {
+        Output = new();
+    }
+
+    [JsonConstructor]
+    public ScriptOutputList(List<ScriptOutputMessage> output) => (Output) = output;
 
     public abstract void SubscribeToOutputStream<T>(ICollection<T> stream, ScriptOutputStreamType streamType);
 

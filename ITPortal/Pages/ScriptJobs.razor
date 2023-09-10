@@ -89,14 +89,14 @@
     private static readonly int[] s_pageSizeOptions = { 10, 20, 30 };
 
     private string _searchString = "";
-    private ScriptJobResult jobResult;
 
     protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)
         {
-            InvokeAsync(LoadSavedScriptJobs);
             InitializeDialogParameters();
+            ScriptJobService.LoadScriptJobs(FileHelper.ScriptJobsPath);
+            this.StateHasChanged();
         }
     }
 
@@ -115,21 +115,6 @@
         s_cancelJobDialogParameters.Add(dialog => dialog.Color, Color.Secondary);
     }
 
-    private void LoadSavedScriptJobs()
-    {
-        DirectoryInfo info = Directory.CreateDirectory(FileHelper.ScriptJobsPath);
-        // Jobs folder has just been created; no jobs to load
-        if (!info.Exists) return;
-
-        IEnumerable<string> filePaths = Directory.EnumerateFiles(FileHelper.ScriptJobsPath);
-
-        foreach (string path in filePaths)
-        {
-            ScriptJobService.LoadScriptJobFromJsonFile(path);
-        }
-        this.StateHasChanged();
-    }
-
     private async void OpenRunJobDialog(ScriptJob job)
     {
         IDialogReference dialog = DialogService.Show<RunScriptJobDialog>("Run Job", s_runJobDialogParameters, s_dialogOptions);
@@ -138,7 +123,9 @@
         if (!dialogResult.Canceled)
         {
             var dialogResultData = dialogResult.Data as RunScriptJobDialogResult;
-            jobResult = ScriptJobService.RunJob(job, dialogResultData.DeviceName, new PowerShellScriptOutputList());
+
+            ScriptJobResult jobResult = ScriptJobService.RunJob(job, dialogResultData.DeviceName, new PowerShellScriptOutputList());
+            FileHelper.TryCreateFile(Guid.NewGuid().ToString() + ".json", FileHelper.ScriptJobResultsPath, jobResult.ToJsonString());
 
             if (dialogResultData.ShouldRunJobImmediately)
             {

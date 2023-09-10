@@ -9,10 +9,11 @@ public interface IScriptJobService
     public List<ScriptJobResult> JobResults { get; set; }
 
     public void AddJob(ScriptJob job);
-    public string GenerateUniqueDefaultJobName();
+    public string GetUniqueDefaultJobName();
     public bool UpdateJobName(ScriptJob job, string newJobName);
     public ScriptJobResult RunJob(ScriptJob job, string deviceName, ScriptOutputList scriptOutput);
-    public bool LoadScriptJobFromJsonFile(string filePath);
+    public void LoadScriptJobs(string folderPath);
+    public void LoadScriptJobResults(string folderPath);
     public ScriptJobResult GetJobResult(int jobResultId);
     public bool HasJob(string jobName);
 }
