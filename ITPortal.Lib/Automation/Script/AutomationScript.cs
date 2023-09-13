@@ -14,7 +14,7 @@ public abstract class AutomationScript
     [JsonIgnore]
     public string ContentString { get; private set; }
     public List<ScriptParameter> Parameters { get; private set; }
-    public ScriptLoadState LoadState { get; protected set; }
+    public ScriptLoadState ContentLoadState { get; private set; }
 
     public AutomationScript()
     {
@@ -26,7 +26,8 @@ public abstract class AutomationScript
 
     public AutomationScript(string filePath) : this()
     {
-        LoadFromFile(filePath, true);
+        LoadContent(filePath);
+        LoadParameters();
     }
 
     protected AutomationScript(string filePath, string fileName, string[] content, List<ScriptParameter> parameters)
@@ -38,21 +39,7 @@ public abstract class AutomationScript
         Parameters = parameters;
     }
 
-    private string GetContentString()
-    {
-        return string.Join("\n", Content);
-    }
-
-    public abstract Task<ScriptExecutionState> InvokeAsync(string deviceName, ScriptOutputList scriptOutput, string cancellationMessage, CancellationToken cancellationToken);
-
-    public abstract bool LoadParameters();
-
-    public void AddParameter(string parameterName, Type parameterType, bool mandatory = false)
-    {
-        Parameters.Add(new ScriptParameter(parameterName, parameterType, mandatory));
-    }
-
-    public virtual bool LoadFromFile(string filePath, bool loadParameters)
+    public bool LoadContent(string filePath)
     {
         ArgumentNullException.ThrowIfNull(filePath, nameof(filePath));
 
@@ -66,58 +53,73 @@ public abstract class AutomationScript
         }
         FilePath = filePath;
 
-        return DoLoadFromFile(FilePath, loadParameters);
+        return DoLoadContent(FilePath);
     }
 
-    private bool DoLoadFromFile(string filePath, bool loadParameters)
+    private bool DoLoadContent(string filePath)
     {
         try
         {
             Content = File.ReadAllLines(filePath);
             ContentString = GetContentString();
-            LoadState = ScriptLoadState.Success;
+            ContentLoadState = ScriptLoadState.Success;
 
-            return !loadParameters || LoadParameters();
+            return true;
         }
         catch (IOException)
         {
-            LoadState = ScriptLoadState.Failed;
+            ContentLoadState = ScriptLoadState.Failed;
 
             return false;
         }
     }
 
-    public virtual bool Refresh()
+    public bool Refresh()
     {
-        if (FilePath != null && LoadState == ScriptLoadState.Success)
+        if (FilePath != null && ContentLoadState == ScriptLoadState.Success)
         {
-            return DoLoadFromFile(FilePath, true);
+            return DoLoadContent(FilePath) && LoadParameters();
         }
         return false;
     }
 
+    public abstract bool LoadParameters();
+
+    public void AddParameter(string parameterName, Type parameterType, bool mandatory = false)
+    {
+        Parameters.Add(new ScriptParameter(parameterName, parameterType, mandatory));
+    }
+
+    public abstract Task<ScriptExecutionState> InvokeAsync(string deviceName, ScriptOutputList scriptOutput, string cancellationMessage,
+        CancellationToken cancellationToken);
+
     public void Unload()
     {
-        LoadState = ScriptLoadState.Unloaded;
+        ContentLoadState = ScriptLoadState.Unloaded;
         FilePath = null;
         FileName = null;
         Content = Array.Empty<string>();
         ContentString = string.Empty;
     }
 
-    public bool IsUnloaded()
+    private string GetContentString()
     {
-        return LoadState == ScriptLoadState.Unloaded;
+        return string.Join("\n", Content);
     }
 
-    public bool IsLoaded()
+    public bool IsContentUnloaded()
     {
-        return LoadState == ScriptLoadState.Success;
+        return ContentLoadState == ScriptLoadState.Unloaded;
     }
 
-    public bool LoadFailed()
+    public bool IsContentLoaded()
     {
-        return LoadState == ScriptLoadState.Failed;
+        return ContentLoadState == ScriptLoadState.Success;
+    }
+
+    public bool ContentFailedToLoad()
+    {
+        return ContentLoadState == ScriptLoadState.Failed;
     }
     
     public override string ToString()

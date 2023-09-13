@@ -7,8 +7,8 @@ public sealed class ScriptJobService : IScriptJobService
 {
     public const int MaxResults = 50;
 
-    public Dictionary<string, ScriptJob> Jobs { get; set; } = new();
-    public Dictionary<int, ScriptJobResult> JobResults { get; set; } = new();
+    public Dictionary<string, ScriptJob> Jobs { get; private set; } = new();
+    public Dictionary<int, ScriptJobResult> JobResults { get; private set; } = new();
 
     private int _nextResultId = 0;
     private int _firstResultId = -1;
@@ -22,7 +22,7 @@ public sealed class ScriptJobService : IScriptJobService
     {
         ArgumentNullException.ThrowIfNull(job.Script.FileName, nameof(job.Script.FileName));
 
-        ScriptJobResult result = new(
+        ScriptJobResult jobResult = new(
             _nextResultId++,
             job.Name,
             job.Script.FileName,
@@ -30,12 +30,12 @@ public sealed class ScriptJobService : IScriptJobService
             DateTime.Now,
             scriptOutput
         );
-        AddJobResult(result);
+        AddJobResult(jobResult);
 
-        job.Run(deviceName, result, ScriptOutputList.FormatAsSystemMessage("Script execution was cancelled"))
-            .ConfigureAwait(false);
+        job.Run(deviceName, scriptOutput, ScriptOutputList.FormatAsSystemMessage("Script execution was cancelled"))
+            .ContinueWith(resultTask => jobResult.InvokeExecutionResultReceived(resultTask.Result));
 
-        return result;
+        return jobResult;
     }
 
     private void AddJobResult(ScriptJobResult result)
@@ -74,10 +74,12 @@ public sealed class ScriptJobService : IScriptJobService
         {
             return false;
         }
-        job.Name = newJobName;
-        AddJob(job);
-
-        return true;
+        if (job.TrySetName(newJobName))
+        {
+            AddJob(job);
+            return true;
+        }
+        return false;
     }
 
     public void LoadScriptJobs(string folderPath)

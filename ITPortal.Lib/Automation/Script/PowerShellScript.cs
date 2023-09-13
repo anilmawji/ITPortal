@@ -42,7 +42,7 @@ public sealed class PowerShellScript : AutomationScript
 
     public override bool LoadParameters()
     {
-        if (!IsLoaded())
+        if (!IsContentLoaded())
         {
             throw new InvalidOperationException("Cannot load parameters on an unloaded script");
         }
@@ -51,7 +51,6 @@ public sealed class PowerShellScript : AutomationScript
 
         if (errors.Length != 0)
         {
-            LoadState = ScriptLoadState.Failed;
             return false;
         }
 
@@ -70,7 +69,8 @@ public sealed class PowerShellScript : AutomationScript
         Parameters.Add(new ScriptParameter(parameter.Name.VariablePath.ToString(), parameter.StaticType, parameter.IsMandatory()));
     }
 
-    public override async Task<ScriptExecutionState> InvokeAsync(string deviceName, ScriptOutputList scriptOutput, string cancellationMessage, CancellationToken cancellationToken)
+    public override async Task<ScriptExecutionState> InvokeAsync(string deviceName, ScriptOutputList scriptOutput, string cancellationMessage,
+        CancellationToken cancellationToken)
     {
         // Check if a pre-cancelled token was given
         if (cancellationToken.IsCancellationRequested)
@@ -79,7 +79,7 @@ public sealed class PowerShellScript : AutomationScript
 
             return ScriptExecutionState.Stopped;
         }
-        if (!IsLoaded())
+        if (!IsContentLoaded())
         {
             throw new InvalidOperationException("Cannot invoke a script that has not been loaded");
         }

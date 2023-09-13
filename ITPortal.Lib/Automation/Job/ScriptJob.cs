@@ -1,17 +1,16 @@
-﻿using ITPortal.Lib.Automation.Script;
+﻿using ITPortal.Lib.Automation.Output;
+using ITPortal.Lib.Automation.Script;
 using ITPortal.Lib.Utilities;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace ITPortal.Lib.Automation.Job;
 
 public sealed class ScriptJob : IDisposable
 {
-    // TODO : change to private set
-    public AutomationScript Script { get; private set; }
-    public string Name { get; set; }
+    public string Name { get; private set; }
     public string Description { get; set; }
+    public AutomationScript Script { get; private set; }
     public DateTime CreationTime { get; private set; }
 
     [JsonIgnore]
@@ -21,29 +20,28 @@ public sealed class ScriptJob : IDisposable
     private CancellationTokenSource _cancellationTokenSource = new();
 
     [JsonConstructor]
-    public ScriptJob(AutomationScript script, string name, string description, DateTime creationTime)
+    public ScriptJob(string name, string description, AutomationScript script, DateTime creationTime)
     {
-        Script = script;
         Name = name;
         Description = description;
+        Script = script;
         CreationTime = creationTime;
     }
 
-    public ScriptJob(AutomationScript script, string name) : this(script, name, string.Empty, DateTime.Now) { }
+    public ScriptJob(string name, AutomationScript script) : this(name, string.Empty, script, DateTime.Now) { }
 
-    public async Task<ScriptExecutionState> Run(string deviceName, ScriptJobResult result, string cancellationMessage)
+    public async Task<ScriptExecutionState> Run(string deviceName, ScriptOutputList scriptOutput, string cancellationMessage)
     {
         SetState(ScriptJobState.Running);
 
         ScriptExecutionState executionResult = await Script.InvokeAsync(
             deviceName,
-            result.ScriptOutput,
+            scriptOutput,
             cancellationMessage,
             _cancellationTokenSource.Token
         );
         SetState(ScriptJobState.Idle);
 
-        result.InvokeExecutionResultReceived(executionResult);
         _cancellationTokenSource = new();
 
         return executionResult;
@@ -77,7 +75,7 @@ public sealed class ScriptJob : IDisposable
             }
             if (job.Script.FilePath != null)
             {
-                job.Script.LoadFromFile(job.Script.FilePath, false);
+                job.Script.LoadContent(job.Script.FilePath);
             }
             return job;
         }
@@ -90,6 +88,13 @@ public sealed class ScriptJob : IDisposable
     public string ToJsonString()
     {
         return JsonSerializer.Serialize(this, ScriptJobContext.Default.ScriptJob);
+    }
+
+    public bool TrySetName(string name)
+    {
+        // TODO: string validation
+        Name = name;
+        return false;
     }
 
     public bool IsIdle()

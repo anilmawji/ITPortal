@@ -5,8 +5,8 @@ namespace ITPortal.Lib.Services;
 
 public interface IScriptJobService
 {
-    public Dictionary<string, ScriptJob> Jobs { get; set; }
-    public Dictionary<int, ScriptJobResult> JobResults { get; set; }
+    public Dictionary<string, ScriptJob> Jobs { get; }
+    public Dictionary<int, ScriptJobResult> JobResults { get; }
 
     public void AddJob(ScriptJob job);
     public string GetUniqueDefaultJobName();
