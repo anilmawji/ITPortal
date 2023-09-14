@@ -30,13 +30,14 @@ public abstract class AutomationScript
         LoadParameters();
     }
 
-    protected AutomationScript(string filePath, string fileName, string[] content, List<ScriptParameter> parameters)
+    public AutomationScript(string filePath, string fileName, string[] content, List<ScriptParameter> parameters)
     {
         FilePath = filePath;
         FileName = fileName;
         Content = content;
         ContentString = GetContentString();
         Parameters = parameters;
+        ContentLoadState = ScriptLoadState.Success;
     }
 
     public bool LoadContent(string filePath)
@@ -95,11 +96,12 @@ public abstract class AutomationScript
 
     public void Unload()
     {
-        ContentLoadState = ScriptLoadState.Unloaded;
         FilePath = null;
         FileName = null;
         Content = Array.Empty<string>();
         ContentString = string.Empty;
+        Parameters.Clear();
+        ContentLoadState = ScriptLoadState.Unloaded;
     }
 
     private string GetContentString()

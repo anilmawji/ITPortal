@@ -33,7 +33,8 @@ public sealed class ScriptJobService : IScriptJobService
         AddJobResult(jobResult);
 
         job.Run(deviceName, scriptOutput, ScriptOutputList.FormatAsSystemMessage("Script execution was cancelled"))
-            .ContinueWith(resultTask => jobResult.InvokeExecutionResultReceived(resultTask.Result));
+            .ContinueWith(resultTask => jobResult.InvokeExecutionResultReceived(resultTask.Result))
+            .ConfigureAwait(false);
 
         return jobResult;
     }

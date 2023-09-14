@@ -84,7 +84,10 @@
         }
     }
 
-    private void OnExecutionResultReceived(object sender, ScriptExecutionState newState) => this.StateHasChanged();
+    private void OnExecutionResultReceived(object sender, ScriptExecutionState newState)
+    {
+        this.StateHasChanged();
+    }
 
     private void GoToJobResults(TableRowClickEventArgs<ScriptJobResult> eventArgs)
     {
