@@ -52,7 +52,6 @@ public sealed class ScriptJob : IDisposable
         if (State == ScriptJobState.Running)
         {
             _cancellationTokenSource?.Cancel();
-            SetState(ScriptJobState.Idle);
         }
     }
 

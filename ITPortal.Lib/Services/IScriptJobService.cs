@@ -1,5 +1,6 @@
 ﻿using ITPortal.Lib.Automation.Job;
 using ITPortal.Lib.Automation.Output;
+using ITPortal.Lib.Automation.Script;
 
 namespace ITPortal.Lib.Services;
 
@@ -7,6 +8,7 @@ public interface IScriptJobService
 {
     public Dictionary<string, ScriptJob> Jobs { get; }
     public Dictionary<int, ScriptJobResult> JobResults { get; }
+    public Task<ScriptExecutionState>? LatestRunJobTask { get; }
 
     public void AddJob(ScriptJob job);
     public string GetUniqueDefaultJobName();

@@ -14,12 +14,9 @@ public sealed class ScriptJobResult : IDisposable
     public string DeviceName { get; private set; }
     public DateTime ExecutionTime { get; private set; }
     public ScriptOutputList ScriptOutput { get; private set; }
-
-    [JsonIgnore]
     public ScriptExecutionState ExecutionState { get; private set; }
     public event EventHandler<ScriptExecutionState>? ExecutionResultReceived;
 
-    [JsonConstructor]
     public ScriptJobResult(int id, string jobName, string scriptName, string deviceName, DateTime executionTime, ScriptOutputList scriptOutput)
     {
         Id = id;
@@ -29,6 +26,13 @@ public sealed class ScriptJobResult : IDisposable
         DeviceName = deviceName;
         ExecutionTime = executionTime;
         ScriptOutput = scriptOutput;
+    }
+
+    [JsonConstructor]
+    public ScriptJobResult(int id, string jobName, string scriptName, string deviceName, DateTime executionTime, ScriptOutputList scriptOutput,
+        ScriptExecutionState executionState) : this(id, jobName, scriptName, deviceName, executionTime, scriptOutput)
+    {
+        ExecutionState = executionState;
     }
 
     internal void InvokeExecutionResultReceived(ScriptExecutionState newState)
@@ -46,8 +50,9 @@ public sealed class ScriptJobResult : IDisposable
 
             return jobResult;
         }
-        catch (Exception)
+        catch (Exception e)
         {
+            System.Diagnostics.Debug.WriteLine(e);
             return null;
         }
     }

@@ -1,5 +1,6 @@
 ﻿using ITPortal.Lib.Automation.Job;
 using ITPortal.Lib.Automation.Output;
+using ITPortal.Lib.Automation.Script;
 
 namespace ITPortal.Lib.Services;
 
@@ -9,6 +10,7 @@ public sealed class ScriptJobService : IScriptJobService
 
     public Dictionary<string, ScriptJob> Jobs { get; private set; } = new();
     public Dictionary<int, ScriptJobResult> JobResults { get; private set; } = new();
+    public Task<ScriptExecutionState>? LatestRunJobTask { get; private set; }
 
     private int _nextResultId = 0;
     private int _firstResultId = -1;
@@ -32,8 +34,10 @@ public sealed class ScriptJobService : IScriptJobService
         );
         AddJobResult(jobResult);
 
-        job.Run(deviceName, scriptOutput, ScriptOutputList.FormatAsSystemMessage("Script execution was cancelled"))
-            .ContinueWith(resultTask => jobResult.InvokeExecutionResultReceived(resultTask.Result))
+        Task<ScriptExecutionState> jobTask = job.Run(deviceName, scriptOutput, ScriptOutputList.FormatAsSystemMessage("Script execution was cancelled"));
+        LatestRunJobTask = jobTask;
+
+        jobTask.ContinueWith(task => jobResult.InvokeExecutionResultReceived(task.Result))
             .ConfigureAwait(false);
 
         return jobResult;
@@ -41,16 +45,16 @@ public sealed class ScriptJobService : IScriptJobService
 
     private void AddJobResult(ScriptJobResult result)
     {
-        if (result.Id < _firstResultId || _firstResultId == -1)
-        {
-            _firstResultId = result.Id;
-        }
-        if (result.Id > _nextResultId)
+        if (result.Id >= _nextResultId)
         {
             _nextResultId = result.Id + 1;
         }
         JobResults.Add(result.Id, result);
 
+        if (result.Id < _firstResultId || _firstResultId == -1)
+        {
+            _firstResultId = result.Id;
+        }
         if (JobResults.Count > MaxResults)
         {
             // Cap the results list to store only the most recent results
@@ -118,10 +122,7 @@ public sealed class ScriptJobService : IScriptJobService
             {
                 int resultId = int.Parse(Path.GetFileNameWithoutExtension(path));
 
-                if (JobResults.ContainsKey(resultId))
-                {
-                    return;
-                }
+                if (JobResults.ContainsKey(resultId)) return;
             }
             catch (Exception)
             {
@@ -131,8 +132,10 @@ public sealed class ScriptJobService : IScriptJobService
 
             if (result != null)
             {
+                System.Diagnostics.Debug.WriteLine("ID: " + result.Id);
                 AddJobResult(result);
-            }
+            } else
+                System.Diagnostics.Debug.WriteLine("NOT");
         }
     }
 

@@ -5,8 +5,10 @@ namespace ITPortal.Lib.Automation.Output;
 
 public sealed class PowerShellScriptOutputList : ScriptOutputList
 {
+    public PowerShellScriptOutputList() : base() { }
+
     [JsonConstructor]
-    public PowerShellScriptOutputList() { }
+    public PowerShellScriptOutputList(List<ScriptOutputMessage> output) : base(output) { }
 
     public override void SubscribeToOutputStream<T>(ICollection<T> stream, ScriptOutputStreamType streamType)
     {

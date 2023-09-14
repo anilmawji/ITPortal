@@ -72,21 +72,9 @@
         }
     }
 
-    protected override void OnAfterRender(bool firstRender)
-    {
-        if (firstRender)
-        {
-            InvokeAsync(() =>
-            {
-                ScriptJobService.LoadScriptJobResults(FileHelper.ScriptJobResultsPath);
-                this.StateHasChanged();
-            });
-        }
-    }
-
     private void OnExecutionResultReceived(object sender, ScriptExecutionState newState)
     {
-        this.StateHasChanged();
+        InvokeAsync(this.StateHasChanged);
     }
 
     private void GoToJobResults(TableRowClickEventArgs<ScriptJobResult> eventArgs)
