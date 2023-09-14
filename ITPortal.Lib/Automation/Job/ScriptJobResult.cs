@@ -50,9 +50,8 @@ public sealed class ScriptJobResult : IDisposable
 
             return jobResult;
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            System.Diagnostics.Debug.WriteLine(e);
             return null;
         }
     }

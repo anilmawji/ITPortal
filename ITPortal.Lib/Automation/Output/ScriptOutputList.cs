@@ -7,7 +7,6 @@ namespace ITPortal.Lib.Automation.Output;
 [JsonDerivedType(typeof(PowerShellScriptOutputList), typeDiscriminator: "powershell")]
 public abstract class ScriptOutputList : IDisposable
 {
-    [JsonIgnore]
     public readonly Dictionary<ScriptOutputStreamType, int> StreamLineCounts = EnumHelper.ToDictionary<ScriptOutputStreamType, int>(0);
     public event EventHandler<ScriptOutputChangedEventArgs>? OutputChanged;
 
@@ -21,7 +20,11 @@ public abstract class ScriptOutputList : IDisposable
         Output = new();
     }
 
-    public ScriptOutputList(List<ScriptOutputMessage> output) => (Output) = output;
+    public ScriptOutputList(List<ScriptOutputMessage> output, Dictionary<ScriptOutputStreamType, int> streamLineCounts)
+    {
+        Output = output;
+        StreamLineCounts = streamLineCounts;
+    }
 
     public abstract void SubscribeToOutputStream<T>(ICollection<T> stream, ScriptOutputStreamType streamType);
 

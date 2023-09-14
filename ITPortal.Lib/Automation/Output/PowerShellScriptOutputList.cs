@@ -8,7 +8,8 @@ public sealed class PowerShellScriptOutputList : ScriptOutputList
     public PowerShellScriptOutputList() : base() { }
 
     [JsonConstructor]
-    public PowerShellScriptOutputList(List<ScriptOutputMessage> output) : base(output) { }
+    public PowerShellScriptOutputList(List<ScriptOutputMessage> output, Dictionary<ScriptOutputStreamType, int> streamLineCounts)
+        : base(output, streamLineCounts) { }
 
     public override void SubscribeToOutputStream<T>(ICollection<T> stream, ScriptOutputStreamType streamType)
     {

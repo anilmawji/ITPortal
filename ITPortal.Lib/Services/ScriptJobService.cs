@@ -132,10 +132,8 @@ public sealed class ScriptJobService : IScriptJobService
 
             if (result != null)
             {
-                System.Diagnostics.Debug.WriteLine("ID: " + result.Id);
                 AddJobResult(result);
-            } else
-                System.Diagnostics.Debug.WriteLine("NOT");
+            }
         }
     }
 
