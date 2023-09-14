@@ -1,9 +1,13 @@
 ﻿using System.Management.Automation;
+using System.Text.Json.Serialization;
 
 namespace ITPortal.Lib.Automation.Output;
 
 public sealed class PowerShellScriptOutputList : ScriptOutputList
 {
+    [JsonConstructor]
+    public PowerShellScriptOutputList() { }
+
     public override void SubscribeToOutputStream<T>(ICollection<T> stream, ScriptOutputStreamType streamType)
     {
         var psStream = (PSDataCollection<T>)stream;

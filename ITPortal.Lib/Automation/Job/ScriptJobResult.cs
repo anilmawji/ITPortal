@@ -1,6 +1,7 @@
 ﻿using ITPortal.Lib.Automation.Output;
 using ITPortal.Lib.Automation.Script;
 using ITPortal.Lib.Utilities;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace ITPortal.Lib.Automation.Job;
@@ -34,6 +35,26 @@ public sealed class ScriptJobResult : IDisposable
     {
         ExecutionState = newState;
         ExecutionResultReceived?.Invoke(this, newState);
+    }
+
+    public static ScriptJobResult? TryLoadFromJsonFile(string filePath)
+    {
+        try
+        {
+            string jsonText = File.ReadAllText(filePath);
+            ScriptJobResult? jobResult = JsonSerializer.Deserialize(jsonText, ScriptJobResultContext.Default.ScriptJobResult);
+
+            return jobResult;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
+
+    public string ToJsonString()
+    {
+        return JsonSerializer.Serialize(this, ScriptJobResultContext.Default.ScriptJobResult);
     }
 
     public void Dispose()

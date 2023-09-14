@@ -1,12 +1,16 @@
-﻿using System.Management.Automation;
+﻿using ITPortal.Lib.Utilities;
+using System.Management.Automation;
 using System.Runtime.Serialization;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace ITPortal.Lib.Automation.Script.Parameter;
 
 public sealed class ScriptParameter
 {
-    public string Name { get; set; }
+    public const string UnknownValue = "Unknown";
+
+    public string Name { get; private set; }
     public object Value { get; set; }
     public string TypeName { get; private set; }
     public bool Mandatory { get; private set; }
@@ -15,7 +19,7 @@ public sealed class ScriptParameter
     {
         Name = name;
         Value = GetDefaultValue(type);
-        TypeName = type.Name;
+        TypeName = type.AssemblyQualifiedName ?? string.Empty;
         Mandatory = mandatory;
     }
 
@@ -23,14 +27,14 @@ public sealed class ScriptParameter
     public ScriptParameter(string name, object value, string typeName, bool mandatory)
     {
         Name = name;
-        Value = value;
+        Value = ((JsonElement)value).GetValue(Type.GetType(typeName)) ?? UnknownValue;
         TypeName = typeName;
         Mandatory = mandatory;
     }
 
     private static object GetDefaultValue(Type type)
     {
-        // It's important to check IsValueType before calling GetUninitializedObject
+        // It is important to check IsValueType before calling GetUninitializedObject
         // GetUninitializedObject is valid for reference types, but it will not return null
         if (type.IsValueType)
         {
@@ -39,7 +43,7 @@ public sealed class ScriptParameter
                 // Override default value for DateTime (1/1/1001)
                 return DateTime.Today;
             }
-            else if (type == typeof(bool) || type == typeof(SwitchParameter))
+            else if (IsBoolType(type))
             {
                 return false;
             }
@@ -49,9 +53,9 @@ public sealed class ScriptParameter
                 return FormatterServices.GetUninitializedObject(type);
             }
         }
-        // Prepare default values for reference types
         else
         {
+            // Parameter value is a reference type
             if (type == typeof(string))
             {
                 return string.Empty;
@@ -60,18 +64,23 @@ public sealed class ScriptParameter
             {
                 if (type.GetElementType() == null)
                 {
-                    return "Unknown";
+                    return UnknownValue;
                 }
                 // All arrays will be treated internally as lists of strings
                 return new List<string>();
             }
         }
-        return "Unknown";
+        return UnknownValue;
     }
 
     public bool IsType(Type type)
     {
-        return TypeName == type.Name;
+        return TypeName == type.AssemblyQualifiedName;
+    }
+
+    public static bool IsBoolType(Type type)
+    {
+        return type == typeof(bool) || type == typeof(SwitchParameter);
     }
 
     public override string? ToString()

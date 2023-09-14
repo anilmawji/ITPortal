@@ -1,5 +1,4 @@
-﻿using ITPortal.Data;
-using ITPortal.Lib.Services;
+﻿using ITPortal.Lib.Services;
 using ITPortal.Lib.Services.Authentication;
 using ITPortal.Lib.Services.Core;
 using Microsoft.Extensions.Configuration;
@@ -42,7 +41,5 @@ public static class MauiProgram
         services.AddSingleton<IScriptJobService, ScriptJobService>();
         services.AddScoped<IGraphClientService, GraphClientService>();
         services.AddGitHubServices();
-
-        services.AddScoped<WeatherForecastService>();
     }
 }

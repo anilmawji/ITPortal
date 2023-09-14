@@ -5,14 +5,14 @@ namespace ITPortal.Lib.Services;
 
 public interface IScriptJobService
 {
-    public Dictionary<string, ScriptJob> Jobs { get; set; }
-    public List<ScriptJobResult> JobResults { get; set; }
+    public Dictionary<string, ScriptJob> Jobs { get; }
+    public Dictionary<int, ScriptJobResult> JobResults { get; }
 
     public void AddJob(ScriptJob job);
-    public string GenerateUniqueDefaultJobName();
+    public string GetUniqueDefaultJobName();
     public bool UpdateJobName(ScriptJob job, string newJobName);
     public ScriptJobResult RunJob(ScriptJob job, string deviceName, ScriptOutputList scriptOutput);
-    public bool LoadScriptJobFromJsonFile(string filePath);
-    public ScriptJobResult GetJobResult(int jobResultId);
+    public void LoadScriptJobs(string folderPath);
+    public void LoadScriptJobResults(string folderPath);
     public bool HasJob(string jobName);
 }

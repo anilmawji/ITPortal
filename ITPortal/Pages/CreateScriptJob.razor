@@ -23,7 +23,7 @@
         <PageSection Title="Script">
             <ChooseFileButton OnClick=@PickAndLoadScript FileName=@_job.Script.FileName />
 
-            @if (_job.Script.IsLoaded())
+            @if (_job.Script.IsContentLoaded())
             {
                 <p class="scroll script-content">
                     @foreach (string line in _job.Script.Content)
@@ -50,13 +50,13 @@
                     </MudItem>
                 </MudGrid>
             }
-            else if (_job.Script.LoadFailed())
+            else if (_job.Script.ContentFailedToLoad())
             {
                 <p>Script failed to load</p>
             }
         </PageSection>
 
-        @if (_job.Script.IsLoaded())
+        @if (_job.Script.IsContentLoaded())
         {
             <PageSection Title="Parameters">
                 <div class="input-group">
@@ -82,8 +82,8 @@
                             else if (parameter.IsType(typeof(int)))
                             {
                                 <div class="small-input-line">
-                                    <MudNumericField T="int" Label=@parameterName Variant="Variant.Filled" Margin="Margin.Dense" Required=@parameter.Mandatory
-                                                     Value=@((int)parameter.Value) ValueChanged="(num) => parameter.Value = num"
+                                    <MudNumericField T="int" Label=@parameterName Variant="Variant.Filled" Margin="Margin.Dense"
+                                                     Required=@parameter.Mandatory Value=@((int)parameter.Value) ValueChanged="(num) => parameter.Value = num"
                                                      RequiredError=@requiredError />
                                 </div>
                             }
@@ -166,7 +166,7 @@
                         </MudButton>
                     </MudItem>
                     <MudItem>
-                        <MudButton @onclick=@TrySaveJob Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" Disabled="!_job.Script.IsLoaded()">
+                        <MudButton @onclick=@TrySaveJob Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" Disabled="!_job.Script.IsContentLoaded()">
                             <MudText>Done</MudText>
                         </MudButton>
                     </MudItem>
@@ -212,8 +212,8 @@
         if (JobName == null)
         {
             _newJobName = string.Empty;
-            _initialJobName = ScriptJobService.GenerateUniqueDefaultJobName();
-            _job = new ScriptJob(new PowerShellScript(), _initialJobName);
+            _initialJobName = ScriptJobService.GetUniqueDefaultJobName();
+            _job = new ScriptJob(_initialJobName, new PowerShellScript());
             _headerTitle = "New Job";
             _creatingNewJob = true;
         }
@@ -222,7 +222,6 @@
             _initialJobName = JobName;
             _newJobName = _initialJobName;
             ScriptJobService.Jobs.TryGetValue(JobName, out _job);
-            System.Diagnostics.Debug.WriteLine("Found job: " + _job.Name);
             _headerTitle = $"Edit Job \"{JobName}\"";
         }
     }
@@ -263,14 +262,15 @@
 
         if (fileResult != null)
         {
-            _job.Script.LoadFromFile(fileResult.FullPath);
+            _job.Script.LoadContent(fileResult.FullPath);
+            _job.Script.LoadParameters();
             this.StateHasChanged();
         }
     }
 
     private void EditScript()
     {
-        if (!_job.Script.IsLoaded()) return;
+        if (!_job.Script.IsContentLoaded()) return;
 
         FileHelper.OpenFileWithDefaultProgram(_job.Script.FilePath);
     }
@@ -304,36 +304,16 @@
         {
             if (ShouldUpdateJobName())
             {
-                _job.Name = _newJobName;
+                _job.TrySetName(_newJobName);
             }
             ScriptJobService.AddJob(_job);
         }
         else if (ShouldUpdateJobName())
         {
-            string oldJobFilePath = Path.Combine(FileHelper.ScriptJobsFolderPath, _job.Name + ".json");
-
-            if (File.Exists(oldJobFilePath))
-            {
-                try
-                {
-                    File.Delete(oldJobFilePath);
-                }
-                catch (Exception e)
-                {
-                    System.Diagnostics.Debug.WriteLine(e.Message);
-                }
-            }
+            FileHelper.TryDeleteFile(_job.Name + ".json", FileHelper.ScriptJobsPath);
             ScriptJobService.UpdateJobName(_job, _newJobName);
         }
-        try
-        {
-            File.WriteAllText(Path.Combine(FileHelper.ScriptJobsFolderPath, _job.Name + ".json"), _job.ToJsonString());
-        }
-        catch (Exception e)
-        {
-            System.Diagnostics.Debug.WriteLine(e.Message);
-        }
-
+        FileHelper.TryCreateFile(_job.Name + ".json", FileHelper.ScriptJobsPath, _job.ToJsonString());
         GoToJobs();
     }
 

@@ -88,14 +88,17 @@
     private static readonly int[] s_pageSizeOptions = { 10, 20, 30 };
 
     private string _searchString = "";
-    private ScriptJobResult jobResult;
 
     protected override void OnAfterRender(bool firstRender)
     {
         if (firstRender)
         {
-            InvokeAsync(LoadSavedScriptJobs);
             InitializeDialogParameters();
+            InvokeAsync(() =>
+            {
+                ScriptJobService.LoadScriptJobs(FileHelper.ScriptJobsPath);
+                this.StateHasChanged();
+            });
         }
     }
 
@@ -114,21 +117,6 @@
         s_cancelJobDialogParameters.Add(dialog => dialog.Color, Color.Secondary);
     }
 
-    private void LoadSavedScriptJobs()
-    {
-        DirectoryInfo info = Directory.CreateDirectory(FileHelper.ScriptJobsFolderPath);
-        // Jobs folder has just been created; no jobs to load
-        if (!info.Exists) return;
-
-        IEnumerable<string> filePaths = Directory.EnumerateFiles(FileHelper.ScriptJobsFolderPath);
-
-        foreach (string path in filePaths)
-        {
-            ScriptJobService.LoadScriptJobFromJsonFile(path);
-        }
-        this.StateHasChanged();
-    }
-
     private async void OpenRunJobDialog(ScriptJob job)
     {
         IDialogReference dialog = DialogService.Show<RunScriptJobDialog>("Run Job", s_runJobDialogParameters, s_dialogOptions);
@@ -137,7 +125,9 @@
         if (!dialogResult.Canceled)
         {
             var dialogResultData = dialogResult.Data as RunScriptJobDialogResult;
-            jobResult = ScriptJobService.RunJob(job, dialogResultData.DeviceName, new PowerShellScriptOutputList());
+
+            ScriptJobResult jobResult = ScriptJobService.RunJob(job, dialogResultData.DeviceName, new PowerShellScriptOutputList());
+            FileHelper.TryCreateFile(jobResult.Id.ToString() + ".json", FileHelper.ScriptJobResultsPath, jobResult.ToJsonString());
 
             if (dialogResultData.ShouldRunJobImmediately)
             {
@@ -178,19 +168,7 @@
 
         if (!result.Canceled && ScriptJobService.Jobs.Remove(jobName))
         {
-            string jobPath = Path.Combine(FileHelper.ScriptJobsFolderPath, jobName + ".json");
-
-            if (File.Exists(jobPath))
-            {
-                try
-                {
-                    File.Delete(jobPath);
-                }
-                catch (Exception e)
-                {
-                    System.Diagnostics.Debug.WriteLine(e.Message);
-                }
-            }
+            FileHelper.TryDeleteFile(jobName, FileHelper.ScriptJobsPath);
             this.StateHasChanged();
         }
     }
