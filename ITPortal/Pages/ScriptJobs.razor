@@ -64,16 +64,18 @@
                 <MudTh Style="text-align:right">
                     @if (context.State != ScriptJobState.Running)
                     {
-                        <MudIconButton Icon=@Icons.Material.Filled.PlayCircle aria-label="start" Style="margin-right: 4px"
+                        <MudIconButton Icon=@Icons.Material.Filled.PlayArrow aria-label="start" Style="margin-right: 4px"
                                        OnClick="() => OpenRunJobDialog(context)"></MudIconButton>
+                        <MudIconButton Icon=@Icons.Material.Filled.Edit aria-label="edit"
+                                       OnClick="() => TryGoToEditJob(context)"></MudIconButton>
                     }
                     else
                     {
-                        <MudIconButton Icon=@Icons.Material.Filled.Cancel aria-label="stop" Style="margin-right: 4px"
+                        <MudIconButton Icon=@Icons.Material.Filled.Stop aria-label="stop" Style="margin-right: 4px"
                                        OnClick="() => OpenCancelJobDialog(context)"></MudIconButton>
+                        <MudIconButton Icon=@Icons.Material.Filled.EditOff aria-label="edit"
+                                       OnClick="() => TryGoToEditJob(context)"></MudIconButton>
                     }
-                    <MudIconButton Icon=@Icons.Material.Filled.Edit aria-label="edit"
-                                   OnClick="() => TryGoToEditJob(context)"></MudIconButton>
                     <MudIconButton Icon=@Icons.Material.Filled.Delete aria-label="delete"
                                    OnClick="() => OpenDeleteJobDialog(context.Name)"></MudIconButton>
                 </MudTh>
@@ -156,6 +158,11 @@
         await jobResult.RunJobTask.ContinueWith((resultTask) =>
         {
             ScriptJobFileHelper.CreateJobResultFile(jobResult);
+
+            if (!dialogResultData.ShouldViewJobResult)
+            {
+                InvokeAsync(this.StateHasChanged);
+            }
         });
     }
 

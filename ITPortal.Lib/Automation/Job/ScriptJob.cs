@@ -72,7 +72,7 @@ public sealed class ScriptJob : IDisposable
             {
                 return null;
             }
-            string fileName = Path.GetFileName(filePath);
+            string fileName = Path.GetFileNameWithoutExtension(filePath);
 
             if (fileName != job.Name)
             {
