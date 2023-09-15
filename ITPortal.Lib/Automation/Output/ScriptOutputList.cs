@@ -11,7 +11,7 @@ public abstract class ScriptOutputList : IDisposable
     public readonly Dictionary<ScriptOutputStreamType, int> StreamLineCounts = EnumHelper.ToDictionary<ScriptOutputStreamType, int>(0);
     public event EventHandler<ScriptOutputChangedEventArgs>? OutputChanged;
 
-    public List<ScriptOutputMessage> Output { get; }
+    private List<ScriptOutputMessage> Output { get; }
 
     [JsonIgnore]
     private ScriptOutputMessage? _previousMessage;

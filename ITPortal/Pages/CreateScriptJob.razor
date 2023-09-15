@@ -244,7 +244,7 @@
         {
             yield return "Job name must be unique";
         }
-        if (jobName.ContainsSpecialChars())
+        if (!jobName.IsValidFileName())
         {
             yield return "Job name must contain only letters and digits";
         }

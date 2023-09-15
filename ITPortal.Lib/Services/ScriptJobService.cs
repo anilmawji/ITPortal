@@ -19,7 +19,7 @@ public sealed class ScriptJobService : IScriptJobService
         Task<ScriptExecutionState> runJobTask = job.Run(
             deviceName,
             scriptOutput,
-            ScriptOutputList.FormatAsSystemMessage("Script execution was cancelled"),
+            ScriptOutputList.FormatAsSystemMessage("Script job was cancelled"),
             runDate
         );
         ScriptJobResult jobResult = new(
