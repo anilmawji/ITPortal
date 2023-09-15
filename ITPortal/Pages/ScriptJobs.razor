@@ -8,10 +8,11 @@
 
 <PageContainer Title="PowerShell Jobs">
     <style>
-        /* adjust table border */
+        /* adjust table border and hide overflowing content */
         .mud-table {
             border-radius: 8px;
             border: solid 1px #D2D2D2;
+            overflow: hidden;
         }
 
         /* correct table height and color */
@@ -41,9 +42,16 @@
                     <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Description)">Description</MudTableSortLabel>
                 </MudTh>
                 <MudTh Style="text-align:right; margin-right: 50px">
-                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" @onclick=@GoToNewJob>
-                        <MudText>New Job</MudText>
-                    </MudButton>
+                    <div class="new-job-btn">
+                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" @onclick=@GoToNewJob>
+                            <MudHidden Breakpoint="Breakpoint.MdAndUp">
+                                <MudText>+</MudText>
+                            </MudHidden>
+                            <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                                <MudText>New Job</MudText>
+                            </MudHidden>
+                        </MudButton>
+                    </div>
                 </MudTh>
             </HeaderContent>
             <RowTemplate>
@@ -90,18 +98,16 @@
 
     private string _searchString = "";
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             InitializeDialogParameters();
-            InvokeAsync(() =>
-            {
-                ScriptJobService.LoadScriptJobs(ScriptJobFileHelper.JobsPath);
-                ScriptJobService.LoadScriptJobResults(ScriptJobFileHelper.JobResultsPath);
-                this.StateHasChanged();
-            });
+            ScriptJobService.LoadScriptJobs(ScriptJobFileHelper.JobsPath);
+            ScriptJobService.LoadScriptJobResults(ScriptJobFileHelper.JobResultsPath);
+            this.StateHasChanged();
         }
+        await base.OnAfterRenderAsync(firstRender);
     }
 
     private void InitializeDialogParameters()
