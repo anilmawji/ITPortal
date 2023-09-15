@@ -3,6 +3,7 @@
 
 @using Microsoft.AspNetCore.Authorization;
 @using System.Text.Json;
+@using ITPortal.Lib.Utilities.Extensions;
 
 @*@attribute [Authorize]*@
 
@@ -90,7 +91,7 @@
                                 </div>
                             }
                             // Avoid importing System.Management.Automation to dodge name conflict between SwitchParameter and ParameterAttribute
-                            else if (parameter.IsType(typeof(bool)) || parameter.IsType(typeof(System.Management.Automation.SwitchParameter)))
+                            else if (parameter.IsBinaryType())
                             {
                                 <div class="small-input-line">
                                     <MudSwitch T="bool" Label=@parameterName Required=@parameter.Mandatory Color="Color.Secondary"

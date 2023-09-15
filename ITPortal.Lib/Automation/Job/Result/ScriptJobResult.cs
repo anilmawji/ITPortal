@@ -1,10 +1,10 @@
 ﻿using ITPortal.Lib.Automation.Output;
 using ITPortal.Lib.Automation.Script;
-using ITPortal.Lib.Utilities;
+using ITPortal.Lib.Utilities.Extensions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace ITPortal.Lib.Automation.Job;
+namespace ITPortal.Lib.Automation.Job.Result;
 
 public sealed class ScriptJobResult : IDisposable
 {
@@ -69,8 +69,9 @@ public sealed class ScriptJobResult : IDisposable
             }
             return jobResult;
         }
-        catch (Exception)
+        catch (Exception e)
         {
+            System.Diagnostics.Debug.WriteLine(e.Message);
             return null;
         }
     }

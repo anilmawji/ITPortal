@@ -1,6 +1,6 @@
 ﻿using ITPortal.Lib.Models.GitHub;
 using ITPortal.Lib.Services.Core;
-using ITPortal.Lib.Utilities;
+using ITPortal.Lib.Utilities.Extensions;
 using System.Net.Http.Headers;
 
 namespace ITPortal.Lib.Services;

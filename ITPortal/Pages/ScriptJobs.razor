@@ -25,7 +25,7 @@
         <MudTable T="ScriptJob" Items=@ScriptJobService.Jobs.Values Dense="true" Hover="true" FixedHeader="true" Filter="new Func<ScriptJob, bool>(FilterJobFunc)"
                   Height="calc(100% - 90px - 10px);">
             <ToolBarContent>
-                <MudTextField @bind-Value=@_searchString Placeholder=@($"Search {ScriptJobService.Jobs.Values.Count} items...") Adornment="Adornment.Start"
+                <MudTextField @bind-Value=@_searchString Placeholder=@($"Search {ScriptJobService.Jobs.Count} items...") Adornment="Adornment.Start"
                               AdornmentIcon=@Icons.Material.Filled.Search IconSize="Size.Medium" Class="mt-0"></MudTextField>
             </ToolBarContent>
             <HeaderContent>
@@ -44,12 +44,7 @@
                 <MudTh Style="text-align:right; margin-right: 50px">
                     <div class="new-job-btn">
                         <MudButton Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" @onclick=@GoToNewJob>
-                            <MudHidden Breakpoint="Breakpoint.MdAndUp">
-                                <MudText>+</MudText>
-                            </MudHidden>
-                            <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                                <MudText>New Job</MudText>
-                            </MudHidden>
+                            <MudText>New Job</MudText>
                         </MudButton>
                     </div>
                 </MudTh>
@@ -198,13 +193,13 @@
 
     private void DeleteJob(string jobName)
     {
-        ScriptJobService.Jobs.Remove(jobName);
+        ScriptJobService.RemoveJob(jobName);
         ScriptJobFileHelper.DeleteJobFile(jobName);
     }
 
     private void DeleteJobResults(ScriptJob job)
     {
-        List<ScriptJobResult> results = ScriptJobService.RemoveJobResults(job);
+        List<ScriptJobResult> results = ScriptJobService.JobResultList.Remove(job);
 
         foreach (ScriptJobResult result in results)
         {

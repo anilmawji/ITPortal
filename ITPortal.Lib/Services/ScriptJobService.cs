@@ -1,4 +1,5 @@
 ﻿using ITPortal.Lib.Automation.Job;
+using ITPortal.Lib.Automation.Job.Result;
 using ITPortal.Lib.Automation.Output;
 using ITPortal.Lib.Automation.Script;
 
@@ -9,14 +10,16 @@ public sealed class ScriptJobService : IScriptJobService
     public const int MaxResults = 50;
 
     public Dictionary<string, ScriptJob> Jobs { get; private set; } = new();
-    public Dictionary<int, ScriptJobResult> JobResults { get; private set; } = new();
-
-    private int _nextResultId = 0;
-    private int _lowestResultId = -1;
+    public ScriptJobResultList JobResultList { get; private set; } = new(MaxResults);
 
     public void AddJob(ScriptJob job)
     {
         Jobs.Add(job.Name, job);
+    }
+
+    public bool RemoveJob(string jobName)
+    {
+        return Jobs.Remove(jobName);
     }
 
     public ScriptJobResult RunJob(ScriptJob job, string deviceName, ScriptOutputList scriptOutput)
@@ -29,7 +32,7 @@ public sealed class ScriptJobService : IScriptJobService
             ScriptOutputList.FormatAsSystemMessage("Script execution was cancelled")
         );
         ScriptJobResult jobResult = new(
-            _nextResultId++,
+            JobResultList.NextResultId,
             job.Name,
             job.Script.FileName,
             deviceName,
@@ -37,7 +40,7 @@ public sealed class ScriptJobService : IScriptJobService
             scriptOutput,
             runJobTask
         );
-        AddJobResult(jobResult);
+        JobResultList.Add(jobResult);
 
         runJobTask.ContinueWith(task => jobResult.InvokeExecutionResultReceived(task.Result))
             .ConfigureAwait(false);
@@ -48,27 +51,6 @@ public sealed class ScriptJobService : IScriptJobService
     public ScriptJobResult RunJob(ScriptJob job, string deviceName)
     {
         return RunJob(job, deviceName, job.Script.NewScriptOutputList());
-    }
-    
-    private void AddJobResult(ScriptJobResult result)
-    {
-        if (JobResults.ContainsKey(result.Id)) return;
-
-        JobResults.Add(result.Id, result);
-
-        if (_nextResultId <= result.Id)
-        {
-            _nextResultId = result.Id + 1;
-        }
-        if (_lowestResultId > result.Id || _lowestResultId == -1)
-        {
-            _lowestResultId = result.Id;
-        }
-        // Cap the results list to store only the most recent results
-        if (JobResults.Count > MaxResults)
-        {
-            JobResults.Remove(_lowestResultId);
-        }
     }
 
     public string GetUniqueDefaultJobName()
@@ -94,22 +76,6 @@ public sealed class ScriptJobService : IScriptJobService
             return true;
         }
         return false;
-    }
-
-    public List<ScriptJobResult> RemoveJobResults(ScriptJob job)
-    {
-        List<ScriptJobResult> results = new();
-
-        foreach ((int id, ScriptJobResult result) in JobResults)
-        {
-            if (result.JobName == job.Name)
-            {
-                System.Diagnostics.Debug.WriteLine("Removing: " + result.Id);
-                results.Add(result);
-                JobResults.Remove(id);
-            }
-        }
-        return results;
     }
 
     public void LoadScriptJobs(string folderPath)
@@ -147,7 +113,7 @@ public sealed class ScriptJobService : IScriptJobService
             {
                 int resultId = int.Parse(Path.GetFileNameWithoutExtension(path));
 
-                if (JobResults.ContainsKey(resultId)) return;
+                if (JobResultList.HasResult(resultId)) return;
             }
             catch (Exception)
             {
@@ -157,7 +123,7 @@ public sealed class ScriptJobService : IScriptJobService
 
             if (result != null)
             {
-                AddJobResult(result);
+                JobResultList.Add(result);
             }
         }
     }
@@ -165,10 +131,5 @@ public sealed class ScriptJobService : IScriptJobService
     public bool HasJob(string jobName)
     {
         return Jobs.GetValueOrDefault(jobName) != default(ScriptJob);
-    }
-
-    public bool HasJobResult(int resultId)
-    {
-        return JobResults.GetValueOrDefault(resultId) != default(ScriptJobResult);
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace ITPortal.Utilities.FileUtils;
+namespace ITPortal.Utilities;
 
 public sealed class FileHelper
 {

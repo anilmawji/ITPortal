@@ -1,6 +1,6 @@
 ﻿namespace ITPortal.Lib.Utilities;
 
-enum LogEvent
+public enum LogEvent
 {
     Info,
     Success,
@@ -8,11 +8,11 @@ enum LogEvent
     Error
 }
 
-internal static class EventLogger
+public static class Logger
 {
     private static readonly string LogPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");
 
-    internal static void Write(LogEvent eventType, string message)
+    public static void Write(LogEvent eventType, string message)
     {
         File.WriteAllText(
             Path.Combine(LogPath, Guid.NewGuid() + ".log"),

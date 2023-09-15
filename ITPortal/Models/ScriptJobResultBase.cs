@@ -1,4 +1,4 @@
-﻿using ITPortal.Lib.Automation.Job;
+﻿using ITPortal.Lib.Automation.Job.Result;
 using ITPortal.Lib.Services;
 using Microsoft.AspNetCore.Components;
 
@@ -16,8 +16,7 @@ public class ScriptJobResultBase : ComponentBase
 
     protected override void OnInitialized()
     {
-        ScriptJobResult result;
-        ScriptJobService.JobResults.TryGetValue(Id, out result);
+        ScriptJobResult result = ScriptJobService.JobResultList.TryGetResult(Id);
 
         if (result != null)
         {
