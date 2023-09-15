@@ -14,6 +14,11 @@ public static class Logger
 
     public static void Write(LogEvent eventType, string message)
     {
+        if (!File.Exists(LogPath))
+        {
+            Directory.CreateDirectory(LogPath);
+        }
+
         File.WriteAllText(
             Path.Combine(LogPath, Guid.NewGuid() + ".log"),
             string.Format("[{0}] => {1}:\n\n{2}\n", DateTime.Now.ToLocalTime().ToString("HH:mm:ss"), eventType.ToString().ToUpper(), message)

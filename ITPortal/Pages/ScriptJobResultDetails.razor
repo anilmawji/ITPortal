@@ -43,10 +43,7 @@
         // Very important to make sure ScriptJobResultBase is populated
         base.OnInitialized();
 
-        if (ScriptJobService.HasJob(Result.JobName))
-        {
-            Job = ScriptJobService.Jobs[Result.JobName];
-        }
+        Job = ScriptJobService.JobList.TryGetJob(Result.JobName);
     }
 
     private void GoToEditJob()

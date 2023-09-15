@@ -54,6 +54,35 @@ public sealed class ScriptJobResultList
         return results;
     }
 
+    public void LoadScriptJobResults(string folderPath)
+    {
+        DirectoryInfo info = Directory.CreateDirectory(folderPath);
+        // Jobs folder has just been created; no jobs to load
+        if (!info.Exists) return;
+
+        IEnumerable<string> filePaths = Directory.EnumerateFiles(folderPath);
+
+        foreach (string path in filePaths)
+        {
+            try
+            {
+                int resultId = int.Parse(Path.GetFileNameWithoutExtension(path));
+
+                if (HasResult(resultId)) return;
+            }
+            catch (Exception)
+            {
+                return;
+            }
+            ScriptJobResult? result = ScriptJobResult.TryLoadFromJsonFile(path);
+
+            if (result != null)
+            {
+                Add(result);
+            }
+        }
+    }
+
     public bool HasResult(int resultId)
     {
         return JobResults.GetValueOrDefault(resultId) != default(ScriptJobResult);
@@ -62,6 +91,7 @@ public sealed class ScriptJobResultList
     public ScriptJobResult? TryGetResult(int id)
     {
         JobResults.TryGetValue(id, out ScriptJobResult? result);
+
         return result;
     }
 

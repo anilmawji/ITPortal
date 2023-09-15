@@ -22,11 +22,11 @@
     </style>
 
     <div class="table-container">
-        <MudTable T="ScriptJob" Items=@ScriptJobService.Jobs.Values Dense="true" Hover="true" FixedHeader="true" Filter="new Func<ScriptJob, bool>(FilterJobFunc)"
-                  Height="calc(100% - 90px - 10px);">
+        <MudTable T="ScriptJob" Items=@ScriptJobService.JobList.GetJobs().Values Dense="true" Hover="true" FixedHeader="true"
+                  Filter="new Func<ScriptJob, bool>(FilterJobFunc)" Height="calc(100% - 90px - 10px);">
             <ToolBarContent>
-                <MudTextField @bind-Value=@_searchString Placeholder=@($"Search {ScriptJobService.Jobs.Count} items...") Adornment="Adornment.Start"
-                              AdornmentIcon=@Icons.Material.Filled.Search IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                <MudTextField @bind-Value=@_searchString Placeholder=@($"Search {ScriptJobService.JobList.GetJobs().Count} items...")
+                              Adornment="Adornment.Start" AdornmentIcon=@Icons.Material.Filled.Search IconSize="Size.Medium" Class="mt-0" />
             </ToolBarContent>
             <HeaderContent>
                     <MudTh Style="padding-left: 30px">
@@ -60,19 +60,19 @@
                     @if (context.State != ScriptJobState.Running)
                     {
                         <MudIconButton Icon=@Icons.Material.Filled.PlayArrow aria-label="start" Style="margin-right: 4px"
-                                       OnClick="() => OpenRunJobDialog(context)"></MudIconButton>
+                                       OnClick="() => OpenRunJobDialog(context)" />
                         <MudIconButton Icon=@Icons.Material.Filled.Edit aria-label="edit"
-                                       OnClick="() => TryGoToEditJob(context)"></MudIconButton>
+                                       OnClick="() => TryGoToEditJob(context)" />
                     }
                     else
                     {
                         <MudIconButton Icon=@Icons.Material.Filled.Stop aria-label="stop" Style="margin-right: 4px"
-                                       OnClick="() => OpenCancelJobDialog(context)"></MudIconButton>
+                                       OnClick="() => OpenCancelJobDialog(context)" />
                         <MudIconButton Icon=@Icons.Material.Filled.EditOff aria-label="edit"
-                                       OnClick="() => TryGoToEditJob(context)"></MudIconButton>
+                                       OnClick="() => TryGoToEditJob(context)" />
                     }
                     <MudIconButton Icon=@Icons.Material.Filled.Delete aria-label="delete"
-                                   OnClick="() => OpenDeleteJobDialog(context.Name)"></MudIconButton>
+                                   OnClick="() => OpenDeleteJobDialog(context.Name)" />
                 </MudTh>
             </RowTemplate>
             <PagerContent>
@@ -100,8 +100,8 @@
         if (firstRender)
         {
             InitializeDialogParameters();
-            ScriptJobService.LoadScriptJobs(ScriptJobFileHelper.JobsPath);
-            ScriptJobService.LoadScriptJobResults(ScriptJobFileHelper.JobResultsPath);
+            ScriptJobService.JobList.LoadScriptJobs(ScriptJobFileHelper.JobsPath);
+            ScriptJobService.JobResultList.LoadScriptJobResults(ScriptJobFileHelper.JobResultsPath);
             this.StateHasChanged();
         }
         await base.OnAfterRenderAsync(firstRender);
@@ -181,10 +181,11 @@
         if (dialogResult.Canceled) return;
 
         var dialogResultData = dialogResult.Data as DeleteScriptJobDialogResult;
+        ScriptJob job = ScriptJobService.JobList.TryGetJob(jobName);
 
-        if (dialogResultData.ShouldDeleteJobResults && ScriptJobService.HasJob(jobName))
+        if (dialogResultData.ShouldDeleteJobResults && job != null)
         {
-            DeleteJobResults(ScriptJobService.Jobs[jobName]);
+            DeleteJobResults(job);
         }
         DeleteJob(jobName);
 
@@ -193,7 +194,7 @@
 
     private void DeleteJob(string jobName)
     {
-        ScriptJobService.RemoveJob(jobName);
+        ScriptJobService.JobList.Remove(jobName);
         ScriptJobFileHelper.DeleteJobFile(jobName);
     }
 

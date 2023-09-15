@@ -215,7 +215,7 @@
         if (JobName == null)
         {
             _newJobName = string.Empty;
-            _initialJobName = ScriptJobService.GetUniqueDefaultJobName();
+            _initialJobName = ScriptJobService.JobList.GetUniqueDefaultJobName();
             _job = new ScriptJob(_initialJobName, new PowerShellScript());
             _headerTitle = "New Job";
             _creatingNewJob = true;
@@ -224,7 +224,7 @@
         {
             _initialJobName = JobName;
             _newJobName = _initialJobName;
-            ScriptJobService.Jobs.TryGetValue(JobName, out _job);
+            _job = ScriptJobService.JobList.TryGetJob(JobName);
             _headerTitle = $"Edit Job \"{JobName}\"";
         }
     }
@@ -240,7 +240,7 @@
         {
             yield return "Job name must be less than 30 characters in length";
         }
-        if (ScriptJobService.HasJob(jobName) && (_creatingNewJob || jobName != _initialJobName))
+        if (ScriptJobService.JobList.HasJob(jobName) && (_creatingNewJob || jobName != _initialJobName))
         {
             yield return "Job name must be unique";
         }
@@ -313,12 +313,12 @@
             {
                 _job.TrySetName(_newJobName);
             }
-            ScriptJobService.AddJob(_job);
+            ScriptJobService.JobList.Add(_job);
         }
         else if (ShouldUpdateJobName())
         {
             ScriptJobFileHelper.DeleteJobFile(_job.Name);
-            ScriptJobService.UpdateJobName(_job, _newJobName);
+            ScriptJobService.JobList.UpdateJobName(_job, _newJobName);
         }
         ScriptJobFileHelper.CreateJobFile(_job);
         GoToJobs();
