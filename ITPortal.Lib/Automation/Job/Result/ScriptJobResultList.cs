@@ -54,7 +54,7 @@ public sealed class ScriptJobResultList
         return results;
     }
 
-    public void LoadScriptJobResults(string folderPath)
+    public void LoadScriptJobResultsFromJsonFiles(string folderPath)
     {
         DirectoryInfo info = Directory.CreateDirectory(folderPath);
         // Jobs folder has just been created; no jobs to load

@@ -73,8 +73,8 @@ public sealed class PowerShellScript : AutomationScript
         return new PowerShellScriptOutputList();
     }
 
-    public override async Task<ScriptExecutionState> InvokeAsync(string deviceName, ScriptOutputList outputList, string cancellationMessage,
-        CancellationToken cancellationToken)
+    public override async Task<ScriptExecutionState> InvokeAsync(string deviceName, ScriptOutputList outputList,
+        string cancellationMessage = DefaultCancellationMessage, CancellationToken cancellationToken = default)
     {
         // Check if a pre-cancelled token was given
         if (cancellationToken.IsCancellationRequested)

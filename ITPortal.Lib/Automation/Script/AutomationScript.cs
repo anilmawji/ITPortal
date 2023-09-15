@@ -7,6 +7,8 @@ namespace ITPortal.Lib.Automation.Script;
 [JsonDerivedType(typeof(PowerShellScript), typeDiscriminator: "powershell")]
 public abstract class AutomationScript
 {
+    protected const string DefaultCancellationMessage = "Cancelled";
+
     public string? FilePath { get; private set; }
     public string? FileName { get; private set; }
     public string[] Content { get; private set; }
@@ -94,11 +96,11 @@ public abstract class AutomationScript
 
     public abstract ScriptOutputList NewScriptOutputList();
 
-    public abstract Task<ScriptExecutionState> InvokeAsync(string deviceName, ScriptOutputList scriptOutput, string cancellationMessage,
-        CancellationToken cancellationToken);
+    public abstract Task<ScriptExecutionState> InvokeAsync(string deviceName, ScriptOutputList scriptOutput,
+        string cancellationMessage = DefaultCancellationMessage, CancellationToken cancellationToken = default);
 
-    public Task<ScriptExecutionState> InvokeAsync(string deviceName, string cancellationMessage,
-        CancellationToken cancellationToken)
+    public Task<ScriptExecutionState> InvokeAsync(string deviceName,
+        string cancellationMessage = DefaultCancellationMessage, CancellationToken cancellationToken = default)
     {
         return InvokeAsync(deviceName, NewScriptOutputList(), cancellationMessage, cancellationToken);
     }

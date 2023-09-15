@@ -1,6 +1,4 @@
-﻿using ITPortal.Lib.Automation.Job.Result;
-
-namespace ITPortal.Lib.Automation.Job;
+﻿namespace ITPortal.Lib.Automation.Job;
 
 public class ScriptJobList
 {
@@ -42,7 +40,7 @@ public class ScriptJobList
         return false;
     }
 
-    public void LoadScriptJobs(string folderPath)
+    public void LoadScriptJobsFromJsonFiles(string folderPath)
     {
         DirectoryInfo info = Directory.CreateDirectory(folderPath);
         // Folder has just been created; no jobs to load

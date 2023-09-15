@@ -12,14 +12,15 @@ public sealed class ScriptJobService : IScriptJobService
     public ScriptJobList JobList { get; private set; } = new();
     public ScriptJobResultList JobResultList { get; private set; } = new(MaxResults);
 
-    public ScriptJobResult RunJob(ScriptJob job, string deviceName, ScriptOutputList scriptOutput)
+    public ScriptJobResult RunJob(ScriptJob job, string deviceName, ScriptOutputList scriptOutput, DateTime runDate = default)
     {
         ArgumentNullException.ThrowIfNull(job.Script.FileName, nameof(job.Script.FileName));
 
         Task<ScriptExecutionState> runJobTask = job.Run(
             deviceName,
             scriptOutput,
-            ScriptOutputList.FormatAsSystemMessage("Script execution was cancelled")
+            ScriptOutputList.FormatAsSystemMessage("Script execution was cancelled"),
+            runDate
         );
         ScriptJobResult jobResult = new(
             JobResultList.NextResultId,
@@ -38,8 +39,8 @@ public sealed class ScriptJobService : IScriptJobService
         return jobResult;
     }
 
-    public ScriptJobResult RunJob(ScriptJob job, string deviceName)
+    public ScriptJobResult RunJob(ScriptJob job, string deviceName, DateTime runDate = default)
     {
-        return RunJob(job, deviceName, job.Script.NewScriptOutputList());
+        return RunJob(job, deviceName, job.Script.NewScriptOutputList(), runDate);
     }
 }

@@ -9,6 +9,6 @@ public interface IScriptJobService
     public ScriptJobList JobList { get; }
     public ScriptJobResultList JobResultList { get; }
 
-    public ScriptJobResult RunJob(ScriptJob job, string deviceName, ScriptOutputList scriptOutput);
-    public ScriptJobResult RunJob(ScriptJob job, string deviceName);
+    public ScriptJobResult RunJob(ScriptJob job, string deviceName, ScriptOutputList scriptOutput, DateTime runDate = default);
+    public ScriptJobResult RunJob(ScriptJob job, string deviceName, DateTime runDate = default);
 }

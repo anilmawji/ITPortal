@@ -100,8 +100,8 @@
         if (firstRender)
         {
             InitializeDialogParameters();
-            ScriptJobService.JobList.LoadScriptJobs(ScriptJobFileHelper.JobsPath);
-            ScriptJobService.JobResultList.LoadScriptJobResults(ScriptJobFileHelper.JobResultsPath);
+            ScriptJobService.JobList.LoadScriptJobsFromJsonFiles(ScriptJobFileHelper.JobsPath);
+            ScriptJobService.JobResultList.LoadScriptJobResultsFromJsonFiles(ScriptJobFileHelper.JobResultsPath);
             this.StateHasChanged();
         }
         await base.OnAfterRenderAsync(firstRender);
