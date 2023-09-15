@@ -243,6 +243,10 @@
         {
             yield return "Job name must be unique";
         }
+        if (jobName.ContainsSpecialChars())
+        {
+            yield return "Job name must contain only letters and digits";
+        }
     }
 
     private IEnumerable<string> ValidateJobDescription(string jobDescription)

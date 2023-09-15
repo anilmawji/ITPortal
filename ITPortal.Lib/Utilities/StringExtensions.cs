@@ -37,4 +37,9 @@ public static class StringExtensions
     {
         return input.Length <= maxLength ? input : input.Substring(0, maxLength);
     }
+
+    public static bool ContainsSpecialChars(this string input)
+    {
+        return input.Any(ch => !char.IsLetterOrDigit(ch));
+    }
 }
