@@ -68,7 +68,13 @@ public sealed class ScriptJob : IDisposable
             string jsonText = File.ReadAllText(filePath);
             ScriptJob? job = JsonSerializer.Deserialize(jsonText, ScriptJobContext.Default.ScriptJob);
 
-            if (job == null || !Path.GetFileName(filePath).Contains(job.Name))
+            if (job == null)
+            {
+                return null;
+            }
+            string fileName = Path.GetFileName(filePath);
+
+            if (fileName != job.Name)
             {
                 return null;
             }

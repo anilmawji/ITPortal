@@ -57,6 +57,16 @@ public sealed class ScriptJobResult : IDisposable
             string jsonText = File.ReadAllText(filePath);
             ScriptJobResult? jobResult = JsonSerializer.Deserialize(jsonText, ScriptJobResultContext.Default.ScriptJobResult);
 
+            if (jobResult == null)
+            {
+                return null;
+            }
+            string fileName = Path.GetFileName(filePath);
+
+            if (fileName != jobResult.Id.ToString())
+            {
+                return null;
+            }
             return jobResult;
         }
         catch (Exception)
