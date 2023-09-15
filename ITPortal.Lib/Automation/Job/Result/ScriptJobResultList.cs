@@ -5,6 +5,7 @@ public sealed class ScriptJobResultList
     public int MaxResults { get; private set; }
     public int NextResultId { get; private set; } = 0;
     public int LowestResultId { get; private set; } = -1;
+    public bool LoadedFromJson { get; private set; }
 
     private readonly Dictionary<int, ScriptJobResult> JobResults = new();
 
@@ -56,6 +57,8 @@ public sealed class ScriptJobResultList
 
     public void LoadScriptJobResultsFromJsonFiles(string folderPath)
     {
+        LoadedFromJson = true;
+
         DirectoryInfo info = Directory.CreateDirectory(folderPath);
         // Jobs folder has just been created; no jobs to load
         if (!info.Exists) return;

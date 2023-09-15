@@ -73,6 +73,16 @@
         }
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !ScriptJobService.JobResultList.LoadedFromJson)
+        {
+            ScriptJobService.JobResultList.LoadScriptJobResultsFromJsonFiles(ScriptJobFileHelper.JobResultsPath);
+            this.StateHasChanged();
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
     private void OnExecutionResultReceived(object sender, ScriptExecutionState newState)
     {
         InvokeAsync(this.StateHasChanged);

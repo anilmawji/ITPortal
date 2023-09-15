@@ -2,8 +2,9 @@
 
 public class ScriptJobList
 {
-    private readonly Dictionary<string, ScriptJob> Jobs = new();
+    public bool LoadedFromJson { get; private set; }
 
+    private readonly Dictionary<string, ScriptJob> Jobs = new();
 
     public void Add(ScriptJob job)
     {
@@ -42,6 +43,8 @@ public class ScriptJobList
 
     public void LoadScriptJobsFromJsonFiles(string folderPath)
     {
+        LoadedFromJson = true;
+
         DirectoryInfo info = Directory.CreateDirectory(folderPath);
         // Folder has just been created; no jobs to load
         if (!info.Exists) return;

@@ -16,8 +16,7 @@ public abstract class AutomationScript
     [JsonIgnore]
     public string ContentString { get; private set; }
     public ScriptLoadState ContentLoadState { get; private set; }
-
-    public List<ScriptParameter> Parameters { get; set; }
+    public List<ScriptParameter> Parameters { get; private set; }
 
     public AutomationScript()
     {
