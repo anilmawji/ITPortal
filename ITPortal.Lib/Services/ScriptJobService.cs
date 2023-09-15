@@ -10,10 +10,9 @@ public sealed class ScriptJobService : IScriptJobService
 
     public Dictionary<string, ScriptJob> Jobs { get; private set; } = new();
     public Dictionary<int, ScriptJobResult> JobResults { get; private set; } = new();
-    public Task<ScriptExecutionState>? LatestRunJobTask { get; private set; }
 
     private int _nextResultId = 0;
-    private int _firstResultId = -1;
+    private int _lowestResultId = -1;
 
     public void AddJob(ScriptJob job)
     {
@@ -24,20 +23,23 @@ public sealed class ScriptJobService : IScriptJobService
     {
         ArgumentNullException.ThrowIfNull(job.Script.FileName, nameof(job.Script.FileName));
 
+        Task<ScriptExecutionState> runJobTask = job.Run(
+            deviceName,
+            scriptOutput,
+            ScriptOutputList.FormatAsSystemMessage("Script execution was cancelled")
+        );
         ScriptJobResult jobResult = new(
             _nextResultId++,
             job.Name,
             job.Script.FileName,
             deviceName,
             DateTime.Now,
-            scriptOutput
+            scriptOutput,
+            runJobTask
         );
         AddJobResult(jobResult);
 
-        Task<ScriptExecutionState> jobTask = job.Run(deviceName, scriptOutput, ScriptOutputList.FormatAsSystemMessage("Script execution was cancelled"));
-        LatestRunJobTask = jobTask;
-
-        jobTask.ContinueWith(task => jobResult.InvokeExecutionResultReceived(task.Result))
+        runJobTask.ContinueWith(task => jobResult.InvokeExecutionResultReceived(task.Result))
             .ConfigureAwait(false);
 
         return jobResult;
@@ -45,20 +47,22 @@ public sealed class ScriptJobService : IScriptJobService
 
     private void AddJobResult(ScriptJobResult result)
     {
-        if (result.Id >= _nextResultId)
+        if (JobResults.ContainsKey(result.Id)) return;
+
+        JobResults.Add(result.Id, result);
+
+        if (_nextResultId <= result.Id)
         {
             _nextResultId = result.Id + 1;
         }
-        JobResults.Add(result.Id, result);
-
-        if (result.Id < _firstResultId || _firstResultId == -1)
+        if (_lowestResultId > result.Id || _lowestResultId == -1)
         {
-            _firstResultId = result.Id;
+            _lowestResultId = result.Id;
         }
+        // Cap the results list to store only the most recent results
         if (JobResults.Count > MaxResults)
         {
-            // Cap the results list to store only the most recent results
-            JobResults.Remove(_firstResultId);
+            JobResults.Remove(_lowestResultId);
         }
     }
 
@@ -85,6 +89,22 @@ public sealed class ScriptJobService : IScriptJobService
             return true;
         }
         return false;
+    }
+
+    public List<ScriptJobResult> RemoveJobResults(ScriptJob job)
+    {
+        List<ScriptJobResult> results = new();
+
+        foreach ((int id, ScriptJobResult result) in JobResults)
+        {
+            if (result.JobName == job.Name)
+            {
+                System.Diagnostics.Debug.WriteLine("Removing: " + result.Id);
+                results.Add(result);
+                JobResults.Remove(id);
+            }
+        }
+        return results;
     }
 
     public void LoadScriptJobs(string folderPath)

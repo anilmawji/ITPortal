@@ -50,10 +50,7 @@
 
     private void GoToEditJob()
     {
-        if (Job != null)
-        {
-            NavigationManager.NavigateTo(PageRoute.EditScriptJobWithName(Job.Name));
-        }
+        NavigationManager.NavigateTo(PageRoute.EditScriptJobWithName(Job.Name));
     }
 
     public void Dispose()

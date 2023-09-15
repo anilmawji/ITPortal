@@ -9,7 +9,7 @@ public enum ScriptJobState
     Running
 }
 
-public static class ScriptJobStateMethods
+public static class ScriptJobStateExtensions
 {
     public static readonly IReadOnlyDictionary<ScriptJobState, string> Colors = new Dictionary<ScriptJobState, string>()
     {

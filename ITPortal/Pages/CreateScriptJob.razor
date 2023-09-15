@@ -260,7 +260,7 @@
 
     private async void PickAndLoadScript()
     {
-        FileResult fileResult = await Utilities.FileHelper.PickFile(s_filePickOptions);
+        FileResult fileResult = await FileHelper.PickFile(s_filePickOptions);
 
         if (fileResult != null)
         {
@@ -312,10 +312,10 @@
         }
         else if (ShouldUpdateJobName())
         {
-            FileHelper.TryDeleteFile(_job.Name + ".json", FileHelper.ScriptJobsPath);
+            ScriptJobFileHelper.DeleteJobFile(_job.Name);
             ScriptJobService.UpdateJobName(_job, _newJobName);
         }
-        FileHelper.TryCreateFile(_job.Name + ".json", FileHelper.ScriptJobsPath, _job.ToJsonString());
+        ScriptJobFileHelper.CreateJobFile(_job);
         GoToJobs();
     }
 

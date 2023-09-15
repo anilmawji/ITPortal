@@ -17,6 +17,9 @@ public sealed class ScriptJobResult : IDisposable
     public ScriptExecutionState ExecutionState { get; private set; }
     public event EventHandler<ScriptExecutionState>? ExecutionResultReceived;
 
+    [JsonIgnore]
+    public Task<ScriptExecutionState>? RunJobTask { get; private set; }
+
     public ScriptJobResult(int id, string jobName, string scriptName, string deviceName, DateTime executionTime, ScriptOutputList scriptOutput)
     {
         Id = id;
@@ -26,6 +29,12 @@ public sealed class ScriptJobResult : IDisposable
         DeviceName = deviceName;
         ExecutionTime = executionTime;
         ScriptOutput = scriptOutput;
+    }
+
+    public ScriptJobResult(int id, string jobName, string scriptName, string deviceName, DateTime executionTime, ScriptOutputList scriptOutput,
+        Task<ScriptExecutionState> runJobTask) : this(id, jobName, scriptName, deviceName, executionTime, scriptOutput)
+    {
+        RunJobTask = runJobTask;
     }
 
     [JsonConstructor]

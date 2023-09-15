@@ -53,7 +53,6 @@ public sealed class PowerShellScript : AutomationScript
         {
             return false;
         }
-
         if (scriptAst.ParamBlock != null)
         {
             foreach (ParameterAst parameter in scriptAst.ParamBlock.Parameters)
@@ -93,7 +92,7 @@ public sealed class PowerShellScript : AutomationScript
             {
                 RegisterParameters(shell);
             }
-            PSDataCollection<PSObject> standardOutputStream = RegisterOutputStreams(shell, (PowerShellScriptOutputList)scriptOutput);
+            PSDataCollection<PSObject> standardOutputStream = RegisterOutputStreams(shell, scriptOutput);
 
             // Use Task.Factory to opt for the newer async/await keywords
             // Moves away from the old IAsyncResult functionality still used by the PowerShell API
