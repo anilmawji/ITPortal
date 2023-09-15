@@ -1,4 +1,4 @@
-﻿namespace ITPortal.Lib.Utilities;
+﻿namespace ITPortal.Lib.Utilities.Extensions;
 
 public static class StringExtensions
 {
@@ -36,5 +36,10 @@ public static class StringExtensions
     public static string NormalizeLength(this string input, int maxLength)
     {
         return input.Length <= maxLength ? input : input.Substring(0, maxLength);
+    }
+
+    public static bool ContainsSpecialChars(this string input)
+    {
+        return input.Any(ch => !char.IsLetterOrDigit(ch));
     }
 }

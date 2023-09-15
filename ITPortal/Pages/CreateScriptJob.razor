@@ -3,6 +3,7 @@
 @attribute [Authorize]
 
 @using System.Text.Json;
+@using ITPortal.Lib.Utilities.Extensions;
 
 @inject IScriptJobService ScriptJobService
 @inject NavigationManager NavigationManager
@@ -88,7 +89,7 @@
                                 </div>
                             }
                             // Avoid importing System.Management.Automation to dodge name conflict between SwitchParameter and ParameterAttribute
-                            else if (parameter.IsType(typeof(bool)) || parameter.IsType(typeof(System.Management.Automation.SwitchParameter)))
+                            else if (parameter.IsBinaryType())
                             {
                                 <div class="small-input-line">
                                     <MudSwitch T="bool" Label=@parameterName Required=@parameter.Mandatory Color="Color.Secondary"
@@ -212,7 +213,7 @@
         if (JobName == null)
         {
             _newJobName = string.Empty;
-            _initialJobName = ScriptJobService.GetUniqueDefaultJobName();
+            _initialJobName = ScriptJobService.JobList.GetUniqueDefaultJobName();
             _job = new ScriptJob(_initialJobName, new PowerShellScript());
             _headerTitle = "New Job";
             _creatingNewJob = true;
@@ -221,7 +222,7 @@
         {
             _initialJobName = JobName;
             _newJobName = _initialJobName;
-            ScriptJobService.Jobs.TryGetValue(JobName, out _job);
+            _job = ScriptJobService.JobList.TryGetJob(JobName);
             _headerTitle = $"Edit Job \"{JobName}\"";
         }
     }
@@ -237,9 +238,13 @@
         {
             yield return "Job name must be less than 30 characters in length";
         }
-        if (ScriptJobService.HasJob(jobName) && (_creatingNewJob || jobName != _initialJobName))
+        if (ScriptJobService.JobList.HasJob(jobName) && (_creatingNewJob || jobName != _initialJobName))
         {
             yield return "Job name must be unique";
+        }
+        if (jobName.ContainsSpecialChars())
+        {
+            yield return "Job name must contain only letters and digits";
         }
     }
 
@@ -258,7 +263,7 @@
 
     private async void PickAndLoadScript()
     {
-        FileResult fileResult = await Utilities.FileHelper.PickFile(s_filePickOptions);
+        FileResult fileResult = await FileHelper.PickFile(s_filePickOptions);
 
         if (fileResult != null)
         {
@@ -306,14 +311,14 @@
             {
                 _job.TrySetName(_newJobName);
             }
-            ScriptJobService.AddJob(_job);
+            ScriptJobService.JobList.Add(_job);
         }
         else if (ShouldUpdateJobName())
         {
-            FileHelper.TryDeleteFile(_job.Name + ".json", FileHelper.ScriptJobsPath);
-            ScriptJobService.UpdateJobName(_job, _newJobName);
+            ScriptJobFileHelper.DeleteJobFile(_job.Name);
+            ScriptJobService.JobList.UpdateJobName(_job, _newJobName);
         }
-        FileHelper.TryCreateFile(_job.Name + ".json", FileHelper.ScriptJobsPath, _job.ToJsonString());
+        ScriptJobFileHelper.CreateJobFile(_job);
         GoToJobs();
     }
 

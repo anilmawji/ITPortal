@@ -1,4 +1,4 @@
-﻿using ITPortal.Lib.Utilities;
+﻿using ITPortal.Lib.Utilities.Extensions;
 using System.Management.Automation;
 using System.Runtime.Serialization;
 using System.Text.Json;
@@ -43,7 +43,7 @@ public sealed class ScriptParameter
                 // Override default value for DateTime (1/1/1001)
                 return DateTime.Today;
             }
-            else if (IsBoolType(type))
+            else if (type == typeof(bool) || type == typeof(SwitchParameter))
             {
                 return false;
             }
@@ -78,9 +78,9 @@ public sealed class ScriptParameter
         return TypeName == type.AssemblyQualifiedName;
     }
 
-    public static bool IsBoolType(Type type)
+    public bool IsBinaryType()
     {
-        return type == typeof(bool) || type == typeof(SwitchParameter);
+        return TypeName == typeof(bool).AssemblyQualifiedName || TypeName == typeof(SwitchParameter).AssemblyQualifiedName;
     }
 
     public override string? ToString()

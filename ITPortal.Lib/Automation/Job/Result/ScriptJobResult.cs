@@ -1,10 +1,10 @@
 ﻿using ITPortal.Lib.Automation.Output;
 using ITPortal.Lib.Automation.Script;
-using ITPortal.Lib.Utilities;
+using ITPortal.Lib.Utilities.Extensions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace ITPortal.Lib.Automation.Job;
+namespace ITPortal.Lib.Automation.Job.Result;
 
 public sealed class ScriptJobResult : IDisposable
 {
@@ -14,12 +14,12 @@ public sealed class ScriptJobResult : IDisposable
     public string DeviceName { get; private set; }
     public DateTime ExecutionTime { get; private set; }
     public ScriptOutputList ScriptOutput { get; private set; }
-
-    [JsonIgnore]
     public ScriptExecutionState ExecutionState { get; private set; }
     public event EventHandler<ScriptExecutionState>? ExecutionResultReceived;
 
-    [JsonConstructor]
+    [JsonIgnore]
+    public Task<ScriptExecutionState>? RunJobTask { get; private set; }
+
     public ScriptJobResult(int id, string jobName, string scriptName, string deviceName, DateTime executionTime, ScriptOutputList scriptOutput)
     {
         Id = id;
@@ -29,6 +29,19 @@ public sealed class ScriptJobResult : IDisposable
         DeviceName = deviceName;
         ExecutionTime = executionTime;
         ScriptOutput = scriptOutput;
+    }
+
+    public ScriptJobResult(int id, string jobName, string scriptName, string deviceName, DateTime executionTime, ScriptOutputList scriptOutput,
+        Task<ScriptExecutionState> runJobTask) : this(id, jobName, scriptName, deviceName, executionTime, scriptOutput)
+    {
+        RunJobTask = runJobTask;
+    }
+
+    [JsonConstructor]
+    public ScriptJobResult(int id, string jobName, string scriptName, string deviceName, DateTime executionTime, ScriptOutputList scriptOutput,
+        ScriptExecutionState executionState) : this(id, jobName, scriptName, deviceName, executionTime, scriptOutput)
+    {
+        ExecutionState = executionState;
     }
 
     internal void InvokeExecutionResultReceived(ScriptExecutionState newState)
@@ -44,10 +57,21 @@ public sealed class ScriptJobResult : IDisposable
             string jsonText = File.ReadAllText(filePath);
             ScriptJobResult? jobResult = JsonSerializer.Deserialize(jsonText, ScriptJobResultContext.Default.ScriptJobResult);
 
+            if (jobResult == null)
+            {
+                return null;
+            }
+            string fileName = Path.GetFileNameWithoutExtension(filePath);
+
+            if (fileName != jobResult.Id.ToString())
+            {
+                return null;
+            }
             return jobResult;
         }
-        catch (Exception)
+        catch (Exception e)
         {
+            System.Diagnostics.Debug.WriteLine(e.Message);
             return null;
         }
     }

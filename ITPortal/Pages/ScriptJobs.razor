@@ -7,24 +7,25 @@
 
 <PageContainer Title="PowerShell Jobs">
     <style>
-        /* Correct MudTable border */
+        /* adjust table border and hide overflowing content */
         .mud-table {
             border-radius: 8px;
             border: solid 1px #D2D2D2;
+            overflow: hidden;
         }
 
-        /* Correct MudTable height and color */
+        /* correct table height and color */
         .mud-table-toolbar {
             --mud-internal-toolbar-height: 48px !important;
         }
     </style>
 
     <div class="table-container">
-        <MudTable T="ScriptJob" Items=@ScriptJobService.Jobs.Values Dense="true" Hover="true" FixedHeader="true" Filter="new Func<ScriptJob, bool>(FilterJobFunc)"
-                  Height="calc(100% - 90px - 10px);">
+        <MudTable T="ScriptJob" Items=@ScriptJobService.JobList.GetJobs().Values Dense="true" Hover="true" FixedHeader="true"
+                  Filter="new Func<ScriptJob, bool>(FilterJobFunc)" Height="calc(100% - 90px - 10px);">
             <ToolBarContent>
-                <MudTextField @bind-Value=@_searchString Placeholder=@($"Search {ScriptJobService.Jobs.Values.Count} items...") Adornment="Adornment.Start"
-                              AdornmentIcon=@Icons.Material.Filled.Search IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                <MudTextField @bind-Value=@_searchString Placeholder=@($"Search {ScriptJobService.JobList.GetJobs().Count} items...")
+                              Adornment="Adornment.Start" AdornmentIcon=@Icons.Material.Filled.Search IconSize="Size.Medium" Class="mt-0" />
             </ToolBarContent>
             <HeaderContent>
                     <MudTh Style="padding-left: 30px">
@@ -40,9 +41,11 @@
                     <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Description)">Description</MudTableSortLabel>
                 </MudTh>
                 <MudTh Style="text-align:right; margin-right: 50px">
-                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" @onclick=@GoToNewJob>
-                        <MudText>New Job</MudText>
-                    </MudButton>
+                    <div class="new-job-btn">
+                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" @onclick=@GoToNewJob>
+                            <MudText>New Job</MudText>
+                        </MudButton>
+                    </div>
                 </MudTh>
             </HeaderContent>
             <RowTemplate>
@@ -55,18 +58,20 @@
                 <MudTh Style="text-align:right">
                     @if (context.State != ScriptJobState.Running)
                     {
-                        <MudIconButton Icon=@Icons.Material.Filled.PlayCircle aria-label="start" Style="margin-right: 4px"
-                                       OnClick="() => OpenRunJobDialog(context)"></MudIconButton>
+                        <MudIconButton Icon=@Icons.Material.Filled.PlayArrow aria-label="start" Style="margin-right: 4px"
+                                       OnClick="() => OpenRunJobDialog(context)" />
+                        <MudIconButton Icon=@Icons.Material.Filled.Edit aria-label="edit"
+                                       OnClick="() => TryGoToEditJob(context)" />
                     }
                     else
                     {
-                        <MudIconButton Icon=@Icons.Material.Filled.Cancel aria-label="stop" Style="margin-right: 4px"
-                                       OnClick="() => OpenCancelJobDialog(context)"></MudIconButton>
+                        <MudIconButton Icon=@Icons.Material.Filled.Stop aria-label="stop" Style="margin-right: 4px"
+                                       OnClick="() => OpenCancelJobDialog(context)" />
+                        <MudIconButton Icon=@Icons.Material.Filled.EditOff aria-label="edit"
+                                       OnClick="() => TryGoToEditJob(context)" />
                     }
-                    <MudIconButton Icon=@Icons.Material.Filled.Edit aria-label="edit"
-                                   OnClick="() => TryGoToEditJob(context)"></MudIconButton>
                     <MudIconButton Icon=@Icons.Material.Filled.Delete aria-label="delete"
-                                   OnClick="() => OpenDeleteJobDialog(context.Name)"></MudIconButton>
+                                   OnClick="() => OpenDeleteJobDialog(context.Name)" />
                 </MudTh>
             </RowTemplate>
             <PagerContent>
@@ -89,17 +94,16 @@
 
     private string _searchString = "";
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             InitializeDialogParameters();
-            InvokeAsync(() =>
-            {
-                ScriptJobService.LoadScriptJobs(FileHelper.ScriptJobsPath);
-                this.StateHasChanged();
-            });
+            ScriptJobService.JobList.LoadScriptJobs(ScriptJobFileHelper.JobsPath);
+            ScriptJobService.JobResultList.LoadScriptJobResults(ScriptJobFileHelper.JobResultsPath);
+            this.StateHasChanged();
         }
+        await base.OnAfterRenderAsync(firstRender);
     }
 
     private void InitializeDialogParameters()
@@ -122,31 +126,39 @@
         IDialogReference dialog = DialogService.Show<RunScriptJobDialog>("Run Job", s_runJobDialogParameters, s_dialogOptions);
         DialogResult dialogResult = await dialog.Result;
 
-        if (!dialogResult.Canceled)
+        if (dialogResult.Canceled) return;
+
+        var dialogResultData = dialogResult.Data as RunScriptJobDialogResult;
+        ScriptJobResult jobResult;
+
+        if (dialogResultData.ShouldRunJobNow)
         {
-            var dialogResultData = dialogResult.Data as RunScriptJobDialogResult;
-
-            ScriptJobResult jobResult = ScriptJobService.RunJob(job, dialogResultData.DeviceName, new PowerShellScriptOutputList());
-            FileHelper.TryCreateFile(jobResult.Id.ToString() + ".json", FileHelper.ScriptJobResultsPath, jobResult.ToJsonString());
-
-            if (dialogResultData.ShouldRunJobImmediately)
-            {
-
-            }
-            else
-            {
-                //TODO: Schedule job to run at _runDate
-            }
-
-            if (dialogResultData.ShouldViewJobResult)
-            {
-                NavigationManager.NavigateTo(PageRoute.ScriptJobResultDetailsWithId(jobResult.Id));
-            }
-            else
-            {
-                this.StateHasChanged();
-            }
+            jobResult = ScriptJobService.RunJob(job, dialogResultData.DeviceName);
         }
+        else
+        {
+            //TODO: Schedule job to run at _runDate instead
+            jobResult = ScriptJobService.RunJob(job, dialogResultData.DeviceName);
+        }
+
+        if (dialogResultData.ShouldViewJobResult)
+        {
+            NavigationManager.NavigateTo(PageRoute.ScriptJobResultDetailsWithId(jobResult.Id));
+        }
+        else
+        {
+            this.StateHasChanged();
+        }
+
+        await jobResult.RunJobTask.ContinueWith((resultTask) =>
+        {
+            ScriptJobFileHelper.CreateJobResultFile(jobResult);
+
+            if (!dialogResultData.ShouldViewJobResult)
+            {
+                InvokeAsync(this.StateHasChanged);
+            }
+        });
     }
 
     private async void OpenCancelJobDialog(ScriptJob job)
@@ -154,22 +166,44 @@
         IDialogReference dialog = DialogService.Show<Dialog>("Confirm Job Cancellation", s_cancelJobDialogParameters, s_dialogOptions);
         DialogResult dialogResult = await dialog.Result;
 
-        if (!dialogResult.Canceled)
-        {
-            job.Cancel();
-            this.StateHasChanged();
-        }
+        if (dialogResult.Canceled) return;
+
+        job.Cancel();
+        this.StateHasChanged();
     }
 
     private async void OpenDeleteJobDialog(string jobName)
     {
-        IDialogReference dialog = DialogService.Show<Dialog>("Confirm Job Deletion", s_deleteJobDialogParameters, s_dialogOptions);
-        DialogResult result = await dialog.Result;
+        IDialogReference dialog = DialogService.Show<DeleteScriptJobDialog>("Confirm Job Deletion", s_deleteJobDialogParameters, s_dialogOptions);
+        DialogResult dialogResult = await dialog.Result;
 
-        if (!result.Canceled && ScriptJobService.Jobs.Remove(jobName))
+        if (dialogResult.Canceled) return;
+
+        var dialogResultData = dialogResult.Data as DeleteScriptJobDialogResult;
+        ScriptJob job = ScriptJobService.JobList.TryGetJob(jobName);
+
+        if (dialogResultData.ShouldDeleteJobResults && job != null)
         {
-            FileHelper.TryDeleteFile(jobName, FileHelper.ScriptJobsPath);
-            this.StateHasChanged();
+            DeleteJobResults(job);
+        }
+        DeleteJob(jobName);
+
+        this.StateHasChanged();
+    }
+
+    private void DeleteJob(string jobName)
+    {
+        ScriptJobService.JobList.Remove(jobName);
+        ScriptJobFileHelper.DeleteJobFile(jobName);
+    }
+
+    private void DeleteJobResults(ScriptJob job)
+    {
+        List<ScriptJobResult> results = ScriptJobService.JobResultList.Remove(job);
+
+        foreach (ScriptJobResult result in results)
+        {
+            ScriptJobFileHelper.DeleteJobResultFile(result.Id);
         }
     }
 

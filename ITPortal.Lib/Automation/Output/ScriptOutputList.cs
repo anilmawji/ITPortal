@@ -1,4 +1,5 @@
 ﻿using ITPortal.Lib.Utilities;
+using ITPortal.Lib.Utilities.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using System.Text.Json.Serialization;
 
@@ -10,7 +11,7 @@ public abstract class ScriptOutputList : IDisposable
     public readonly Dictionary<ScriptOutputStreamType, int> StreamLineCounts = EnumHelper.ToDictionary<ScriptOutputStreamType, int>(0);
     public event EventHandler<ScriptOutputChangedEventArgs>? OutputChanged;
 
-    private List<ScriptOutputMessage> Output { get; }
+    public List<ScriptOutputMessage> Output { get; }
 
     [JsonIgnore]
     private ScriptOutputMessage? _previousMessage;
@@ -20,8 +21,11 @@ public abstract class ScriptOutputList : IDisposable
         Output = new();
     }
 
-    [JsonConstructor]
-    public ScriptOutputList(List<ScriptOutputMessage> output) => (Output) = output;
+    public ScriptOutputList(List<ScriptOutputMessage> output, Dictionary<ScriptOutputStreamType, int> streamLineCounts)
+    {
+        Output = output;
+        StreamLineCounts = streamLineCounts;
+    }
 
     public abstract void SubscribeToOutputStream<T>(ICollection<T> stream, ScriptOutputStreamType streamType);
 

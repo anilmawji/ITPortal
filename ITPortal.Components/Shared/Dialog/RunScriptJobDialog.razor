@@ -8,8 +8,8 @@
                     <MudSelectItem Value=@LocalhostDevice />
                 </MudSelect>
             </div>
-            <MudCheckBox @bind-Checked=@Result.ShouldRunJobImmediately Color="Color.Secondary" Style="width:500px">Run Now</MudCheckBox>
-            @if (!Result.ShouldRunJobImmediately)
+            <MudCheckBox @bind-Checked=@Result.ShouldRunJobNow Color="Color.Secondary" Style="width:500px">Run Now</MudCheckBox>
+            @if (!Result.ShouldRunJobNow)
             {
                 TimeSpan time = Result.RunDate.TimeOfDay;
 
@@ -45,6 +45,7 @@
 </MudDialog>
 
 @code {
+    // Temp: in the future accept the device name/ip as a parameter
     private const string LocalhostDevice = "Localhost";
 
     public RunScriptJobDialogResult Result { get; set; } = new(LocalhostDevice);

@@ -15,6 +15,7 @@
     <div class="section">
         <p>Execution Time: @Result.ExecutionTime</p>
         <p>Device: @Result.DeviceName</p>
+        <p>Job Name: @Result.JobName</p>
     </div>
     <div class="section">
         <MudGrid Spacing="2">
@@ -43,18 +44,12 @@
         // Very important to make sure ScriptJobResultBase is populated
         base.OnInitialized();
 
-        if (ScriptJobService.HasJob(Result.JobName))
-        {
-            Job = ScriptJobService.Jobs[Result.JobName];
-        }
+        Job = ScriptJobService.JobList.TryGetJob(Result.JobName);
     }
 
     private void GoToEditJob()
     {
-        if (Job != null)
-        {
-            NavigationManager.NavigateTo(PageRoute.EditScriptJobWithName(Job.Name));
-        }
+        NavigationManager.NavigateTo(PageRoute.EditScriptJobWithName(Job.Name));
     }
 
     public void Dispose()

@@ -53,7 +53,6 @@ public sealed class PowerShellScript : AutomationScript
         {
             return false;
         }
-
         if (scriptAst.ParamBlock != null)
         {
             foreach (ParameterAst parameter in scriptAst.ParamBlock.Parameters)
@@ -69,13 +68,18 @@ public sealed class PowerShellScript : AutomationScript
         Parameters.Add(new ScriptParameter(parameter.Name.VariablePath.ToString(), parameter.StaticType, parameter.IsMandatory()));
     }
 
-    public override async Task<ScriptExecutionState> InvokeAsync(string deviceName, ScriptOutputList scriptOutput, string cancellationMessage,
+    public override ScriptOutputList NewScriptOutputList()
+    {
+        return new PowerShellScriptOutputList();
+    }
+
+    public override async Task<ScriptExecutionState> InvokeAsync(string deviceName, ScriptOutputList outputList, string cancellationMessage,
         CancellationToken cancellationToken)
     {
         // Check if a pre-cancelled token was given
         if (cancellationToken.IsCancellationRequested)
         {
-            scriptOutput.Add(cancellationMessage, ScriptOutputStreamType.Warning);
+            outputList.Add(cancellationMessage, ScriptOutputStreamType.Warning);
 
             return ScriptExecutionState.Stopped;
         }
@@ -93,7 +97,7 @@ public sealed class PowerShellScript : AutomationScript
             {
                 RegisterParameters(shell);
             }
-            PSDataCollection<PSObject> standardOutputStream = RegisterOutputStreams(shell, (PowerShellScriptOutputList)scriptOutput);
+            PSDataCollection<PSObject> standardOutputStream = RegisterOutputStreams(shell, outputList);
 
             // Use Task.Factory to opt for the newer async/await keywords
             // Moves away from the old IAsyncResult functionality still used by the PowerShell API
@@ -112,13 +116,13 @@ public sealed class PowerShellScript : AutomationScript
         }
         catch (OperationCanceledException)
         {
-            scriptOutput.Add(cancellationMessage, ScriptOutputStreamType.Warning);
+            outputList.Add(cancellationMessage, ScriptOutputStreamType.Warning);
 
             return ScriptExecutionState.Stopped;
         }
         catch (Exception e)
         {
-            scriptOutput.Add(e.Message, ScriptOutputStreamType.Error);
+            outputList.Add(e.Message, ScriptOutputStreamType.Error);
 
             return ScriptExecutionState.Error;
         }
@@ -132,23 +136,23 @@ public sealed class PowerShellScript : AutomationScript
         }
     }
 
-    private static PSDataCollection<PSObject> RegisterOutputStreams(PowerShell shell, ScriptOutputList scriptOutput)
+    private static PSDataCollection<PSObject> RegisterOutputStreams(PowerShell shell, ScriptOutputList outputList)
     {
         PSDataCollection<PSObject> standardOutputStream = new();
 
-        scriptOutput.SubscribeToOutputStream(standardOutputStream, ScriptOutputStreamType.Standard);
-        scriptOutput.SubscribeToOutputStream(shell.Streams.Information, ScriptOutputStreamType.Information);
-        scriptOutput.SubscribeToOutputStream(shell.Streams.Progress, ScriptOutputStreamType.Progress);
-        scriptOutput.SubscribeToOutputStream(shell.Streams.Warning, ScriptOutputStreamType.Warning);
+        outputList.SubscribeToOutputStream(standardOutputStream, ScriptOutputStreamType.Standard);
+        outputList.SubscribeToOutputStream(shell.Streams.Information, ScriptOutputStreamType.Information);
+        outputList.SubscribeToOutputStream(shell.Streams.Progress, ScriptOutputStreamType.Progress);
+        outputList.SubscribeToOutputStream(shell.Streams.Warning, ScriptOutputStreamType.Warning);
 
-        if (scriptOutput is PowerShellScriptOutputList psScriptOutput)
+        if (outputList is PowerShellScriptOutputList psOutputList)
         {
             // Provide more detailed PowerShell-specific errors
-            psScriptOutput.SubscribeToErrorOutputStream(shell.Streams.Error);
+            psOutputList.SubscribeToErrorOutputStream(shell.Streams.Error);
         }
         else
         {
-            scriptOutput.SubscribeToOutputStream(shell.Streams.Error, ScriptOutputStreamType.Error);
+            outputList.SubscribeToOutputStream(shell.Streams.Error, ScriptOutputStreamType.Error);
         }
         return standardOutputStream;
     }

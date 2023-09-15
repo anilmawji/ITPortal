@@ -4,14 +4,11 @@ namespace ITPortal.Utilities;
 
 public sealed class FileHelper
 {
-    public static readonly string ScriptJobsPath = Path.Combine(FileSystem.Current.AppDataDirectory, "jobs");
-    public static readonly string ScriptJobResultsPath = Path.Combine(FileSystem.Current.AppDataDirectory, "job_results");
-
-    public static bool TryCreateFile(string fileName, string folderPath, string fileContents)
+    public static bool CreateFile(string fileName, string fileExtension, string folderPath, string fileContents)
     {
         try
         {
-            File.WriteAllText(Path.Combine(folderPath, fileName), fileContents);
+            File.WriteAllText(Path.Combine(folderPath, fileName + "." + fileExtension), fileContents);
             return true;
         }
         catch (Exception)
@@ -20,9 +17,9 @@ public sealed class FileHelper
         }
     }
 
-    public static bool TryDeleteFile(string fileName, string folderPath)
+    public static bool DeleteFile(string fileName, string fileExtension, string folderPath)
     {
-        string filePath = Path.Combine(folderPath, fileName);
+        string filePath = Path.Combine(folderPath, fileName + "." + fileExtension);
 
         if (File.Exists(filePath))
         {

@@ -36,7 +36,7 @@ p {
     box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
 }
 
-/*Workaround to make MudTable resize with window*/
+/* workaround to make MudTable resize with window */
 .table-container {
     height: calc(100vh - 90px - 100px);
     display: grid;

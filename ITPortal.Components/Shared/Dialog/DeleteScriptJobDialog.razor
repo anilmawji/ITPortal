@@ -1,0 +1,19 @@
+﻿@inherits DialogBase
+
+<MudDialog>
+    <DialogContent>
+        <div style="width:300px">
+            <MudCheckBox @bind-Checked=@Result.ShouldDeleteJobResults Color="Color.Secondary">Remove Job Results</MudCheckBox>
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick=@Cancel>Cancel</MudButton>
+        <MudButton Color="@Color" Variant="Variant.Filled" OnClick=@Submit>@SubmitButtonText</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    public DeleteScriptJobDialogResult Result { get; private set; } = new();
+
+    internal override void Submit() => MudDialog?.Close(DialogResult.Ok(Result));
+}

@@ -1,6 +1,6 @@
 ﻿using ITPortal.Lib.Automation.Output;
 using ITPortal.Lib.Automation.Script;
-using ITPortal.Lib.Utilities;
+using ITPortal.Lib.Utilities.Extensions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -47,12 +47,16 @@ public sealed class ScriptJob : IDisposable
         return executionResult;
     }
 
+    public Task<ScriptExecutionState> Run(string deviceName, string cancellationMessage)
+    {
+        return Run(deviceName, Script.NewScriptOutputList(), cancellationMessage);
+    }
+
     public void Cancel()
     {
         if (State == ScriptJobState.Running)
         {
             _cancellationTokenSource?.Cancel();
-            SetState(ScriptJobState.Idle);
         }
     }
 
@@ -69,7 +73,13 @@ public sealed class ScriptJob : IDisposable
             string jsonText = File.ReadAllText(filePath);
             ScriptJob? job = JsonSerializer.Deserialize(jsonText, ScriptJobContext.Default.ScriptJob);
 
-            if (job == null || !Path.GetFileName(filePath).Contains(job.Name))
+            if (job == null)
+            {
+                return null;
+            }
+            string fileName = Path.GetFileNameWithoutExtension(filePath);
+
+            if (fileName != job.Name)
             {
                 return null;
             }
@@ -79,8 +89,9 @@ public sealed class ScriptJob : IDisposable
             }
             return job;
         }
-        catch (Exception)
+        catch (Exception e)
         {
+            System.Diagnostics.Debug.WriteLine(e.Message);
             return null;
         }
     }
