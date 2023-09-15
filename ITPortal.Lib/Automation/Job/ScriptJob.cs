@@ -47,6 +47,11 @@ public sealed class ScriptJob : IDisposable
         return executionResult;
     }
 
+    public Task<ScriptExecutionState> Run(string deviceName, string cancellationMessage)
+    {
+        return Run(deviceName, Script.NewScriptOutputList(), cancellationMessage);
+    }
+
     public void Cancel()
     {
         if (State == ScriptJobState.Running)

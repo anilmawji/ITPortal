@@ -1,6 +1,5 @@
 ﻿using ITPortal.Lib.Automation.Job;
 using ITPortal.Lib.Automation.Output;
-using ITPortal.Lib.Automation.Script;
 
 namespace ITPortal.Lib.Services;
 
@@ -13,8 +12,10 @@ public interface IScriptJobService
     public string GetUniqueDefaultJobName();
     public bool UpdateJobName(ScriptJob job, string newJobName);
     public ScriptJobResult RunJob(ScriptJob job, string deviceName, ScriptOutputList scriptOutput);
+    public ScriptJobResult RunJob(ScriptJob job, string deviceName);
     public List<ScriptJobResult> RemoveJobResults(ScriptJob job);
     public void LoadScriptJobs(string folderPath);
     public void LoadScriptJobResults(string folderPath);
     public bool HasJob(string jobName);
+    public bool HasJobResult(int resultId);
 }

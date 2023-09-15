@@ -45,6 +45,11 @@ public sealed class ScriptJobService : IScriptJobService
         return jobResult;
     }
 
+    public ScriptJobResult RunJob(ScriptJob job, string deviceName)
+    {
+        return RunJob(job, deviceName, job.Script.NewScriptOutputList());
+    }
+    
     private void AddJobResult(ScriptJobResult result)
     {
         if (JobResults.ContainsKey(result.Id)) return;
@@ -160,5 +165,10 @@ public sealed class ScriptJobService : IScriptJobService
     public bool HasJob(string jobName)
     {
         return Jobs.GetValueOrDefault(jobName) != default(ScriptJob);
+    }
+
+    public bool HasJobResult(int resultId)
+    {
+        return JobResults.GetValueOrDefault(resultId) != default(ScriptJobResult);
     }
 }

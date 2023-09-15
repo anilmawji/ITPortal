@@ -135,15 +135,16 @@
         if (dialogResult.Canceled) return;
 
         var dialogResultData = dialogResult.Data as RunScriptJobDialogResult;
-        ScriptJobResult jobResult = ScriptJobService.RunJob(job, dialogResultData.DeviceName, new PowerShellScriptOutputList());
+        ScriptJobResult jobResult;
 
-        if (dialogResultData.ShouldRunJobImmediately)
+        if (dialogResultData.ShouldRunJobNow)
         {
-
+            jobResult = ScriptJobService.RunJob(job, dialogResultData.DeviceName);
         }
         else
         {
-            //TODO: Schedule job to run at _runDate
+            //TODO: Schedule job to run at _runDate instead
+            jobResult = ScriptJobService.RunJob(job, dialogResultData.DeviceName);
         }
 
         if (dialogResultData.ShouldViewJobResult)

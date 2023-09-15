@@ -8,8 +8,8 @@
                     <MudSelectItem Value=@LocalhostDevice />
                 </MudSelect>
             </div>
-            <MudCheckBox @bind-Checked=@Result.ShouldRunJobImmediately Color="Color.Secondary" Style="width:500px">Run Now</MudCheckBox>
-            @if (!Result.ShouldRunJobImmediately)
+            <MudCheckBox @bind-Checked=@Result.ShouldRunJobNow Color="Color.Secondary" Style="width:500px">Run Now</MudCheckBox>
+            @if (!Result.ShouldRunJobNow)
             {
                 TimeSpan time = Result.RunDate.TimeOfDay;
 

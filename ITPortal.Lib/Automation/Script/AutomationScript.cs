@@ -91,8 +91,16 @@ public abstract class AutomationScript
         Parameters.Add(new ScriptParameter(parameterName, parameterType, mandatory));
     }
 
+    public abstract ScriptOutputList NewScriptOutputList();
+
     public abstract Task<ScriptExecutionState> InvokeAsync(string deviceName, ScriptOutputList scriptOutput, string cancellationMessage,
         CancellationToken cancellationToken);
+
+    public Task<ScriptExecutionState> InvokeAsync(string deviceName, string cancellationMessage,
+        CancellationToken cancellationToken)
+    {
+        return InvokeAsync(deviceName, NewScriptOutputList(), cancellationMessage, cancellationToken);
+    }
 
     public void Unload()
     {
