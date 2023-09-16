@@ -53,17 +53,7 @@
         {
             <PageSection Title="Parameters">
                 <div class="input-group">
-                    @if (_job.Script.Parameters.Any())
-                    {
-                        @foreach (ScriptParameter parameter in _job.Script.Parameters)
-                        {
-                            <ScriptParameterView Parameter=@parameter/>
-                        }
-                    }
-                    else
-                    {
-                        <p>This script does not accept any parameters.</p>
-                    }
+                    <ScriptParameterGroup Script=@_job.Script/>
                 </div>
             </PageSection>
         }

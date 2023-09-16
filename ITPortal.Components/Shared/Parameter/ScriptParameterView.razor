@@ -1,4 +1,4 @@
-﻿@* cannot use two-way binding since Parameter.Value is an 'object' that has its type assigned at runtime *@
+﻿@* Cannot use two-way binding since Parameter.Value is an 'object' that has its type assigned at runtime *@
 @if (Parameter.IsType(typeof(string)))
 {
     <div class="input-line">
@@ -25,7 +25,7 @@ else if (Parameter.IsBinaryType())
 }
 else if (Parameter.IsType(typeof(DateTime)))
 {
-    // no need to explicitly update "date" since it references Parameter.Value which is being updated every time the date changes
+    // No need to explicitly update "date" since it references Parameter.Value which is being updated every time the date changes
     DateTime date = (DateTime)Parameter.Value;
     TimeSpan time = date.TimeOfDay;
 
@@ -101,7 +101,7 @@ else
         RequiredError = ParameterName + " is a required field";
     }
 
-    // provide a larger input field depending on the name of the parameter
+    // Provide a larger input field depending on the name of the parameter
     private int GetNumLinesInTextField()
     {
         return s_extendedInputFieldTriggers.Contains(Parameter.Name) ? 10 : 1;

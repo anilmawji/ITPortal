@@ -10,3 +10,10 @@
 .input-group {
     width: 100%;
 }
+
+.input-line {
+    width: 70%;
+    min-width: 320px;
+    max-width: 1500px;
+    margin-bottom: 20px;
+}
