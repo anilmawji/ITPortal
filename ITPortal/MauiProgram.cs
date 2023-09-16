@@ -3,7 +3,6 @@ using ITPortal.Lib.Services.Authentication;
 using ITPortal.Lib.Services.Core;
 using Microsoft.Extensions.Configuration;
 using MudBlazor.Services;
-using CommunityToolkit.Maui;
 
 namespace ITPortal;
 public static class MauiProgram
@@ -15,7 +14,7 @@ public static class MauiProgram
         builder.UseMauiApp<App>().ConfigureFonts(fonts =>
         {
             fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-        }).UseMauiCommunityToolkit();
+        });
 
         builder.Services.AddMauiBlazorWebView();
 #if DEBUG
