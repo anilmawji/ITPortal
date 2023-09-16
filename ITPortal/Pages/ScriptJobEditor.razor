@@ -52,9 +52,7 @@
         @if (_job.Script.IsContentLoaded())
         {
             <PageSection Title="Parameters">
-                <div class="input-group">
-                    <ScriptParameterGroup Script=@_job.Script/>
-                </div>
+                <ScriptParameterGroup Script=@_job.Script/>
             </PageSection>
         }
 
