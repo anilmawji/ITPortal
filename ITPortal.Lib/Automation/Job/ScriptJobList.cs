@@ -55,7 +55,7 @@ public class ScriptJobList
         {
             if (HasJob(Path.GetFileNameWithoutExtension(path))) continue;
 
-            ScriptJob? job = ScriptJob.TryLoadFromJsonFile(path);
+            ScriptJob? job = ScriptJob.LoadFromJsonFile(path);
 
             if (job != null)
             {

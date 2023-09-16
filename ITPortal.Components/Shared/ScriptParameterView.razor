@@ -1,0 +1,109 @@
+﻿@* cannot use two-way binding since Parameter.Value is an 'object' that has its type assigned at runtime *@
+@if (Parameter.IsType(typeof(string)))
+{
+    <div class="input-line">
+        <MudTextField T="string" Label=@ParameterName Lines=@GetNumLinesInTextField() Variant="Variant.Filled" Margin="Margin.Dense"
+                      Required=@Parameter.Mandatory Text=@((string)Parameter.Value) TextChanged="(text) => Parameter.Value = text"
+                      RequiredError=@RequiredError />
+    </div>
+}
+else if (Parameter.IsType(typeof(int)))
+{
+    <div class="small-input-line">
+        <MudNumericField T="int" Label=@ParameterName Variant="Variant.Filled" Margin="Margin.Dense"
+                         Required=@Parameter.Mandatory Value=@((int)Parameter.Value) ValueChanged="(num) => Parameter.Value = num"
+                         RequiredError=@RequiredError />
+    </div>
+}
+else if (Parameter.IsBinaryType())
+{
+    <div class="small-input-line">
+        <MudSwitch T="bool" Label=@ParameterName Required=@Parameter.Mandatory Color="Color.Secondary"
+                   Checked=@((bool)Parameter.Value) CheckedChanged="(checkedValue) => Parameter.Value = checkedValue"
+                   RequiredError=@RequiredError />
+    </div>
+}
+else if (Parameter.IsType(typeof(DateTime)))
+{
+    // no need to explicitly update "date" since it references Parameter.Value which is being updated every time the date changes
+    DateTime date = (DateTime)Parameter.Value;
+    TimeSpan time = date.TimeOfDay;
+
+    <div class="small-input-line mud-date">
+        <MudDatePicker Label=@ParameterName Variant="Variant.Filled" Margin="Margin.Dense" Required=@Parameter.Mandatory
+                       PickerVariant="PickerVariant.Inline" Date=@date
+                       DateChanged="(newDate) => {
+                           if (newDate != null)
+                           {
+                               Parameter.Value = ((DateTime)newDate).Date.Add(time);
+                           }
+                       }"
+                       RequiredError=@RequiredError />
+
+        <MudTimePicker Label=@ParameterName Variant="Variant.Filled" Margin="Margin.Dense" AmPm="true" Time=@time
+                       TimeChanged="(newTime) => {
+                           if (newTime != null)
+                           {
+                               time = (TimeSpan)newTime;
+                               Parameter.Value = date.Date.Add(time);
+                           }
+                       }"
+                       RequiredError=@RequiredError />
+    </div>
+}
+else if (Parameter.IsType(typeof(string[])))
+{
+    <div class="input-line">
+        <MudExtensions.MudChipField T="string" Label=@ParameterName Margin="Margin.Dense" Required=@Parameter.Mandatory
+                                    Values=@((List<string>)Parameter.Value) Delimiter=@Delimiter FullWidth="true" ChipColor="Color.Default"
+                                    ChipVariant="Variant.Text" ChipSize="Size.Medium" WrapChips="true" ChipsMaxWidth=@ChipsMaxWidth Closeable="true"
+                                    Variant="Variant.Filled" RequiredError=@RequiredError />
+    </div>
+}
+else if (Parameter.IsType(typeof(int[])))
+{
+    <div class="input-line">
+        <MudExtensions.MudChipField T="int" Label=@ParameterName Margin="Margin.Dense" Required=@Parameter.Mandatory
+                                    Values=@((List<string>)Parameter.Value) Delimiter=@Delimiter FullWidth="true" ChipColor="Color.Default"
+                                    ChipVariant="Variant.Text" ChipSize="Size.Medium" WrapChips="true" ChipsMaxWidth=@ChipsMaxWidth Closeable="true"
+                                    Variant="Variant.Filled" RequiredError=@RequiredError />
+    </div>
+}
+else if (Parameter.IsType(typeof(bool[])))
+{
+    <div class="input-line">
+        <MudExtensions.MudChipField T="bool" Label=@ParameterName Margin="Margin.Dense" Required=@Parameter.Mandatory
+                                    Values=@((List<string>)Parameter.Value) Delimiter=@Delimiter FullWidth="true" ChipColor="Color.Default"
+                                    ChipVariant="Variant.Text" ChipSize="Size.Medium" WrapChips="true" ChipsMaxWidth=@ChipsMaxWidth Closeable="true"
+                                    Variant="Variant.Filled" RequiredError=@RequiredError />
+    </div>
+}
+else
+{
+    <p>Parameter @ParameterName uses an unsupported data type.</p>
+}
+
+@code {
+    private static readonly string[] s_extendedInputFieldTriggers = { "body", "description", "message" };
+
+    private const char Delimiter = ' ';
+    private const int ChipsMaxWidth = 80;
+
+    [Parameter, EditorRequired]
+    public ScriptParameter Parameter { get; set; } = null!;
+
+    private string ParameterName = string.Empty;
+    private string RequiredError = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        ParameterName = Parameter.Name.FirstCharToUpper();
+        RequiredError = ParameterName + " is a required field";
+    }
+
+    // provide a larger input field depending on the name of the parameter
+    private int GetNumLinesInTextField()
+    {
+        return s_extendedInputFieldTriggers.Contains(Parameter.Name) ? 10 : 1;
+    }
+}

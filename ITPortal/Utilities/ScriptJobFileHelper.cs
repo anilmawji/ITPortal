@@ -11,22 +11,74 @@ namespace ITPortal.Utilities
 
         public static bool CreateJobFile(ScriptJob job)
         {
-            return FileHelper.CreateFile(job.Name + ".json", JobsPath, job.ToJsonString());
+            try
+            {
+                string filePath = Path.Combine(JobsPath, job.Name + ".json");
+
+                File.WriteAllText(filePath, job.ToJsonString());
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.WriteToFile(LogEvent.Error, e.Message);
+
+                return false;
+            }
         }
 
         public static bool DeleteJobFile(string jobName)
         {
-            return FileHelper.DeleteFile(jobName + ".json", JobsPath);
+            try
+            {
+                string filePath = Path.Combine(JobsPath, jobName + ".json");
+
+                File.Delete(filePath);
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.WriteToFile(LogEvent.Error, e.Message);
+
+                return false;
+            }
         }
 
         public static bool CreateJobResultFile(ScriptJobResult result)
         {
-            return FileHelper.CreateFile(result.Id.ToString() + ".json", JobResultsPath, result.ToJsonString());
+            try
+            {
+                string filePath = Path.Combine(JobResultsPath, result.Id.ToString() + ".json");
+
+                File.WriteAllText(filePath, result.ToJsonString());
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.WriteToFile(LogEvent.Error, e.Message);
+
+                return false;
+            }
         }
 
         public static bool DeleteJobResultFile(int resultId)
         {
-            return FileHelper.DeleteFile(resultId.ToString() + ".json", JobResultsPath);
+            try
+            {
+                string filePath = Path.Combine(JobResultsPath, resultId.ToString() + ".json");
+
+                File.Delete(filePath);
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.WriteToFile(LogEvent.Error, e.Message);
+
+                return false;
+            }
         }
     }
 }

@@ -28,13 +28,7 @@
 
             @if (_job.Script.IsContentLoaded())
             {
-                <p class="scroll script-content">
-                    @foreach (string line in _job.Script.Content)
-                    {
-                        @line
-                        <br>
-                    }
-                </p>
+                <ScriptContentView Script=@_job.Script/>
                 <MudGrid Spacing="2">
                     <MudItem>
                         <MudButton @onclick=@RefreshScript Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
@@ -53,10 +47,6 @@
                     </MudItem>
                 </MudGrid>
             }
-            else if (_job.Script.ContentFailedToLoad())
-            {
-                <p>Script failed to load</p>
-            }
         </PageSection>
 
         @if (_job.Script.IsContentLoaded())
@@ -67,87 +57,7 @@
                     {
                         @foreach (ScriptParameter parameter in _job.Script.Parameters)
                         {
-                            string parameterName = parameter.Name.FirstCharToUpper();
-                            string requiredError = parameterName + " is a required field";
-
-                            // Cannot use two-way binding for these since parameter.Value is an object and must be casted to the correct type
-                            @if (parameter.IsType(typeof(string)))
-                            {
-                                // Provide a larger input field depending on the name of the parameter
-                                int numLines = ParameterRequiresExendedInputField(parameter) ? 10 : 1;
-
-                                <div class="input-line">
-                                    <MudTextField T="string" Label=@parameterName Lines=@numLines Variant="Variant.Filled" Margin="Margin.Dense"
-                                                  Required=@parameter.Mandatory Text=@((string)parameter.Value) TextChanged="(text) => parameter.Value = text"
-                                                  RequiredError=@requiredError />
-                                </div>
-                            }
-                            else if (parameter.IsType(typeof(int)))
-                            {
-                                <div class="small-input-line">
-                                    <MudNumericField T="int" Label=@parameterName Variant="Variant.Filled" Margin="Margin.Dense"
-                                                     Required=@parameter.Mandatory Value=@((int)parameter.Value) ValueChanged="(num) => parameter.Value = num"
-                                                     RequiredError=@requiredError />
-                                </div>
-                            }
-                            else if (parameter.IsBinaryType())
-                            {
-                                <div class="small-input-line">
-                                    <MudSwitch T="bool" Label=@parameterName Required=@parameter.Mandatory Color="Color.Secondary"
-                                               Checked=@((bool)parameter.Value) CheckedChanged="(checkedValue) => parameter.Value = checkedValue"
-                                               RequiredError=@requiredError />
-                                </div>
-                            }
-                            else if (parameter.IsType(typeof(DateTime)))
-                            {
-                                // No need to explicitly update "date" since it references parameter.Value which is being updated every time the date changes
-                                DateTime date = (DateTime)parameter.Value;
-                                TimeSpan time = date.TimeOfDay;
-
-                                <div class="small-input-line mud-date">
-                                    <MudDatePicker Label=@parameterName Variant="Variant.Filled" Margin="Margin.Dense" Required=@parameter.Mandatory
-                                                   PickerVariant="PickerVariant.Inline" Date=@date DateChanged="(newDate) => parameter.Value = ((DateTime)newDate).Date.Add(time)"
-                                                   RequiredError=@requiredError />
-
-                                    <MudTimePicker Label=@parameterName Variant="Variant.Filled" Margin="Margin.Dense" AmPm="true" Time=@time
-                                                   TimeChanged="(newTime) => {
-                                                        time = (TimeSpan)newTime;
-                                                        parameter.Value = date.Date.Add(time);
-                                                    }"
-                                                    RequiredError=@requiredError />
-                                </div>
-                            }
-                            else if (parameter.IsType(typeof(string[])))
-                            {
-                                <div class="input-line">
-                                    <MudExtensions.MudChipField T="string" Label=@parameterName Margin="Margin.Dense" Required=@parameter.Mandatory
-                                                                Values=@((List<string>)parameter.Value) Delimiter=@Delimiter FullWidth="true" ChipColor="Color.Default"
-                                                                ChipVariant="Variant.Text" ChipSize="Size.Medium" WrapChips="true" ChipsMaxWidth=@ChipsMaxWidth Closeable="true"
-                                                                Variant="Variant.Filled" RequiredError=@requiredError />
-                                </div>
-                            }
-                            else if (parameter.IsType(typeof(int[])))
-                            {
-                                <div class="input-line">
-                                    <MudExtensions.MudChipField T="int" Label=@parameterName Margin="Margin.Dense" Required=@parameter.Mandatory
-                                                                Values=@((List<string>)parameter.Value) Delimiter=@Delimiter FullWidth="true" ChipColor="Color.Default"
-                                                                ChipVariant="Variant.Text" ChipSize="Size.Medium" WrapChips="true" ChipsMaxWidth=@ChipsMaxWidth Closeable="true"
-                                                                Variant="Variant.Filled" RequiredError=@requiredError />
-                                </div>
-                            }
-                            else if (parameter.IsType(typeof(bool[])))
-                            {
-                                <div class="input-line">
-                                    <MudExtensions.MudChipField T="bool" Label=@parameterName Margin="Margin.Dense" Required=@parameter.Mandatory
-                                                                Values=@((List<string>)parameter.Value) Delimiter=@Delimiter FullWidth="true" ChipColor="Color.Default"
-                                                                ChipVariant="Variant.Text" ChipSize="Size.Medium" WrapChips="true" ChipsMaxWidth=@ChipsMaxWidth Closeable="true"
-                                                                Variant="Variant.Filled" RequiredError=@requiredError />
-                                </div>
-                            }
-                            else
-                            {
-                                <p>Parameter @parameterName uses an unsupported data type.</p>
-                            }
+                            <ScriptParameterView Parameter=@parameter/>
                         }
                     }
                     else
@@ -168,7 +78,8 @@
                         </MudButton>
                     </MudItem>
                     <MudItem>
-                        <MudButton @onclick=@TrySaveJob Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" Disabled="!_job.Script.IsContentLoaded()">
+                        <MudButton @onclick=@TrySaveJob Variant="Variant.Filled" Color="Color.Secondary" Style="color:white"
+                                   Disabled="!_job.Script.IsContentLoaded()">
                             <MudText>Done</MudText>
                         </MudButton>
                     </MudItem>
@@ -194,10 +105,6 @@
         PickerTitle = "Please select a PowerShell script file",
         FileTypes = s_allowedFileTypes,
     };
-    private static readonly string[] s_extendedInputFieldTriggers = { "body", "description", "message" };
-
-    private const char Delimiter = ' ';
-    private const int ChipsMaxWidth = 80;
 
     private MudForm _jobForm;
     private string _headerTitle;
@@ -257,11 +164,6 @@
         }
     }
 
-    private bool ParameterRequiresExendedInputField(ScriptParameter parameter)
-    {
-        return s_extendedInputFieldTriggers.Contains(parameter.Name);
-    }
-
     private async void PickAndLoadScript()
     {
         FileResult fileResult = await FileHelper.PickFileAsync(s_filePickOptions);
@@ -274,19 +176,19 @@
         }
     }
 
-    private void EditScript()
-    {
-        if (!_job.Script.IsContentLoaded()) return;
-
-        FileHelper.OpenFileWithDefaultProgram(_job.Script.FilePath);
-    }
-
     private void RefreshScript()
     {
         if (_job.Script.Refresh())
         {
             this.StateHasChanged();
         }
+    }
+
+    private void EditScript()
+    {
+        if (!_job.Script.IsContentLoaded()) return;
+
+        FileHelper.OpenFileWithDefaultProgram(_job.Script.FilePath);
     }
 
     private void RemoveScript()

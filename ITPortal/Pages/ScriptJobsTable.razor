@@ -98,8 +98,7 @@
         if (firstRender)
         {
             InitializeDialogParameters();
-            ScriptJobService.JobList.LoadFromJsonFiles(ScriptJobFileHelper.JobsPath);
-            ScriptJobService.JobResultList.LoadFromJsonFiles(ScriptJobFileHelper.JobResultsPath);
+            LoadSavedJobData();
             this.StateHasChanged();
         }
         await base.OnAfterRenderAsync(firstRender);
@@ -118,6 +117,34 @@
         s_cancelJobDialogParameters.Add(dialog => dialog.SubmitButtonText, "Yes");
         s_cancelJobDialogParameters.Add(dialog => dialog.CancelButtonText, "No");
         s_cancelJobDialogParameters.Add(dialog => dialog.Color, Color.Secondary);
+    }
+
+    private void LoadSavedJobData()
+    {
+        try
+        {
+            ScriptJobService.JobList.LoadFromJsonFiles(ScriptJobFileHelper.JobsPath);
+            ScriptJobService.JobResultList.LoadFromJsonFiles(ScriptJobFileHelper.JobResultsPath);
+        }
+        catch (Exception e)
+        {
+            System.Diagnostics.Debug.WriteLine(e.Message);
+                        Logger.WriteToFile(LogEvent.Error, e.Message);
+        }
+    }
+
+    private void GoToNewJob()
+    {
+        NavigationManager.NavigateTo(PageRoute.CreateScriptJob);
+    }
+
+    private void TryGoToEditJob(TableRowClickEventArgs<ScriptJob> eventArgs)
+    {
+        ScriptJob job = eventArgs.Item;
+
+        if (job.IsRunning() || !ScriptJobService.JobList.HasJob(job.Name)) return;
+
+        NavigationManager.NavigateTo(PageRoute.EditScriptJobWithName(job.Name));
     }
 
     private async void OpenRunJobDialog(ScriptJob job)
@@ -209,20 +236,6 @@
         {
             ScriptJobFileHelper.DeleteJobResultFile(result.Id);
         }
-    }
-
-    private void GoToNewJob()
-    {
-        NavigationManager.NavigateTo(PageRoute.CreateScriptJob);
-    }
-
-    private void TryGoToEditJob(TableRowClickEventArgs<ScriptJob> eventArgs)
-    {
-        ScriptJob job = eventArgs.Item;
-
-        if (job.IsRunning() || !ScriptJobService.JobList.HasJob(job.Name)) return;
-
-        NavigationManager.NavigateTo(PageRoute.EditScriptJobWithName(job.Name));
     }
 
     private bool FilterJobFunc(ScriptJob job) => DoFilterJobFunc(job, _searchString);

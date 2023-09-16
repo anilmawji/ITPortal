@@ -50,30 +50,22 @@ public sealed class ScriptJobResult : IDisposable
         ExecutionResultReceived?.Invoke(this, newState);
     }
 
-    public static ScriptJobResult? TryLoadFromJsonFile(string filePath)
+    public static ScriptJobResult? LoadFromJsonFile(string filePath)
     {
-        try
-        {
-            string jsonText = File.ReadAllText(filePath);
-            ScriptJobResult? jobResult = JsonSerializer.Deserialize(jsonText, ScriptJobResultContext.Default.ScriptJobResult);
+        string jsonText = File.ReadAllText(filePath);
+        ScriptJobResult? jobResult = JsonSerializer.Deserialize(jsonText, ScriptJobResultContext.Default.ScriptJobResult);
 
-            if (jobResult == null)
-            {
-                return null;
-            }
-            string fileName = Path.GetFileNameWithoutExtension(filePath);
-
-            if (fileName != jobResult.Id.ToString())
-            {
-                return null;
-            }
-            return jobResult;
-        }
-        catch (Exception e)
+        if (jobResult == null)
         {
-            System.Diagnostics.Debug.WriteLine(e.Message);
             return null;
         }
+        string fileName = Path.GetFileNameWithoutExtension(filePath);
+
+        if (fileName != jobResult.Id.ToString())
+        {
+            return null;
+        }
+        return jobResult;
     }
 
     public string ToJsonString()

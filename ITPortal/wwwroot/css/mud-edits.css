@@ -1,6 +1,6 @@
 ﻿* {
     font-family: "Segoe UI", Arial, sans-serif;
-    /* Disable dragging/highlighting on all browsers */
+    /* disable dragging/highlighting on all browsers */
     -webkit-user-drag: none;
     user-select: none;
     -moz-user-select: none;
@@ -11,15 +11,15 @@
 }
 
 html {
-    height: 100%; /* Fallback CSS for IE 4-6 and older browsers. Note: Without this setting, body below cannot achieve 100% height. */
-    height: 100vh; /* Overrides 100% height in modern HTML5 browsers and uses the viewport's height. Only works in modern HTML5 browsers */
+    height: 100%; /* fallback CSS for IE 4-6 and older browsers. note: without this setting, body below cannot achieve 100% height. */
+    height: 100vh; /* overrides 100% height in modern HTML5 browsers and uses the viewport's height. only works in modern HTML5 browsers */
 }
 
 body {
-    width: auto; /* Allows content to grow beyond the page without overflow */
-    height: auto; /* Allows content to grow beyond the page without overflow */
-    min-height: 100%; /* Starts web page with 100% height. Fallback for IE 4-6 and older browsers */
-    min-height: 100vh; /* Starts web page with 100% height. Uses the viewport's height. Only works in modern HTML5 browsers */
+    width: auto; /* allows content to grow beyond the page without overflow */
+    height: auto; /* allows content to grow beyond the page without overflow */
+    min-height: 100%; /* starts web page with 100% height. Fallback for IE 4-6 and older browsers */
+    min-height: 100vh; /* starts web page with 100% height. Uses the viewport's height. only works in modern HTML5 browsers */
     overflow: hidden;
     margin: 0;
     padding: 0;
@@ -39,7 +39,7 @@ body {
     overflow-y: scroll;
 }
 
-/*Add shadow below appbar*/
+/* add shadow below appbar */
 .mud-appbar .mud-toolbar {
     box-shadow: 0 3px 6px rgb(0 0 0 / 0.3);
 }

@@ -1,5 +1,4 @@
-﻿using ITPortal.Lib.Utilities;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Text;
 using Windows.Storage;
 using Windows.Storage.Pickers;
@@ -8,41 +7,6 @@ namespace ITPortal.Utilities;
 
 public sealed class FileHelper
 {
-    public static bool CreateFile(string fileName, string folderPath, string fileContents)
-    {
-        try
-        {
-            File.WriteAllText(Path.Combine(folderPath, fileName), fileContents);
-            return true;
-        }
-        catch (Exception e)
-        {
-            Logger.WriteToFile(LogEvent.Error, e.Message);
-            return false;
-        }
-    }
-
-    public static bool DeleteFile(string fileName, string folderPath)
-    {
-        string filePath = Path.Combine(folderPath, fileName);
-
-        if (!File.Exists(filePath))
-        {
-            return false;
-        }
-
-        try
-        {
-            File.Delete(filePath);
-            return true;
-        }
-        catch (Exception e)
-        {
-            Logger.WriteToFile(LogEvent.Error, e.Message);
-            return false;
-        }
-    }
-
     public static async Task<FileResult> PickFileAsync(PickOptions options)
     {
         try
@@ -103,7 +67,7 @@ public sealed class FileHelper
 
     public static ValueTask PickSaveFileAsync(string filename, string fileContent)
     {
-        var stream = new MemoryStream(Encoding.Default.GetBytes(fileContent));
+        MemoryStream stream = new(Encoding.Default.GetBytes(fileContent));
 
         return PickSaveFileAsync(filename, stream);
     }

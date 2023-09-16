@@ -67,17 +67,11 @@ public sealed class ScriptJobResultList
 
         foreach (string path in filePaths)
         {
-            try
-            {
-                int resultId = int.Parse(Path.GetFileNameWithoutExtension(path));
+            int resultId = int.Parse(Path.GetFileNameWithoutExtension(path));
 
-                if (HasResult(resultId)) return;
-            }
-            catch (Exception)
-            {
-                return;
-            }
-            ScriptJobResult? result = ScriptJobResult.TryLoadFromJsonFile(path);
+            if (HasResult(resultId)) return;
+
+            ScriptJobResult? result = ScriptJobResult.LoadFromJsonFile(path);
 
             if (result != null)
             {
