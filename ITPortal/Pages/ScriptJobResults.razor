@@ -77,7 +77,7 @@
     {
         if (firstRender && !ScriptJobService.JobResultList.LoadedFromJson)
         {
-            ScriptJobService.JobResultList.LoadScriptJobResultsFromJsonFiles(ScriptJobFileHelper.JobResultsPath);
+            ScriptJobService.JobResultList.LoadFromJsonFiles(ScriptJobFileHelper.JobResultsPath);
             this.StateHasChanged();
         }
         await base.OnAfterRenderAsync(firstRender);

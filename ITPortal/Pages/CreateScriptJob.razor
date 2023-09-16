@@ -90,7 +90,6 @@
                                                      RequiredError=@requiredError />
                                 </div>
                             }
-                            // Avoid importing System.Management.Automation to dodge name conflict between SwitchParameter and ParameterAttribute
                             else if (parameter.IsBinaryType())
                             {
                                 <div class="small-input-line">
@@ -265,7 +264,7 @@
 
     private async void PickAndLoadScript()
     {
-        FileResult fileResult = await FileHelper.PickFile(s_filePickOptions);
+        FileResult fileResult = await FileHelper.PickFileAsync(s_filePickOptions);
 
         if (fileResult != null)
         {

@@ -1,5 +1,6 @@
 ﻿using ITPortal.Lib.Automation.Job;
 using ITPortal.Lib.Automation.Job.Result;
+using ITPortal.Lib.Utilities;
 
 namespace ITPortal.Utilities
 {
@@ -10,22 +11,22 @@ namespace ITPortal.Utilities
 
         public static bool CreateJobFile(ScriptJob job)
         {
-            return FileHelper.CreateFile(job.Name, "json", JobsPath, job.ToJsonString());
+            return FileHelper.CreateFile(job.Name + ".json", JobsPath, job.ToJsonString());
         }
 
         public static bool DeleteJobFile(string jobName)
         {
-            return FileHelper.DeleteFile(jobName, "json", JobsPath);
+            return FileHelper.DeleteFile(jobName + ".json", JobsPath);
         }
 
         public static bool CreateJobResultFile(ScriptJobResult result)
         {
-            return FileHelper.CreateFile(result.Id.ToString(), "json", JobResultsPath, result.ToJsonString());
+            return FileHelper.CreateFile(result.Id.ToString() + ".json", JobResultsPath, result.ToJsonString());
         }
 
         public static bool DeleteJobResultFile(int resultId)
         {
-            return FileHelper.DeleteFile(resultId.ToString(), "json", JobResultsPath);
+            return FileHelper.DeleteFile(resultId.ToString() + ".json", JobResultsPath);
         }
     }
 }

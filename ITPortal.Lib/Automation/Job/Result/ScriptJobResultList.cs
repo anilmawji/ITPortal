@@ -55,7 +55,7 @@ public sealed class ScriptJobResultList
         return results;
     }
 
-    public void LoadScriptJobResultsFromJsonFiles(string folderPath)
+    public void LoadFromJsonFiles(string folderPath)
     {
         LoadedFromJson = true;
 

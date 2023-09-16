@@ -41,7 +41,7 @@ public class ScriptJobList
         return false;
     }
 
-    public void LoadScriptJobsFromJsonFiles(string folderPath)
+    public void LoadFromJsonFiles(string folderPath)
     {
         LoadedFromJson = true;
 

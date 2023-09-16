@@ -10,18 +10,31 @@ public enum LogEvent
 
 public static class Logger
 {
-    private static readonly string LogPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");
+    private static readonly string LogDirPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");
 
-    public static void Write(LogEvent eventType, string message)
+    public static void WriteToFile(LogEvent eventType, string message)
     {
-        if (!File.Exists(LogPath))
+        if (!File.Exists(LogDirPath))
         {
-            Directory.CreateDirectory(LogPath);
+            Directory.CreateDirectory(LogDirPath);
         }
 
-        File.WriteAllText(
-            Path.Combine(LogPath, Guid.NewGuid() + ".log"),
-            string.Format("[{0}] => {1}:\n\n{2}\n", DateTime.Now.ToLocalTime().ToString("HH:mm:ss"), eventType.ToString().ToUpper(), message)
-        );
+        try
+        {
+            File.AppendAllText(Path.Combine(LogDirPath, Guid.NewGuid() + ".log"), NewLogMessage(eventType, message));
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Failed to write to log file:");
+            Console.WriteLine(e.Message);
+        }
+    }
+
+    private static string NewLogMessage(LogEvent eventType, string message)
+    {
+        string timestamp = DateTime.Now.ToLocalTime().ToString("HH:mm:ss");
+        string newLine = Environment.NewLine;
+
+        return $"[{timestamp}] => {eventType.ToString().ToUpper()}: {newLine}{newLine}{message}{newLine}";
     }
 }

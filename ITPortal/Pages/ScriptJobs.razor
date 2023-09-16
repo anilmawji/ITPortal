@@ -23,7 +23,7 @@
 
     <div class="table-container">
         <MudTable T="ScriptJob" Items=@ScriptJobService.JobList.GetJobs().Values Dense="true" Hover="true" FixedHeader="true"
-                  Filter="new Func<ScriptJob, bool>(FilterJobFunc)" Height="calc(100% - 90px - 10px);">
+                  Filter="new Func<ScriptJob, bool>(FilterJobFunc)" Height="calc(100% - 90px - 10px);" OnRowClick=@TryGoToEditJob>
             <ToolBarContent>
                 <MudTextField @bind-Value=@_searchString Placeholder=@($"Search {ScriptJobService.JobList.GetJobs().Count} items...")
                               Adornment="Adornment.Start" AdornmentIcon=@Icons.Material.Filled.Search IconSize="Size.Medium" Class="mt-0" />
@@ -61,16 +61,14 @@
                     {
                         <MudIconButton Icon=@Icons.Material.Filled.PlayArrow aria-label="start" Style="margin-right: 4px"
                                        OnClick="() => OpenRunJobDialog(context)" />
-                        <MudIconButton Icon=@Icons.Material.Filled.Edit aria-label="edit"
-                                       OnClick="() => TryGoToEditJob(context)" />
                     }
                     else
                     {
                         <MudIconButton Icon=@Icons.Material.Filled.Stop aria-label="stop" Style="margin-right: 4px"
                                        OnClick="() => OpenCancelJobDialog(context)" />
-                        <MudIconButton Icon=@Icons.Material.Filled.EditOff aria-label="edit"
-                                       OnClick="() => TryGoToEditJob(context)" />
                     }
+                    <MudIconButton Icon=@Icons.Material.Filled.FileDownload aria-label="edit"
+                                   OnClick="() => OpenDownloadJobDialog(context)" />
                     <MudIconButton Icon=@Icons.Material.Filled.Delete aria-label="delete"
                                    OnClick="() => OpenDeleteJobDialog(context.Name)" />
                 </MudTh>
@@ -100,8 +98,8 @@
         if (firstRender)
         {
             InitializeDialogParameters();
-            ScriptJobService.JobList.LoadScriptJobsFromJsonFiles(ScriptJobFileHelper.JobsPath);
-            ScriptJobService.JobResultList.LoadScriptJobResultsFromJsonFiles(ScriptJobFileHelper.JobResultsPath);
+            ScriptJobService.JobList.LoadFromJsonFiles(ScriptJobFileHelper.JobsPath);
+            ScriptJobService.JobResultList.LoadFromJsonFiles(ScriptJobFileHelper.JobResultsPath);
             this.StateHasChanged();
         }
         await base.OnAfterRenderAsync(firstRender);
@@ -173,6 +171,11 @@
         this.StateHasChanged();
     }
 
+    private async void OpenDownloadJobDialog(ScriptJob job)
+    {
+        await FileHelper.PickSaveFileAsync(job.Name + ".json", job.ToJsonString());
+    }
+
     private async void OpenDeleteJobDialog(string jobName)
     {
         IDialogReference dialog = DialogService.Show<DeleteScriptJobDialog>("Confirm Job Deletion", s_deleteJobDialogParameters, s_dialogOptions);
@@ -213,9 +216,11 @@
         NavigationManager.NavigateTo(PageRoute.CreateScriptJob);
     }
 
-    private void TryGoToEditJob(ScriptJob job)
+    private void TryGoToEditJob(TableRowClickEventArgs<ScriptJob> eventArgs)
     {
-        if (job.IsRunning()) return;
+        ScriptJob job = eventArgs.Item;
+
+        if (job.IsRunning() || !ScriptJobService.JobList.HasJob(job.Name)) return;
 
         NavigationManager.NavigateTo(PageRoute.EditScriptJobWithName(job.Name));
     }
