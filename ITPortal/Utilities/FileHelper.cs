@@ -77,7 +77,7 @@ public sealed class FileHelper
         return false;
     }
 
-    public static async ValueTask PickSaveFileAsync(string filename, string fileContent)
+    public static async ValueTask PickSaveFileAsync(string filename, Stream stream)
     {
         string extension = Path.GetExtension(filename);
         FileSavePicker fileSavePicker = new()
@@ -97,9 +97,15 @@ public sealed class FileHelper
         {
             using Stream fileStream = await result.OpenStreamForWriteAsync();
             fileStream.SetLength(0); // override
-            using MemoryStream stream = new(Encoding.Default.GetBytes(fileContent));
             await stream.CopyToAsync(fileStream);
         }
+    }
+
+    public static ValueTask PickSaveFileAsync(string filename, string fileContent)
+    {
+        var stream = new MemoryStream(Encoding.Default.GetBytes(fileContent));
+
+        return PickSaveFileAsync(filename, stream);
     }
 
     public static void OpenFileWithDefaultProgram(string filePath)
