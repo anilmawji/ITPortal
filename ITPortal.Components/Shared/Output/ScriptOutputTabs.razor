@@ -1,7 +1,7 @@
 ﻿@implements IDisposable
 
 <style>
-    /* override default mud styles */
+    /* override default mud table colors */
     .mud-tab-slider {
         background-color: #0078D4;
     }
@@ -23,17 +23,14 @@
     <MudTabPanel Text="All Output" BadgeData=@GetOutputLineCountText(ScriptOutput.GetMessages())>
         <ScriptOutputView OutputList=@ScriptOutput?.GetMessages() />
     </MudTabPanel>
-    @if (ScriptOutput != null)
+    @foreach ((ScriptOutputStreamType streamType, int numLines) in ScriptOutput.StreamLineCounts)
     {
-        foreach ((ScriptOutputStreamType streamType, int numLines) in ScriptOutput.StreamLineCounts)
-        {
-            if (numLines == 0) continue;
-            IReadOnlyList<ScriptOutputMessage> messages = ScriptOutput.GetMessagesFilteredByStream(streamType);
+        if (numLines == 0) continue;
+        IReadOnlyList<ScriptOutputMessage> messages = ScriptOutput.GetMessagesFilteredByStream(streamType);
 
-            <MudTabPanel Text=@GetTabName(streamType) Icon=@TabIcons[streamType]>
-                <ScriptOutputView OutputList=@messages />
-            </MudTabPanel>
-        }
+        <MudTabPanel Text=@GetTabName(streamType) Icon=@TabIcons[streamType]>
+            <ScriptOutputView OutputList=@messages />
+        </MudTabPanel>
     }
 </MudTabs>
 
@@ -74,13 +71,9 @@
 
     private string GetOutputLineCountText(IReadOnlyList<ScriptOutputMessage> messages)
     {
-        if (ScriptOutput != null)
-        {
-            int numMessages = messages.Count;
+        int numMessages = messages.Count;
 
-            return numMessages <= 99 ? numMessages.ToString() : "99+";
-        }
-        return "0";
+        return numMessages <= 99 ? numMessages.ToString() : "99+";
     }
 
     public void Dispose()

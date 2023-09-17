@@ -9,7 +9,7 @@ namespace ITPortal.Utilities
         public static readonly string JobsPath = Path.Combine(FileSystem.Current.AppDataDirectory, "jobs");
         public static readonly string JobResultsPath = Path.Combine(FileSystem.Current.AppDataDirectory, "job_results");
 
-        public static bool CreateJobFile(ScriptJob job)
+        public static bool TryCreateJobFile(ScriptJob job)
         {
             try
             {
@@ -27,7 +27,7 @@ namespace ITPortal.Utilities
             }
         }
 
-        public static bool DeleteJobFile(string jobName)
+        public static bool TryDeleteJobFile(string jobName)
         {
             try
             {
@@ -45,7 +45,7 @@ namespace ITPortal.Utilities
             }
         }
 
-        public static bool CreateJobResultFile(ScriptJobResult result)
+        public static bool TryCreateJobResultFile(ScriptJobResult result)
         {
             try
             {
@@ -63,7 +63,7 @@ namespace ITPortal.Utilities
             }
         }
 
-        public static bool DeleteJobResultFile(int resultId)
+        public static bool TryDeleteJobResultFile(int resultId)
         {
             try
             {

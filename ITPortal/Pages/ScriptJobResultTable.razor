@@ -75,18 +75,19 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && !ScriptJobService.JobResultList.LoadedFromJson)
+        if (firstRender)
         {
-            LoadSavedJobData();
+            LoadSavedJobFiles();
             this.StateHasChanged();
         }
         await base.OnAfterRenderAsync(firstRender);
     }
 
-    private void LoadSavedJobData()
+    private void LoadSavedJobFiles()
     {
         try
         {
+            ScriptJobService.JobList.LoadFromJsonFiles(ScriptJobFileHelper.JobsPath);
             ScriptJobService.JobResultList.LoadFromJsonFiles(ScriptJobFileHelper.JobResultsPath);
         }
         catch (Exception e)

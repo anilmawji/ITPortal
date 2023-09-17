@@ -43,6 +43,7 @@ public class ScriptJobList
 
     public void LoadFromJsonFiles(string folderPath)
     {
+        if (LoadedFromJson) return;
         LoadedFromJson = true;
 
         DirectoryInfo info = Directory.CreateDirectory(folderPath);

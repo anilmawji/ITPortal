@@ -33,8 +33,7 @@ public sealed class ScriptJobService : IScriptJobService
         );
         JobResultList.Add(jobResult);
 
-        runJobTask.ContinueWith(task => jobResult.InvokeExecutionResultReceived(task.Result))
-            .ConfigureAwait(false);
+        runJobTask.ContinueWith(task => jobResult.InvokeExecutionResultReceived(task.Result));
 
         return jobResult;
     }

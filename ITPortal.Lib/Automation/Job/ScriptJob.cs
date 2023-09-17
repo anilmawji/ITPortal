@@ -31,7 +31,8 @@ public sealed class ScriptJob : IDisposable
     public ScriptJob(string name, AutomationScript script) : this(name, string.Empty, script, DateTime.Now) { }
 
     // TODO: use runDate to determine when to run the job
-    public async Task<ScriptExecutionState> Run(string deviceName, ScriptOutputList outputList, string cancellationMessage, DateTime runDate = default)
+    public async Task<ScriptExecutionState> Run(string deviceName, ScriptOutputList outputList,
+        string cancellationMessage, DateTime runDate = default)
     {
         SetState(ScriptJobState.Running);
 
@@ -40,7 +41,8 @@ public sealed class ScriptJob : IDisposable
             outputList,
             cancellationMessage,
             _cancellationTokenSource.Token
-        );
+        ).ConfigureAwait(false);
+
         SetState(ScriptJobState.Idle);
 
         _cancellationTokenSource = new();
@@ -48,17 +50,9 @@ public sealed class ScriptJob : IDisposable
         return executionResult;
     }
 
-    public Task<ScriptExecutionState> Run(string deviceName, string cancellationMessage, DateTime runDate = default)
-    {
-        return Run(deviceName, Script.NewScriptOutputList(), cancellationMessage, runDate);
-    }
-
     public void Cancel()
     {
-        if (State == ScriptJobState.Running)
-        {
-            _cancellationTokenSource?.Cancel();
-        }
+        _cancellationTokenSource?.Cancel();
     }
 
     private void SetState(ScriptJobState state)

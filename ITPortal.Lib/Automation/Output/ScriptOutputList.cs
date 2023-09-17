@@ -64,9 +64,14 @@ public abstract class ScriptOutputList : IDisposable
 
     public IReadOnlyList<ScriptOutputMessage> GetMessagesFilteredByStream(ScriptOutputStreamType streamType)
     {
-        return Output.Where(x => x.StreamType == streamType)
+        return Output.Where(message => message.StreamType == streamType)
             .ToList()
             .AsReadOnly();
+    }
+
+    public bool HasErrorMessages()
+    {
+        return StreamLineCounts[ScriptOutputStreamType.Error] > 0;
     }
 
     public void Clear()
@@ -77,5 +82,6 @@ public abstract class ScriptOutputList : IDisposable
     public void Dispose()
     {
         OutputChanged.DisposeSubscriptions();
+        GC.SuppressFinalize(this);
     }
 }

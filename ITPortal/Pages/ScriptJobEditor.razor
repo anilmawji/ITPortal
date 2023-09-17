@@ -166,10 +166,8 @@
 
     private void RefreshScript()
     {
-        if (_job.Script.Refresh())
-        {
-            this.StateHasChanged();
-        }
+        _job.Script.Refresh();
+        this.StateHasChanged();
     }
 
     private void EditScript()
@@ -206,10 +204,10 @@
         }
         else if (ShouldUpdateJobName())
         {
-            ScriptJobFileHelper.DeleteJobFile(_job.Name);
+            ScriptJobFileHelper.TryDeleteJobFile(_job.Name);
             ScriptJobService.JobList.UpdateJobName(_job, _newJobName);
         }
-        ScriptJobFileHelper.CreateJobFile(_job);
+        ScriptJobFileHelper.TryCreateJobFile(_job);
         GoToJobs();
     }
 

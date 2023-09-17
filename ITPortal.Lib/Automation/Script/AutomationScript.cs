@@ -42,48 +42,30 @@ public abstract class AutomationScript
         ContentLoadState = ScriptLoadState.Success;
     }
 
-    public bool LoadContent(string filePath)
+    public void LoadContent(string filePath)
     {
         ArgumentNullException.ThrowIfNull(filePath, nameof(filePath));
-
-        try
-        {
-            FileName = Path.GetFileName(filePath);
-        }
-        catch (ArgumentException)
-        {
-            return false;
-        }
+        
+        FileName = Path.GetFileName(filePath);
         FilePath = filePath;
 
-        return DoLoadContent(FilePath);
+        DoLoadContent(FilePath);
     }
 
-    private bool DoLoadContent(string filePath)
+    private void DoLoadContent(string filePath)
     {
-        try
-        {
-            Content = File.ReadAllLines(filePath);
-            ContentString = GetContentString();
-            ContentLoadState = ScriptLoadState.Success;
-
-            return true;
-        }
-        catch (IOException)
-        {
-            ContentLoadState = ScriptLoadState.Failed;
-
-            return false;
-        }
+        Content = File.ReadAllLines(filePath);
+        ContentString = GetContentString();
+        ContentLoadState = ScriptLoadState.Success;
     }
 
-    public bool Refresh()
+    public void Refresh()
     {
         if (FilePath != null && ContentLoadState == ScriptLoadState.Success)
         {
-            return DoLoadContent(FilePath) && LoadParameters();
+            DoLoadContent(FilePath);
+            LoadParameters();
         }
-        return false;
     }
 
     public abstract bool LoadParameters();
@@ -97,12 +79,6 @@ public abstract class AutomationScript
 
     public abstract Task<ScriptExecutionState> InvokeAsync(string deviceName, ScriptOutputList scriptOutput,
         string cancellationMessage = DefaultCancellationMessage, CancellationToken cancellationToken = default);
-
-    public Task<ScriptExecutionState> InvokeAsync(string deviceName,
-        string cancellationMessage = DefaultCancellationMessage, CancellationToken cancellationToken = default)
-    {
-        return InvokeAsync(deviceName, NewScriptOutputList(), cancellationMessage, cancellationToken);
-    }
 
     public void Unload()
     {
@@ -129,7 +105,7 @@ public abstract class AutomationScript
         return ContentLoadState == ScriptLoadState.Success;
     }
 
-    public bool ContentFailedToLoad()
+    public bool ContentHasFailedToLoad()
     {
         return ContentLoadState == ScriptLoadState.Failed;
     }

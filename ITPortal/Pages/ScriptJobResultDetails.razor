@@ -12,14 +12,20 @@
         </div>
     </div>
     <div class="section">
-        <p>Execution Time: @Result.ExecutionTime</p>
+        <p>Job: @Result.JobName</p>
         <p>Device: @Result.DeviceName</p>
-        <p>Job Name: @Result.JobName</p>
+        <p>Execution Time: @Result.ExecutionTime</p>
     </div>
+    @if (Job == null)
+    {
+        <div class="section">
+            <MudText>Job could not be found</MudText>
+        </div>
+    }
     <div class="section">
         <MudGrid Spacing="2">
             <MudItem>
-                <MudButton @onclick=@Job.Cancel Variant="Variant.Filled" Color="Color.Secondary"
+                <MudButton @onclick=@TryCancelJob Variant="Variant.Filled" Color="Color.Secondary"
                            Style="color:white" Disabled=@(Job == null || Result.ExecutionState != ScriptExecutionState.Running)>
                     <MudText>Cancel</MudText>
                 </MudButton>
@@ -44,6 +50,14 @@
         base.OnInitialized();
 
         Job = ScriptJobService.JobList.TryGetJob(Result.JobName);
+    }
+
+    private void TryCancelJob()
+    {
+        if (Job != null)
+        {
+            Job.Cancel();
+        }
     }
 
     private void GoToEditJob()

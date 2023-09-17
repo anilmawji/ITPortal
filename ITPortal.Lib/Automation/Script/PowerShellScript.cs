@@ -9,42 +9,27 @@ namespace ITPortal.Lib.Automation.Script;
 
 public sealed class PowerShellScript : AutomationScript
 {
-    private readonly InitialSessionState _initialPowerShellState;
+    private static readonly InitialSessionState _initialPowerShellState;
 
-    public PowerShellScript()
+    static PowerShellScript()
     {
-        _initialPowerShellState = NewInitialSessionState();
+        // CreateDefault2() only loads commands necessary to host PowerShell, CreateDefault() loads all built-in commands
+        _initialPowerShellState = InitialSessionState.CreateDefault();
+        _initialPowerShellState.ApartmentState = ApartmentState.MTA;
+        _initialPowerShellState.ExecutionPolicy = Microsoft.PowerShell.ExecutionPolicy.Bypass;
     }
 
-    public PowerShellScript(string filePath) : base(filePath)
-    {
-        _initialPowerShellState = NewInitialSessionState();
-    }
+    public PowerShellScript() { }
 
     [JsonConstructor]
     public PowerShellScript(string filePath, string fileName, string[] content, List<ScriptParameter> parameters)
-        : base(filePath, fileName, content, parameters)
-    {
-        _initialPowerShellState = NewInitialSessionState();
-    }
-
-    private static InitialSessionState NewInitialSessionState()
-    {
-        // CreateDefault2() only loads the commands necessary to host PowerShell, CreateDefault() loads all build-in commands
-        InitialSessionState initialPowerShellState = InitialSessionState.CreateDefault();
-        // Allow multiple threads in the PS session
-        initialPowerShellState.ApartmentState = ApartmentState.MTA;
-        // Set execution policy of the PS session
-        initialPowerShellState.ExecutionPolicy = Microsoft.PowerShell.ExecutionPolicy.Bypass;
-
-        return initialPowerShellState;
-    }
+        : base(filePath, fileName, content, parameters) { }
 
     public override bool LoadParameters()
     {
         if (!IsContentLoaded())
         {
-            throw new InvalidOperationException("Cannot load parameters on an unloaded script");
+            throw new InvalidOperationException("Attempt to load parameters of a script that has not been loaded");
         }
 
         ScriptBlockAst scriptAst = Parser.ParseInput(ContentString, out _, out ParseError[] errors);
@@ -53,19 +38,20 @@ public sealed class PowerShellScript : AutomationScript
         {
             return false;
         }
-        if (scriptAst.ParamBlock != null)
+        if (scriptAst.ParamBlock == null)
         {
-            foreach (ParameterAst parameter in scriptAst.ParamBlock.Parameters)
-            {
-                AddParameter(parameter);
-            }
+            return true;
+        }
+        foreach (var parameterAst in scriptAst.ParamBlock.Parameters)
+        {
+            ScriptParameter parameter = new(
+                parameterAst.Name.VariablePath.ToString(),
+                parameterAst.StaticType,
+                parameterAst.IsMandatory()
+            );
+            Parameters.Add(parameter);
         }
         return true;
-    }
-
-    public void AddParameter(ParameterAst parameter)
-    {
-        Parameters.Add(new ScriptParameter(parameter.Name.VariablePath.ToString(), parameter.StaticType, parameter.IsMandatory()));
     }
 
     public override ScriptOutputList NewScriptOutputList()
@@ -76,6 +62,11 @@ public sealed class PowerShellScript : AutomationScript
     public override async Task<ScriptExecutionState> InvokeAsync(string deviceName, ScriptOutputList outputList,
         string cancellationMessage = DefaultCancellationMessage, CancellationToken cancellationToken = default)
     {
+        if (!IsContentLoaded())
+        {
+            throw new InvalidOperationException("Attempt to invoke a script that has not been loaded");
+        }
+
         // Check if a pre-cancelled token was given
         if (cancellationToken.IsCancellationRequested)
         {
@@ -83,14 +74,11 @@ public sealed class PowerShellScript : AutomationScript
 
             return ScriptExecutionState.Stopped;
         }
-        if (!IsContentLoaded())
-        {
-            throw new InvalidOperationException("Cannot invoke a script that has not been loaded");
-        }
+
+        using PowerShell shell = PowerShell.Create(_initialPowerShellState);
+
         try
         {
-            // "using" relies on compiler to dispose of shell when try-catch block is exited
-            using PowerShell shell = PowerShell.Create(_initialPowerShellState);
             shell.AddScript(ContentString);
 
             if (Parameters.Any())
@@ -101,26 +89,24 @@ public sealed class PowerShellScript : AutomationScript
 
             // Use Task.Factory to opt for the newer async/await keywords
             // Moves away from the old IAsyncResult functionality still used by the PowerShell API
-            Task<PSDataCollection<PSObject>> shellTask = Task.Factory.FromAsync(
-                shell.BeginInvoke<PSObject, PSObject>(null, standardOutputStream),
-                shell.EndInvoke);
+            await Task.Factory.FromAsync(shell.BeginInvoke<PSObject, PSObject>(null, standardOutputStream), shell.EndInvoke)
+                .WaitAsync(cancellationToken);
 
-            await shellTask.WaitAsync(cancellationToken)
-                .ConfigureAwait(false);
-
-            if (shell.HadErrors)
-            {
-                return ScriptExecutionState.Error;
-            }
-            return ScriptExecutionState.Success;
+            return shell.HadErrors || outputList.HasErrorMessages() ? ScriptExecutionState.Error : ScriptExecutionState.Success;
         }
         catch (OperationCanceledException)
         {
             outputList.Add(cancellationMessage, ScriptOutputStreamType.Warning);
 
-            return ScriptExecutionState.Stopped;
+            return shell.HadErrors || outputList.HasErrorMessages() ? ScriptExecutionState.Error : ScriptExecutionState.Stopped;
         }
-        catch (Exception e)
+        catch (InvalidOperationException e)
+        {
+            outputList.Add(e.Message, ScriptOutputStreamType.Error);
+
+            return ScriptExecutionState.Error;
+        }
+        catch (PipelineStoppedException e)
         {
             outputList.Add(e.Message, ScriptOutputStreamType.Error);
 

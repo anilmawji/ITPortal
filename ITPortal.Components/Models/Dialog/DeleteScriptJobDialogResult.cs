@@ -2,6 +2,6 @@
 {
     public sealed class DeleteScriptJobDialogResult
     {
-        public bool ShouldDeleteJobResults { get; set; }
+        public bool ShouldDeleteJobResults { get; internal set; }
     }
 }

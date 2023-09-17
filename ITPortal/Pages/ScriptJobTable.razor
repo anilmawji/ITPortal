@@ -98,7 +98,7 @@
         if (firstRender)
         {
             InitializeDialogParameters();
-            LoadSavedJobData();
+            LoadSavedJobFiles();
             this.StateHasChanged();
         }
         await base.OnAfterRenderAsync(firstRender);
@@ -119,8 +119,9 @@
         s_cancelJobDialogParameters.Add(dialog => dialog.Color, Color.Secondary);
     }
 
-    private void LoadSavedJobData()
+    private void LoadSavedJobFiles()
     {
+        System.Diagnostics.Debug.WriteLine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs"));
         try
         {
             ScriptJobService.JobList.LoadFromJsonFiles(ScriptJobFileHelper.JobsPath);
@@ -129,7 +130,7 @@
         catch (Exception e)
         {
             System.Diagnostics.Debug.WriteLine(e.Message);
-                        Logger.WriteToFile(LogEvent.Error, e.Message);
+            Logger.WriteToFile(LogEvent.Error, e.Message);
         }
     }
 
@@ -155,17 +156,14 @@
         if (dialogResult.Canceled) return;
 
         var dialogResultData = dialogResult.Data as RunScriptJobDialogResult;
-        ScriptJobResult jobResult;
 
-        if (dialogResultData.ShouldRunJobNow)
-        {
-            jobResult = ScriptJobService.RunJob(job, dialogResultData.DeviceName);
-        }
-        else
-        {
-            //TODO: Schedule job to run at _runDate instead
-            jobResult = ScriptJobService.RunJob(job, dialogResultData.DeviceName);
-        }
+        ScriptJobResult jobResult = RunJob(
+            job, job.Script.NewScriptOutputList(),
+            dialogResultData.DeviceName,
+            dialogResultData.ShouldRunJobNow,
+            dialogResultData.ErrorAction,
+            dialogResultData.ShouldViewJobResult
+        );
 
         if (dialogResultData.ShouldViewJobResult)
         {
@@ -175,16 +173,52 @@
         {
             this.StateHasChanged();
         }
+    }
 
-        await jobResult.RunJobTask.ContinueWith((resultTask) =>
+    private ScriptJobResult RunJob(ScriptJob job, ScriptOutputList outputList, string deviceName,
+        bool runJobNow, ScriptJobErrorAction errorAction, bool refreshPage)
+    {
+        ScriptJobResult jobResult;
+
+        if (errorAction == ScriptJobErrorAction.Cancel)
         {
-            ScriptJobFileHelper.CreateJobResultFile(jobResult);
+            CancelJobOnErrorOutputReceived(job, outputList);
+        }
 
-            if (!dialogResultData.ShouldViewJobResult)
+        if (runJobNow)
+        {
+            jobResult = ScriptJobService.RunJob(job, deviceName, outputList);
+        }
+        else
+        {
+            //TODO: Schedule job to run at _runDate instead
+            jobResult = ScriptJobService.RunJob(job, deviceName, outputList);
+        }
+
+        // This is executed when the job is finished running
+        jobResult.RunJobTask.ContinueWith((resultTask) =>
+        {
+            ScriptJobFileHelper.TryCreateJobResultFile(jobResult);
+
+            if (refreshPage)
             {
                 InvokeAsync(this.StateHasChanged);
             }
+            outputList.Dispose();
         });
+
+        return jobResult;
+    }
+
+    private void CancelJobOnErrorOutputReceived(ScriptJob job, ScriptOutputList outputList)
+    {
+        outputList.OutputChanged += (object sender, ScriptOutputChangedEventArgs e) =>
+        {
+            if (e.StreamType == ScriptOutputStreamType.Error)
+            {
+                CancelJob(job);
+            }
+        };
     }
 
     private async void OpenCancelJobDialog(ScriptJob job)
@@ -194,8 +228,7 @@
 
         if (dialogResult.Canceled) return;
 
-        job.Cancel();
-        this.StateHasChanged();
+        CancelJob(job);
     }
 
     private async void OpenDownloadJobDialog(ScriptJob job)
@@ -218,14 +251,21 @@
             DeleteJobResults(job);
         }
         DeleteJob(jobName);
+    }
 
-        this.StateHasChanged();
+    private void CancelJob(ScriptJob job)
+    {
+        job.Cancel();
+
+        InvokeAsync(this.StateHasChanged);
     }
 
     private void DeleteJob(string jobName)
     {
         ScriptJobService.JobList.Remove(jobName);
-        ScriptJobFileHelper.DeleteJobFile(jobName);
+        ScriptJobFileHelper.TryDeleteJobFile(jobName);
+
+        InvokeAsync(this.StateHasChanged);
     }
 
     private void DeleteJobResults(ScriptJob job)
@@ -234,7 +274,7 @@
 
         foreach (ScriptJobResult result in results)
         {
-            ScriptJobFileHelper.DeleteJobResultFile(result.Id);
+            ScriptJobFileHelper.TryDeleteJobResultFile(result.Id);
         }
     }
 
