@@ -100,13 +100,13 @@ public sealed class PowerShellScript : AutomationScript
 
             return shell.HadErrors || outputList.HasErrorMessages() ? ScriptExecutionState.Error : ScriptExecutionState.Stopped;
         }
-        catch (InvalidOperationException e)
-        {
-            outputList.Add(e.Message, ScriptOutputStreamType.Error);
-
-            return ScriptExecutionState.Error;
-        }
         catch (PipelineStoppedException e)
+        {
+            outputList.Add(e.Message, ScriptOutputStreamType.Warning);
+
+            return ScriptExecutionState.Stopped;
+        }
+        catch (InvalidOperationException e)
         {
             outputList.Add(e.Message, ScriptOutputStreamType.Error);
 

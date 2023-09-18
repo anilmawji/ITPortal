@@ -6,21 +6,21 @@
 
 @*@attribute [Authorize]*@
 
+<style>
+    /* adjust table border and hide overflowing content */
+    .mud-table {
+        border-radius: 8px;
+        border: solid 1px #D2D2D2;
+        overflow: hidden;
+    }
+
+    /* correct table height and color */
+    .mud-table-toolbar {
+        --mud-internal-toolbar-height: 48px !important;
+    }
+</style>
+
 <PageContainer Title="PowerShell Jobs">
-    <style>
-        /* adjust table border and hide overflowing content */
-        .mud-table {
-            border-radius: 8px;
-            border: solid 1px #D2D2D2;
-            overflow: hidden;
-        }
-
-        /* correct table height and color */
-        .mud-table-toolbar {
-            --mud-internal-toolbar-height: 48px !important;
-        }
-    </style>
-
     <div class="table-container">
         <MudTable T="ScriptJob" Items=@ScriptJobService.JobList.GetJobs().Values Dense="true" Hover="true" FixedHeader="true"
                   Filter="new Func<ScriptJob, bool>(FilterJobFunc)" Height="calc(100% - 90px - 10px);" OnRowClick=@TryGoToEditJob>

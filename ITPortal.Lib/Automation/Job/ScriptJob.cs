@@ -1,6 +1,6 @@
 ﻿using ITPortal.Lib.Automation.Output;
 using ITPortal.Lib.Automation.Script;
-using ITPortal.Lib.Utilities.Extensions;
+using ITPortal.Lib.Utilities;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -34,17 +34,18 @@ public sealed class ScriptJob : IDisposable
     public async Task<ScriptExecutionState> Run(string deviceName, ScriptOutputList outputList,
         string cancellationMessage, DateTime runDate = default)
     {
-        SetState(ScriptJobState.Running);
-
-        ScriptExecutionState executionResult = await Script.InvokeAsync(
+        Task<ScriptExecutionState> runScript = Script.InvokeAsync(
             deviceName,
             outputList,
             cancellationMessage,
             _cancellationTokenSource.Token
-        ).ConfigureAwait(false);
+        );
 
+        SetState(ScriptJobState.Running);
+        ScriptExecutionState executionResult = await runScript.ConfigureAwait(false);
         SetState(ScriptJobState.Idle);
 
+        _cancellationTokenSource.Dispose();
         _cancellationTokenSource = new();
 
         return executionResult;

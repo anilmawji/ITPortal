@@ -1,6 +1,6 @@
 ﻿using ITPortal.Lib.Automation.Output;
 using ITPortal.Lib.Automation.Script;
-using ITPortal.Lib.Utilities.Extensions;
+using ITPortal.Lib.Utilities;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 

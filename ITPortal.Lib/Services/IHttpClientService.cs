@@ -1,4 +1,4 @@
-﻿namespace ITPortal.Lib.Services.Core;
+﻿namespace ITPortal.Lib.Services;
 
 public interface IHttpClientService
 {

@@ -1,5 +1,4 @@
-﻿using ITPortal.Lib.Services.Authentication.External;
-using Microsoft.AspNetCore.Components.Authorization;
+﻿using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Kiota.Abstractions.Authentication;
