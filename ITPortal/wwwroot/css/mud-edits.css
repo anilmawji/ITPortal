@@ -48,3 +48,8 @@ body {
     border: solid 1px #D2D2D2;
     background-color: rgba(0,0,0,.03) !important;
 }
+
+/* correct position of multiselection boxes */
+.mud-table-row .mud-table-cell {
+    padding-left: 20px !important;
+}

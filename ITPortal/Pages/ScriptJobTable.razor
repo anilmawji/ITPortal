@@ -23,7 +23,8 @@
 <PageContainer Title="PowerShell Jobs">
     <div class="table-container">
         <MudTable T="ScriptJob" Items=@ScriptJobService.JobList.GetJobs().Values Dense="true" Hover="true" FixedHeader="true"
-                  Filter="new Func<ScriptJob, bool>(FilterJobFunc)" Height="calc(100% - 90px - 10px);" OnRowClick=@TryGoToEditJob>
+                  Filter="new Func<ScriptJob, bool>(FilterJobFunc)" Height="calc(100% - 90px - 10px);"
+                  MultiSelection="true" @bind-SelectedItems="s_selectedJobs">
             <ToolBarContent>
                 <MudTextField @bind-Value=@_searchString Placeholder=@($"Search {ScriptJobService.JobList.GetJobs().Count} items...")
                               Adornment="Adornment.Start" AdornmentIcon=@Icons.Material.Filled.Search IconSize="Size.Medium" Class="mt-0" />
@@ -46,6 +47,18 @@
                         <MudButton Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" @onclick=@GoToNewJob>
                             <MudText>New Job</MudText>
                         </MudButton>
+                        @if (s_selectedJobs.Count > 0)
+                        {
+@*                             <MudButton Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" @onclick=@GoToNewJob>
+                                <MudText>Export Selected</MudText>
+                            </MudButton> *@
+                        }
+                        else
+                        {
+@*                             <MudButton Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" @onclick=@GoToNewJob>
+                                <MudText>Import</MudText>
+                            </MudButton> *@
+                        }
                     </div>
                 </MudTh>
             </HeaderContent>
@@ -61,14 +74,16 @@
                     {
                         <MudIconButton Icon=@Icons.Material.Filled.PlayArrow aria-label="start" Style="margin-right: 4px"
                                        OnClick="() => OpenRunJobDialog(context)" />
+                        <MudIconButton Icon=@Icons.Material.Filled.Edit aria-label="edit"
+                                       OnClick="() => TryGoToEditJob(context)" />
                     }
                     else
                     {
                         <MudIconButton Icon=@Icons.Material.Filled.Stop aria-label="stop" Style="margin-right: 4px"
                                        OnClick="() => OpenCancelJobDialog(context)" />
+                        <MudIconButton Icon=@Icons.Material.Filled.EditOff aria-label="edit"
+                                       OnClick="() => TryGoToEditJob(context)" />
                     }
-                    <MudIconButton Icon=@Icons.Material.Filled.FileDownload aria-label="edit"
-                                   OnClick="() => OpenDownloadJobDialog(context)" />
                     <MudIconButton Icon=@Icons.Material.Filled.Delete aria-label="delete"
                                    OnClick="() => OpenDeleteJobDialog(context.Name)" />
                 </MudTh>
@@ -81,6 +96,8 @@
 </PageContainer>
 
 @code {
+    private static HashSet<ScriptJob> s_selectedJobs = new();
+
     private static readonly DialogOptions s_dialogOptions = new() {
         CloseButton = true,
         DisableBackdropClick = true,
@@ -139,10 +156,8 @@
         NavigationManager.NavigateTo(PageRoute.CreateScriptJob);
     }
 
-    private void TryGoToEditJob(TableRowClickEventArgs<ScriptJob> eventArgs)
+    private void TryGoToEditJob(ScriptJob job)
     {
-        ScriptJob job = eventArgs.Item;
-
         if (job.IsRunning() || !ScriptJobService.JobList.HasJob(job.Name)) return;
 
         NavigationManager.NavigateTo(PageRoute.EditScriptJobWithName(job.Name));

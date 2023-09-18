@@ -31,8 +31,8 @@ public sealed class ScriptJobService : IScriptJobService
             scriptOutput,
             runJobTask
         );
-        JobResultList.Add(jobResult);
 
+        JobResultList.Add(jobResult);
         runJobTask.ContinueWith(task => jobResult.InvokeExecutionResultReceived(task.Result));
 
         return jobResult;
