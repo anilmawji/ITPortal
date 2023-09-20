@@ -11,6 +11,17 @@ public class ScriptJobList
         Jobs.Add(job.Name, job);
     }
 
+    public bool TryAdd(ScriptJob job)
+    {
+        if (!HasJob(job.Name))
+        {
+            Jobs.Add(job.Name, job);
+
+            return true;
+        }
+        return false;
+    }
+
     public bool Remove(string jobName)
     {
         return Jobs.Remove(jobName);
@@ -39,30 +50,6 @@ public class ScriptJobList
             return true;
         }
         return false;
-    }
-
-    public void LoadFromJsonFiles(string folderPath)
-    {
-        if (LoadedFromJson) return;
-        LoadedFromJson = true;
-
-        DirectoryInfo info = Directory.CreateDirectory(folderPath);
-        // Folder has just been created; no jobs to load
-        if (!info.Exists) return;
-
-        IEnumerable<string> filePaths = Directory.EnumerateFiles(folderPath);
-
-        foreach (string path in filePaths)
-        {
-            if (HasJob(Path.GetFileNameWithoutExtension(path))) continue;
-
-            ScriptJob? job = ScriptJob.LoadFromJsonFile(path);
-
-            if (job != null)
-            {
-                Add(job);
-            }
-        }
     }
 
     public bool HasJob(string jobName)

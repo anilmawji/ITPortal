@@ -28,6 +28,8 @@ public sealed class ScriptJob : IDisposable
         CreationTime = creationTime;
     }
 
+    public ScriptJob(string name, string description, AutomationScript script) : this(name, description, script, DateTime.Now) { }
+
     public ScriptJob(string name, AutomationScript script) : this(name, string.Empty, script, DateTime.Now) { }
 
     // TODO: use runDate to determine when to run the job
@@ -60,28 +62,6 @@ public sealed class ScriptJob : IDisposable
     {
         State = state;
         StateChanged?.Invoke(this, State);
-    }
-
-    public static ScriptJob? LoadFromJsonFile(string filePath)
-    {
-        string jsonText = File.ReadAllText(filePath);
-        ScriptJob? job = JsonSerializer.Deserialize(jsonText, ScriptJobContext.Default.ScriptJob);
-
-        if (job == null)
-        {
-            return null;
-        }
-        string fileName = Path.GetFileNameWithoutExtension(filePath);
-
-        if (fileName != job.Name)
-        {
-            return null;
-        }
-        if (job.Script.FilePath != null)
-        {
-            job.Script.LoadContent(job.Script.FilePath);
-        }
-        return job;
     }
 
     public string ToJsonString()

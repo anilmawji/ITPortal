@@ -1,6 +1,7 @@
 ﻿using ITPortal.Lib.Automation.Output;
 using ITPortal.Lib.Automation.Script;
 using ITPortal.Lib.Utilities;
+using System.Management.Automation;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -50,22 +51,28 @@ public sealed class ScriptJobResult : IDisposable
         ExecutionResultReceived?.Invoke(this, newState);
     }
 
-    public static ScriptJobResult? LoadFromJsonFile(string filePath)
+    public static ScriptJobResult LoadFromJsonFile(string filePath)
     {
-        string jsonText = File.ReadAllText(filePath);
-        ScriptJobResult? jobResult = JsonSerializer.Deserialize(jsonText, ScriptJobResultContext.Default.ScriptJobResult);
-
-        if (jobResult == null)
+        if (!File.Exists(filePath))
         {
-            return null;
+            throw new FileNotFoundException("Requested job result file does not exist: " + filePath);
         }
+        string jsonText = File.ReadAllText(filePath);
+
+        ScriptJobResult? result = JsonSerializer.Deserialize(jsonText, ScriptJobResultContext.Default.ScriptJobResult);
+
+        if (result == null)
+        {
+            throw new InvalidDataException("Failed to deserialize job result file: " + filePath);
+        }
+
         string fileName = Path.GetFileNameWithoutExtension(filePath);
 
-        if (fileName != jobResult.Id.ToString())
+        if (fileName != result?.Id.ToString())
         {
-            return null;
+            throw new InvalidDataException("Failed to read job result file - file name does not match job id: " + filePath);
         }
-        return jobResult;
+        return result;
     }
 
     public string ToJsonString()

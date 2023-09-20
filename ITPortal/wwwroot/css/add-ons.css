@@ -35,11 +35,3 @@ p {
     border-color: #D2D2D2;
     box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
 }
-
-/* workaround to make mudtable resize with window */
-/*.table-container {
-    height: calc(100vh - 90px - 100px);
-    display: grid;
-    grid-template-columns: minmax(0,1fr);
-    grid-template-rows: minmax(0,1fr);
-}*/

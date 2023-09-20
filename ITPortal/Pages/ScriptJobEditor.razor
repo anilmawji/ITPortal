@@ -23,7 +23,11 @@
         </PageSection>
 
         <PageSection Title="Script">
-            <ChooseFileButton OnClick=@PickAndLoadScript FileName=@_job.Script.FileName />
+            <FilePickerContainer FileName=@_job.Script.FileName>
+                <MudButton @onclick=@PickAndLoadScript Variant="Variant.Filled" Size="Size.Small">
+                    <MudText>Choose File</MudText>
+                </MudButton>
+            </FilePickerContainer>
 
             @if (_job.Script.IsContentLoaded())
             {
@@ -80,17 +84,15 @@
     [Parameter]
     public string JobName { get; set; }
 
-    private static readonly FilePickerFileType s_allowedFileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
-        {
-            { DevicePlatform.WinUI, new[] { ".ps1" } },
-            { DevicePlatform.macOS, new[] { "ps1" } }
-        }
-    );
     private static readonly PickOptions s_filePickOptions = new PickOptions()
     {
         // PickerTitle is used by macOS but not Windows - unreliable for providing information to user
         PickerTitle = "Please select a PowerShell script file",
-        FileTypes = s_allowedFileTypes,
+        FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
+        {
+            { DevicePlatform.WinUI, new[] { ".ps1" } },
+            { DevicePlatform.macOS, new[] { "ps1" } }
+        })
     };
 
     private MudForm _jobForm;
@@ -155,12 +157,11 @@
     {
         FileResult fileResult = await FileHelper.PickFileAsync(s_filePickOptions);
 
-        if (fileResult != null)
-        {
-            _job.Script.LoadContent(fileResult.FullPath);
-            _job.Script.LoadParameters();
-            this.StateHasChanged();
-        }
+        if (fileResult == null) return;
+
+        _job.Script.LoadContent(fileResult.FullPath);
+        _job.Script.LoadParameters();
+        this.StateHasChanged();
     }
 
     private void RefreshScript()
@@ -195,23 +196,22 @@
 
         if (_creatingNewJob)
         {
-            if (ShouldUpdateJobName())
-            {
-                _job.TrySetName(_newJobName);
-            }
             ScriptJobService.JobList.Add(_job);
         }
-        else if (ShouldUpdateJobName())
+        else
         {
             ScriptJobFileHelper.TryDeleteJobFile(_job.Name);
-            ScriptJobService.JobList.UpdateJobName(_job, _newJobName);
         }
+        UpdateJobName();
         ScriptJobFileHelper.TryCreateJobFile(_job);
         GoToJobs();
     }
 
-    private bool ShouldUpdateJobName()
+    private void UpdateJobName()
     {
-        return _newJobName != string.Empty && _newJobName != _initialJobName;
+        if (_newJobName != string.Empty && _newJobName != _initialJobName)
+        {
+            ScriptJobService.JobList.UpdateJobName(_job, _newJobName);
+        }
     }
 }

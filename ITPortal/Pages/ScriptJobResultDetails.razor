@@ -37,12 +37,12 @@
             </MudItem>
         </MudGrid>
     </div>
-    <ScriptOutputTabs ScriptOutput=@Result.ScriptOutput @ref=@OutputTabs />
+    <ScriptOutputGroup ScriptOutput=@Result.ScriptOutput @ref=@OutputGroup />
 </PageContainer>
 
 @code {
     ScriptJob Job;
-    ScriptOutputTabs OutputTabs;
+    ScriptOutputGroup OutputGroup;
 
     protected override void OnInitialized()
     {
@@ -67,6 +67,6 @@
 
     public void Dispose()
     {
-        OutputTabs.Dispose();
+        OutputGroup.Dispose();
     }
 }

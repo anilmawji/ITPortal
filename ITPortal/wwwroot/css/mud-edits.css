@@ -53,3 +53,11 @@ body {
 .mud-table-row .mud-table-cell {
     padding-left: 20px !important;
 }
+
+/* workaround to make mudtable resize with window */
+.table-container {
+    height: calc(100vh - 100px - 90px);
+    display: grid;
+    grid-template-columns: minmax(0,1fr);
+    grid-template-rows: minmax(0,1fr);
+}

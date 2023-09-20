@@ -18,21 +18,30 @@
     .mud-table-toolbar {
         --mud-internal-toolbar-height: 48px !important;
     }
+
+    header-btn {
+        width: 20px;
+        height: 300px;
+        z-index: 100;
+        color: white;
+        background-color: blue;
+        padding: 10px;
+    }
 </style>
 
 <PageContainer Title="PowerShell Jobs">
     <div class="table-container">
-        <MudTable T="ScriptJob" Items=@ScriptJobService.JobList.GetJobs().Values Dense="true" Hover="true" FixedHeader="true"
-                  Filter="new Func<ScriptJob, bool>(FilterJobFunc)" Height="calc(100% - 90px - 10px);"
+        <MudTable T="ScriptJob" Items=@ScriptJobService.JobList.GetJobs().Values Dense="true" Hover="true" FixedHeader="true" FixedFooter="true"
+                  Filter="new Func<ScriptJob, bool>(FilterJobFunc)" Height="calc(100% - 90px - 10px)"
                   MultiSelection="true" @bind-SelectedItems="s_selectedJobs">
             <ToolBarContent>
                 <MudTextField @bind-Value=@_searchString Placeholder=@($"Search {ScriptJobService.JobList.GetJobs().Count} items...")
                               Adornment="Adornment.Start" AdornmentIcon=@Icons.Material.Filled.Search IconSize="Size.Medium" Class="mt-0" />
             </ToolBarContent>
             <HeaderContent>
-                    <MudTh Style="padding-left: 30px">
-                        <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Name)">Name</MudTableSortLabel>
-                    </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Name)">Name</MudTableSortLabel>
+                </MudTh>
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Script.FileName)">Script</MudTableSortLabel>
                 </MudTh>
@@ -42,47 +51,38 @@
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Description)">Description</MudTableSortLabel>
                 </MudTh>
-                <MudTh Style="text-align:right; margin-right: 50px">
-                    <div class="new-job-btn">
-                        <MudButton Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" @onclick=@GoToNewJob>
-                            <MudText>New Job</MudText>
-                        </MudButton>
-                        @if (s_selectedJobs.Count > 0)
-                        {
-@*                             <MudButton Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" @onclick=@GoToNewJob>
-                                <MudText>Export Selected</MudText>
-                            </MudButton> *@
-                        }
-                        else
-                        {
-@*                             <MudButton Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" @onclick=@GoToNewJob>
-                                <MudText>Import</MudText>
-                            </MudButton> *@
-                        }
-                    </div>
+                <MudTh Style="text-align:right">
+                    <MudIconButton Icon=@Icons.Material.Filled.FileUpload aria-label="import" OnClick=@PickJobFileAsync />
+                    <MudIconButton Icon=@Icons.Material.Filled.Add aria-label="add" OnClick=@GoToNewJobPage />
                 </MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTh DataLabel="Name" Style="padding-left: 30px">@context.Name</MudTh>
-                <MudTh DataLabel="script">@context.Script.FileName</MudTh>
+                <MudTh DataLabel="Name">
+                    @context.Name
+                </MudTh>
+                <MudTh DataLabel="script">
+                    @context.Script.FileName
+                </MudTh>
                 <MudTh DataLabel="status">
                     <ScriptJobStateChipText Job=@context />
                 </MudTh>
-                <MudTh DataLabel="Description">@context.Description.NormalizeLength(40)</MudTh>
+                <MudTh DataLabel="Description">
+                    @context.Description.NormalizeLength(40)
+                </MudTh>
                 <MudTh Style="text-align:right">
                     @if (context.State != ScriptJobState.Running)
                     {
-                        <MudIconButton Icon=@Icons.Material.Filled.PlayArrow aria-label="start" Style="margin-right: 4px"
-                                       OnClick="() => OpenRunJobDialog(context)" />
+                        <MudIconButton Icon=@Icons.Material.Filled.PlayArrow aria-label="start"
+                                       Style="margin-right: 4px" OnClick="() => OpenRunJobDialog(context)" />
                         <MudIconButton Icon=@Icons.Material.Filled.Edit aria-label="edit"
-                                       OnClick="() => TryGoToEditJob(context)" />
+                                       Style="margin-right: 4px" OnClick="() => GoToEditJobPage(context)" />
                     }
                     else
                     {
-                        <MudIconButton Icon=@Icons.Material.Filled.Stop aria-label="stop" Style="margin-right: 4px"
-                                       OnClick="() => OpenCancelJobDialog(context)" />
+                        <MudIconButton Icon=@Icons.Material.Filled.Stop aria-label="stop"
+                                       Style="margin-right: 4px" OnClick="() => OpenCancelJobDialog(context)" />
                         <MudIconButton Icon=@Icons.Material.Filled.EditOff aria-label="edit"
-                                       OnClick="() => TryGoToEditJob(context)" />
+                                       Style="margin-right: 4px" />
                     }
                     <MudIconButton Icon=@Icons.Material.Filled.Delete aria-label="delete"
                                    OnClick="() => OpenDeleteJobDialog(context.Name)" />
@@ -108,6 +108,17 @@
     private static readonly DialogParameters<Dialog> s_cancelJobDialogParameters = new();
     private static readonly int[] s_pageSizeOptions = { 10, 20, 30 };
 
+    private static readonly PickOptions s_filePickOptions = new PickOptions()
+    {
+        // PickerTitle is used by macOS but not Windows - unreliable for providing information to user
+        PickerTitle = "Please select a Job file",
+        FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
+        {
+            { DevicePlatform.WinUI, new[] { ".json" } },
+            { DevicePlatform.macOS, new[] { "json" } }
+        })
+    };
+
     private string _searchString = "";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -115,7 +126,8 @@
         if (firstRender)
         {
             InitializeDialogParameters();
-            LoadSavedJobFiles();
+            ScriptJobFileHelper.LoadSavedJobs(ScriptJobService.JobList);
+            ScriptJobFileHelper.LoadSavedJobResults(ScriptJobService.JobResultList);
             this.StateHasChanged();
         }
         await base.OnAfterRenderAsync(firstRender);
@@ -136,31 +148,28 @@
         s_cancelJobDialogParameters.Add(dialog => dialog.Color, Color.Secondary);
     }
 
-    private void LoadSavedJobFiles()
-    {
-        System.Diagnostics.Debug.WriteLine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs"));
-        try
-        {
-            ScriptJobService.JobList.LoadFromJsonFiles(ScriptJobFileHelper.JobsPath);
-            ScriptJobService.JobResultList.LoadFromJsonFiles(ScriptJobFileHelper.JobResultsPath);
-        }
-        catch (Exception e)
-        {
-            System.Diagnostics.Debug.WriteLine(e.Message);
-            Logger.WriteToFile(LogEvent.Error, e.Message);
-        }
-    }
-
-    private void GoToNewJob()
+    private void GoToNewJobPage()
     {
         NavigationManager.NavigateTo(PageRoute.CreateScriptJob);
     }
 
-    private void TryGoToEditJob(ScriptJob job)
+    private async void PickJobFileAsync()
     {
-        if (job.IsRunning() || !ScriptJobService.JobList.HasJob(job.Name)) return;
+        FileResult fileResult = await FileHelper.PickFileAsync(s_filePickOptions);
 
-        NavigationManager.NavigateTo(PageRoute.EditScriptJobWithName(job.Name));
+        if (fileResult == null) return;
+
+        ScriptJob job = ScriptJobFileHelper.LoadJobFromJsonFile(fileResult.FullPath, ScriptJobService.JobList);
+
+        if (job != null)
+        {
+            this.StateHasChanged();
+        }
+    }
+
+    private async void DownloadJobFile(ScriptJob job)
+    {
+        await FileHelper.PickSaveFileAsync(job.Name + ".json", job.ToJsonString());
     }
 
     private async void OpenRunJobDialog(ScriptJob job)
@@ -246,9 +255,9 @@
         CancelJob(job);
     }
 
-    private async void OpenDownloadJobDialog(ScriptJob job)
+    private void GoToEditJobPage(ScriptJob job)
     {
-        await FileHelper.PickSaveFileAsync(job.Name + ".json", job.ToJsonString());
+        NavigationManager.NavigateTo(PageRoute.EditScriptJobWithName(job.Name));
     }
 
     private async void OpenDeleteJobDialog(string jobName)

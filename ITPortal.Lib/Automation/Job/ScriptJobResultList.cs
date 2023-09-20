@@ -5,18 +5,12 @@ public sealed class ScriptJobResultList
     public int MaxResults { get; private set; }
     public int NextResultId { get; private set; } = 0;
     public int LowestResultId { get; private set; } = -1;
-    public bool LoadedFromJson { get; private set; }
 
     private readonly Dictionary<int, ScriptJobResult> JobResults = new();
 
     public ScriptJobResultList(int maxResults)
     {
         MaxResults = maxResults;
-    }
-
-    public int GetNextResultId()
-    {
-        return 0;
     }
 
     public void Add(ScriptJobResult result)
@@ -33,6 +27,17 @@ public sealed class ScriptJobResultList
             JobResults.Remove(LowestResultId);
         }
         NextResultId++;
+    }
+
+    public bool TryAdd(ScriptJobResult result)
+    {
+        if (!HasResult(result.Id))
+        {
+            Add(result);
+
+            return true;
+        }
+        return false;
     }
 
     public bool Remove(int id)
@@ -53,32 +58,6 @@ public sealed class ScriptJobResultList
             }
         }
         return results;
-    }
-
-    public void LoadFromJsonFiles(string folderPath)
-    {
-        if (LoadedFromJson) return;
-        LoadedFromJson = true;
-
-        DirectoryInfo info = Directory.CreateDirectory(folderPath);
-        // Jobs folder has just been created; no jobs to load
-        if (!info.Exists) return;
-
-        IEnumerable<string> filePaths = Directory.EnumerateFiles(folderPath);
-
-        foreach (string path in filePaths)
-        {
-            int resultId = int.Parse(Path.GetFileNameWithoutExtension(path));
-
-            if (HasResult(resultId)) return;
-
-            ScriptJobResult? result = ScriptJobResult.LoadFromJsonFile(path);
-
-            if (result != null)
-            {
-                Add(result);
-            }
-        }
     }
 
     public bool HasResult(int resultId)
