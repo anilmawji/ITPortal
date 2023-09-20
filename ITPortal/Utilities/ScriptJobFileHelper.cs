@@ -48,7 +48,7 @@ public class ScriptJobFileHelper
         }
         catch (JsonException e)
         {
-            Logger.AddMessage(LogEvent.Error, "Failed to deserialize job" + e.Message);
+            Logger.AddMessage(LogEvent.Error, $"Failed to deserialize job {fileName}: " + e.Message);
             return null;
         }
 
@@ -57,9 +57,7 @@ public class ScriptJobFileHelper
             Logger.AddMessage(LogEvent.Warning, "Warning - file name does not match job name: " + jsonFilePath);
         }
 
-        string dirPath = Path.GetDirectoryName(jsonFilePath);
-
-        if (dirPath != JobsPath)
+        if (Path.GetDirectoryName(jsonFilePath) != JobsPath)
         {
             try
             {
@@ -122,13 +120,25 @@ public class ScriptJobFileHelper
         }
         catch (JsonException e)
         {
-            Logger.AddMessage(LogEvent.Error, "Failed to deserialize job result" + e.Message);
+            Logger.AddMessage(LogEvent.Error, $"Failed to deserialize job result {fileName}: " + e.Message);
             return null;
         }
 
         if (fileName != result.Id.ToString())
         {
             Logger.AddMessage(LogEvent.Warning, "Warning - file name does not match job result id: " + jsonFilePath);
+        }
+
+        if (Path.GetDirectoryName(jsonFilePath) != JobsPath)
+        {
+            try
+            {
+                File.Copy(jsonFilePath, Path.Combine(JobResultsPath, Path.GetFileName(jsonFilePath)));
+            }
+            catch (Exception e)
+            {
+                Logger.AddMessage(LogEvent.Warning, $"Failed to copy job result file to {JobResultsPath}: " + e.Message);
+            }
         }
 
         resultList.Add(result);

@@ -26,7 +26,7 @@ public static class Logger
         }
 
         string timestamp = DateTime.Now.ToLocalTime().ToString("HH:mm:ss");
-        string logMessage = $"[{timestamp}] => {eventType.ToString().ToUpper()}: {NewLine}{NewLine}{message}{NewLine}";
+        string logMessage = $"[{timestamp}] => {eventType.ToString().ToUpper()}: {NewLine}{message}{NewLine}";
 
         try
         {
