@@ -23,11 +23,13 @@
         </PageSection>
 
         <PageSection Title="Script">
-            <FilePickerContainer FileName=@_job.Script.FileName>
-                <MudButton @onclick=@PickAndLoadScript Variant="Variant.Filled" Size="Size.Small">
-                    <MudText>Choose File</MudText>
-                </MudButton>
-            </FilePickerContainer>
+            <div class="input-line">
+                <FilePickerContainer FileName=@_job.Script.FileName>
+                    <MudButton @onclick=@PickAndLoadScript Variant="Variant.Filled" Size="Size.Small">
+                        <MudText>Choose File</MudText>
+                    </MudButton>
+                </FilePickerContainer>
+            </div>
 
             @if (_job.Script.IsContentLoaded())
             {

@@ -161,10 +161,9 @@
 
         ScriptJob job = ScriptJobFileHelper.LoadJobFromJsonFile(fileResult.FullPath, ScriptJobService.JobList);
 
-        if (job != null)
-        {
-            this.StateHasChanged();
-        }
+        if (job == null) return;
+
+        this.StateHasChanged();
     }
 
     private async void DownloadJobFile(ScriptJob job)

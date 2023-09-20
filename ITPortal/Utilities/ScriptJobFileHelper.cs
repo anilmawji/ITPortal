@@ -1,8 +1,6 @@
 ﻿using ITPortal.Lib.Automation.Job;
 using ITPortal.Lib.Automation.Job.Result;
 using ITPortal.Lib.Utilities;
-using Microsoft.Graph.Models;
-using Microsoft.Maui.Storage;
 using System.Text.Json;
 
 namespace ITPortal.Utilities;
@@ -59,6 +57,20 @@ public class ScriptJobFileHelper
             Logger.AddMessage(LogEvent.Warning, "Warning - file name does not match job name: " + jsonFilePath);
         }
 
+        string dirPath = Path.GetDirectoryName(jsonFilePath);
+
+        if (dirPath != JobsPath)
+        {
+            try
+            {
+                File.Copy(jsonFilePath, Path.Combine(JobsPath, Path.GetFileName(jsonFilePath)));
+            }
+            catch (Exception e)
+            {
+                Logger.AddMessage(LogEvent.Warning, $"Failed to copy job file to {JobsPath}: " + e.Message);
+            }
+        }
+
         if (job.Script.FilePath != null)
         {
             job.Script.LoadContent(job.Script.FilePath);
@@ -92,13 +104,13 @@ public class ScriptJobFileHelper
 
         if (!int.TryParse(fileName, out int resultId))
         {
-            Logger.AddMessage(LogEvent.Error, "Failed to add job to list: file name is not an integer");
+            Logger.AddMessage(LogEvent.Error, "Failed to add job to list: job result file name is not an integer");
             return null;
         }
 
         if (resultList.HasResult(resultId))
         {
-            Logger.AddMessage(LogEvent.Error, "Failed to add job to list: duplicate job name found");
+            Logger.AddMessage(LogEvent.Error, "Failed to add job to list: duplicate job result id found");
             return null;
         }
 
@@ -110,13 +122,13 @@ public class ScriptJobFileHelper
         }
         catch (JsonException e)
         {
-            Logger.AddMessage(LogEvent.Error, "Failed to deserialize job" + e.Message);
+            Logger.AddMessage(LogEvent.Error, "Failed to deserialize job result" + e.Message);
             return null;
         }
 
         if (fileName != result.Id.ToString())
         {
-            Logger.AddMessage(LogEvent.Warning, "Warning - file name does not match job name: " + jsonFilePath);
+            Logger.AddMessage(LogEvent.Warning, "Warning - file name does not match job result id: " + jsonFilePath);
         }
 
         resultList.Add(result);
