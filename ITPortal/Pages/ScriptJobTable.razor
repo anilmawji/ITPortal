@@ -47,7 +47,7 @@
                     @if (selectedJobs.Count > 0)
                     {
                         <MudIconButton Icon=@Icons.Material.Filled.FileDownload aria-label="export"
-                                       Style="margin-right: 4px" OnClick=@DownloadSelectedJobsAsync />
+                                       Style=@($"margin-right: {IconPadding}px") OnClick=@DownloadSelectedJobsAsync />
                     }
                     <MudIconButton Icon=@Icons.Material.Filled.FileUpload aria-label="import" OnClick=@PickJobFileAsync />
                     <MudIconButton Icon=@Icons.Material.Filled.Add aria-label="add" OnClick=@GoToNewJobPage />
@@ -70,16 +70,16 @@
                     @if (context.State != ScriptJobState.Running)
                     {
                         <MudIconButton Icon=@Icons.Material.Filled.PlayArrow aria-label="start"
-                                       Style="margin-right: 4px" OnClick="() => OpenRunJobDialog(context)" />
+                                       Style=@($"margin-right: {IconPadding}px") OnClick="() => OpenRunJobDialog(context)" />
                         <MudIconButton Icon=@Icons.Material.Filled.Edit aria-label="edit"
-                                       Style="margin-right: 4px" OnClick="() => GoToEditJobPage(context)" />
+                                       Style=@($"margin-right: {IconPadding}px") OnClick="() => GoToEditJobPage(context)" />
                     }
                     else
                     {
                         <MudIconButton Icon=@Icons.Material.Filled.Stop aria-label="stop"
-                                       Style="margin-right: 4px" OnClick="() => OpenCancelJobDialog(context)" />
+                                       Style=@($"margin-right: {IconPadding}px") OnClick="() => OpenCancelJobDialog(context)" />
                         <MudIconButton Icon=@Icons.Material.Filled.EditOff aria-label="edit"
-                                       Style="margin-right: 4px" />
+                                       Style=@($"margin-right: {IconPadding}px") />
                     }
                     <MudIconButton Icon=@Icons.Material.Filled.Delete aria-label="delete"
                                    OnClick="() => OpenDeleteJobDialog(context.Name)" />
@@ -93,6 +93,8 @@
 </PageContainer>
 
 @code {
+    private const int IconPadding = 4;
+
     private static readonly DialogOptions s_dialogOptions = new() {
         CloseButton = true,
         DisableBackdropClick = true,

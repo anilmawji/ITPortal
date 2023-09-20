@@ -71,8 +71,12 @@ public sealed class ScriptJob : IDisposable
 
     public bool TrySetName(string name)
     {
-        // TODO: string validation
-        Name = name;
+        if (name.IsValidFileName())
+        {
+            Name = name;
+
+            return true;
+        }
         return false;
     }
 
