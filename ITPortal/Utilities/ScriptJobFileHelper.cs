@@ -36,7 +36,8 @@ public class ScriptJobFileHelper
 
         if (jobList.HasJob(fileName))
         {
-            Logger.AddMessage(LogEvent.Error, "Failed to add job to list: duplicate job name found");
+            Logger.AddMessage(LogEvent.Error, $"Failed to add job to list: duplicate job name \'{fileName}\' found");
+
             return null;
         }
 
@@ -48,13 +49,14 @@ public class ScriptJobFileHelper
         }
         catch (JsonException e)
         {
-            Logger.AddMessage(LogEvent.Error, $"Failed to deserialize job {fileName}: " + e.Message);
+            Logger.AddMessage(LogEvent.Error, $"Failed to deserialize job \'{fileName}\': {e.Message}");
+
             return null;
         }
 
         if (fileName != job.Name)
         {
-            Logger.AddMessage(LogEvent.Warning, "Warning - file name does not match job name: " + jsonFilePath);
+            Logger.AddMessage(LogEvent.Warning, $"Warning - file name of \'{jsonFilePath}\' does not match job name \'{job.Name}\'");
         }
 
         if (Path.GetDirectoryName(jsonFilePath) != JobsPath)
@@ -65,7 +67,7 @@ public class ScriptJobFileHelper
             }
             catch (Exception e)
             {
-                Logger.AddMessage(LogEvent.Warning, $"Failed to copy job file to {JobsPath}: " + e.Message);
+                Logger.AddMessage(LogEvent.Warning, $"Failed to copy job file to \'{JobsPath}\': {e.Message}");
             }
         }
 
@@ -102,13 +104,15 @@ public class ScriptJobFileHelper
 
         if (!int.TryParse(fileName, out int resultId))
         {
-            Logger.AddMessage(LogEvent.Error, "Failed to add job to list: job result file name is not an integer");
+            Logger.AddMessage(LogEvent.Error, $"Failed to add job result to list: file name \'{fileName}\' is not an integer");
+
             return null;
         }
 
         if (resultList.HasResult(resultId))
         {
-            Logger.AddMessage(LogEvent.Error, "Failed to add job to list: duplicate job result id found");
+            Logger.AddMessage(LogEvent.Error, $"Failed to add job result to list: duplicate id \'{resultId}\' found");
+
             return null;
         }
 
@@ -120,13 +124,14 @@ public class ScriptJobFileHelper
         }
         catch (JsonException e)
         {
-            Logger.AddMessage(LogEvent.Error, $"Failed to deserialize job result {fileName}: " + e.Message);
+            Logger.AddMessage(LogEvent.Error, $"Failed to deserialize job result \'{fileName}\': {e.Message}");
+
             return null;
         }
 
         if (fileName != result.Id.ToString())
         {
-            Logger.AddMessage(LogEvent.Warning, "Warning - file name does not match job result id: " + jsonFilePath);
+            Logger.AddMessage(LogEvent.Warning, $"Warning - file name of \'{jsonFilePath}\' does not match job result id \'{result.Id}\'");
         }
 
         if (Path.GetDirectoryName(jsonFilePath) != JobsPath)
@@ -137,7 +142,7 @@ public class ScriptJobFileHelper
             }
             catch (Exception e)
             {
-                Logger.AddMessage(LogEvent.Warning, $"Failed to copy job result file to {JobResultsPath}: " + e.Message);
+                Logger.AddMessage(LogEvent.Warning, $"Failed to copy job result file to \'{JobResultsPath}\': {e.Message}");
             }
         }
 
@@ -146,37 +151,56 @@ public class ScriptJobFileHelper
         return result;
     }
 
-    public static bool TryCreateJobFile(ScriptJob job)
+    public static bool TryCreateJobFile(ScriptJob job, string jsonFilePath)
     {
         try
         {
-            string filePath = Path.Combine(JobsPath, job.Name + ".json");
-
-            File.WriteAllText(filePath, job.ToJsonString());
+            File.WriteAllText(jsonFilePath, job.ToJsonString());
 
             return true;
         }
         catch (Exception e)
         {
-            Logger.AddMessage(LogEvent.Error, e.Message);
+            Logger.AddMessage(LogEvent.Error, $"Failed to create job file \'{jsonFilePath}\': {e.Message}");
 
             return false;
         }
     }
 
+    public static bool TryCreateJobFile(ScriptJob job)
+    {
+        return TryCreateJobFile(job, Path.Combine(JobsPath, job.Name + ".json"));
+    }
+
     public static bool TryDeleteJobFile(string jobName)
     {
+        string jsonFilePath = Path.Combine(JobsPath, jobName + ".json");
+
         try
         {
-            string filePath = Path.Combine(JobsPath, jobName + ".json");
-
-            File.Delete(filePath);
+            File.Delete(jsonFilePath);
 
             return true;
         }
         catch (Exception e)
         {
-            Logger.AddMessage(LogEvent.Error, e.Message);
+            Logger.AddMessage(LogEvent.Error, $"Failed to delete job file \'{jsonFilePath}\': {e.Message}");
+
+            return false;
+        }
+    }
+
+    public static bool TryCreateJobResultFile(ScriptJobResult result, string jsonFilePath)
+    {
+        try
+        {
+            File.WriteAllText(jsonFilePath, result.ToJsonString());
+
+            return true;
+        }
+        catch (Exception e)
+        {
+            Logger.AddMessage(LogEvent.Error, $"Failed to create job result file \'{jsonFilePath}\': {e.Message}");
 
             return false;
         }
@@ -184,35 +208,22 @@ public class ScriptJobFileHelper
 
     public static bool TryCreateJobResultFile(ScriptJobResult result)
     {
-        try
-        {
-            string filePath = Path.Combine(JobResultsPath, result.Id.ToString() + ".json");
-
-            File.WriteAllText(filePath, result.ToJsonString());
-
-            return true;
-        }
-        catch (Exception e)
-        {
-            Logger.AddMessage(LogEvent.Error, e.Message);
-
-            return false;
-        }
+        return TryCreateJobResultFile(result, Path.Combine(JobResultsPath, result.Id.ToString() + ".json"));
     }
 
     public static bool TryDeleteJobResultFile(int resultId)
     {
+        string jsonFilePath = Path.Combine(JobResultsPath, resultId.ToString() + ".json");
+
         try
         {
-            string filePath = Path.Combine(JobResultsPath, resultId.ToString() + ".json");
-
-            File.Delete(filePath);
+            File.Delete(jsonFilePath);
 
             return true;
         }
         catch (Exception e)
         {
-            Logger.AddMessage(LogEvent.Error, e.Message);
+            Logger.AddMessage(LogEvent.Error, $"Failed to delete job result file \'{jsonFilePath}\': {e.Message}");
 
             return false;
         }

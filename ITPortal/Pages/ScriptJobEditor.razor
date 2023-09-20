@@ -155,7 +155,7 @@
         }
     }
 
-    private async void PickAndLoadScript()
+    private async Task PickAndLoadScript()
     {
         FileResult fileResult = await FileHelper.PickFileAsync(s_filePickOptions);
 

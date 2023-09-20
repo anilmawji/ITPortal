@@ -1,4 +1,5 @@
-﻿@attribute [Route(PageRoute.ScriptJobs)]
+﻿@using CommunityToolkit.Maui.Storage;
+@attribute [Route(PageRoute.ScriptJobs)]
 
 @inject IScriptJobService ScriptJobService
 @inject IDialogService DialogService
@@ -18,22 +19,13 @@
     .mud-table-toolbar {
         --mud-internal-toolbar-height: 48px !important;
     }
-
-    header-btn {
-        width: 20px;
-        height: 300px;
-        z-index: 100;
-        color: white;
-        background-color: blue;
-        padding: 10px;
-    }
 </style>
 
 <PageContainer Title="PowerShell Jobs">
     <div class="table-container">
         <MudTable T="ScriptJob" Items=@ScriptJobService.JobList.GetJobs().Values Dense="true" Hover="true" FixedHeader="true" FixedFooter="true"
-                  Filter="new Func<ScriptJob, bool>(FilterJobFunc)" Height="calc(100% - 90px - 10px)"
-                  MultiSelection="true" @bind-SelectedItems="s_selectedJobs">
+                  Filter="new Func<ScriptJob, bool>(FilterJobFunc)" Height="calc(100% - 90px - 10px)" OnRowClick=@(() => InvokeAsync(this.StateHasChanged))
+                  MultiSelection="true" @bind-SelectedItems=@selectedJobs>
             <ToolBarContent>
                 <MudTextField @bind-Value=@_searchString Placeholder=@($"Search {ScriptJobService.JobList.GetJobs().Count} items...")
                               Adornment="Adornment.Start" AdornmentIcon=@Icons.Material.Filled.Search IconSize="Size.Medium" Class="mt-0" />
@@ -52,6 +44,11 @@
                     <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Description)">Description</MudTableSortLabel>
                 </MudTh>
                 <MudTh Style="text-align:right">
+                    @if (selectedJobs.Count > 0)
+                    {
+                        <MudIconButton Icon=@Icons.Material.Filled.FileDownload aria-label="export"
+                                       Style="margin-right: 4px" OnClick=@DownloadSelectedJobsAsync />
+                    }
                     <MudIconButton Icon=@Icons.Material.Filled.FileUpload aria-label="import" OnClick=@PickJobFileAsync />
                     <MudIconButton Icon=@Icons.Material.Filled.Add aria-label="add" OnClick=@GoToNewJobPage />
                 </MudTh>
@@ -96,8 +93,6 @@
 </PageContainer>
 
 @code {
-    private static HashSet<ScriptJob> s_selectedJobs = new();
-
     private static readonly DialogOptions s_dialogOptions = new() {
         CloseButton = true,
         DisableBackdropClick = true,
@@ -120,6 +115,7 @@
     };
 
     private string _searchString = "";
+    private HashSet<ScriptJob> selectedJobs = new();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -153,7 +149,28 @@
         NavigationManager.NavigateTo(PageRoute.CreateScriptJob);
     }
 
-    private async void PickJobFileAsync()
+    private async Task DownloadSelectedJobsAsync()
+    {
+        FolderPickerResult folderResult = await FolderPicker.Default.PickAsync(CancellationToken.None);
+
+        if (!folderResult.IsSuccessful) return;
+
+        foreach (ScriptJob selectedJob in selectedJobs)
+        {
+            foreach ((string jobName, ScriptJob job) in ScriptJobService.JobList.GetJobs())
+            {
+                if (jobName == selectedJob.Name)
+                {
+                    string jsonFilePath = Path.Combine(folderResult.Folder.Path, jobName + ".json");
+
+                    ScriptJobFileHelper.TryCreateJobFile(selectedJob, jsonFilePath);
+                    break;
+                }
+            }
+        }
+    }
+
+    private async Task PickJobFileAsync()
     {
         FileResult fileResult = await FileHelper.PickFileAsync(s_filePickOptions);
 
@@ -166,12 +183,7 @@
         this.StateHasChanged();
     }
 
-    private async void DownloadJobFile(ScriptJob job)
-    {
-        await FileHelper.PickSaveFileAsync(job.Name + ".json", job.ToJsonString());
-    }
-
-    private async void OpenRunJobDialog(ScriptJob job)
+    private async Task OpenRunJobDialog(ScriptJob job)
     {
         IDialogReference dialog = DialogService.Show<RunScriptJobDialog>("Run Job", s_runJobDialogParameters, s_dialogOptions);
         DialogResult dialogResult = await dialog.Result;
@@ -244,7 +256,7 @@
         };
     }
 
-    private async void OpenCancelJobDialog(ScriptJob job)
+    private async Task OpenCancelJobDialog(ScriptJob job)
     {
         IDialogReference dialog = DialogService.Show<Dialog>("Confirm Job Cancellation", s_cancelJobDialogParameters, s_dialogOptions);
         DialogResult dialogResult = await dialog.Result;
@@ -259,7 +271,7 @@
         NavigationManager.NavigateTo(PageRoute.EditScriptJobWithName(job.Name));
     }
 
-    private async void OpenDeleteJobDialog(string jobName)
+    private async Task OpenDeleteJobDialog(string jobName)
     {
         IDialogReference dialog = DialogService.Show<DeleteScriptJobDialog>("Confirm Job Deletion", s_deleteJobDialogParameters, s_dialogOptions);
         DialogResult dialogResult = await dialog.Result;
