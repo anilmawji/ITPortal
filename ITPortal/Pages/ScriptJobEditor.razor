@@ -69,7 +69,14 @@
                     <MudItem>
                         <MudButton @onclick=@TrySaveJob Variant="Variant.Filled" Color="Color.Secondary" Style="color:white"
                                    Disabled="!_job.Script.IsContentLoaded()">
-                            <MudText>Done</MudText>
+                            @if (_creatingNewJob)
+                            {
+                                <MudText>Done</MudText>
+                            }
+                            else
+                            {
+                                <MudText>Save</MudText>
+                            }
                         </MudButton>
                     </MudItem>
                 </MudGrid>
