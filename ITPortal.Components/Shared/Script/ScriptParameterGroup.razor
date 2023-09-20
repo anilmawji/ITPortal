@@ -1,0 +1,19 @@
+﻿@if (Script.IsContentLoaded())
+{
+    @if (Script.Parameters.Any())
+    {
+        @foreach (ScriptParameter parameter in Script.Parameters)
+        {
+            <ScriptParameterView Parameter=@parameter />
+        }
+    }
+    else
+    {
+        <p>This script does not accept any parameters.</p>
+    }
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public AutomationScript Script { get; set; } = null!;
+}

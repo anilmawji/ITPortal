@@ -1,4 +1,4 @@
-﻿namespace ITPortal.Lib.Utilities.Extensions
+﻿namespace ITPortal.Lib.Utilities
 {
     public static class EventHandlerExtensions
     {

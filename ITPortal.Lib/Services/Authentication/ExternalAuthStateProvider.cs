@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Identity.Client;
 
-namespace ITPortal.Lib.Services.Authentication.External;
+namespace ITPortal.Lib.Services.Authentication;
 
 public sealed class ExternalAuthStateProvider : AuthenticationStateProvider
 {

@@ -1,4 +1,4 @@
-﻿/* Center element horizontally and vertically */
+﻿/* center element horizontally and vertically */
 .centered {
     position: absolute;
     top: 50%;
@@ -6,7 +6,7 @@
     transform: translate(-50%, -50%);
 }
 
-/* Add a background behind an element */
+/* add a background behind an element */
 .background {
     position: relative;
     height: 100%;
@@ -34,12 +34,4 @@ p {
     border: 1px solid;
     border-color: #D2D2D2;
     box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
-}
-
-/* workaround to make MudTable resize with window */
-.table-container {
-    height: calc(100vh - 90px - 100px);
-    display: grid;
-    grid-template-columns: minmax(0,1fr);
-    grid-template-rows: minmax(0,1fr);
 }

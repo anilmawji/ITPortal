@@ -15,7 +15,7 @@ public sealed class PowerShellScriptOutputList : ScriptOutputList
     {
         var psStream = (PSDataCollection<T>)stream;
 
-        psStream.DataAdded += (sender, e) =>
+        psStream.DataAdded += (object? sender, DataAddedEventArgs e) =>
         {
             string? message = psStream[e.Index]?.ToString();
             Add(message, streamType);

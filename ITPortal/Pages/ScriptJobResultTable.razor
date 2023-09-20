@@ -6,30 +6,30 @@
 @inject IScriptJobService ScriptJobService
 @inject NavigationManager NavigationManager
 
+<style>
+    /* adjust table border and hide overflowing content */
+    .mud-table {
+        border-radius: 8px;
+        border: solid 1px #D2D2D2;
+        overflow: hidden;
+    }
+
+    /* correct table height and color */
+    .mud-table-toolbar {
+        --mud-internal-toolbar-height: 48px !important;
+    }
+</style>
+
 <PageContainer Title="PowerShell Job Results">
-    <style>
-        /* adjust table border and hide overflowing content */
-        .mud-table {
-            border-radius: 8px;
-            border: solid 1px #D2D2D2;
-            overflow: hidden;
-        }
-
-        /* correct table height and color */
-        .mud-table-toolbar {
-            --mud-internal-toolbar-height: 48px !important;
-        }
-    </style>
-
     <div class="table-container">
         <MudTable T="ScriptJobResult" Items=@ScriptJobService.JobResultList.GetResults().Values Dense="true" Hover="true" FixedHeader="true"
-                  Filter="new Func<ScriptJobResult, bool>(FilterJobResultFunc)" OnRowClick=@TryGoToJobResults Height="calc(100% - 90px - 10px);">
+                  Filter="new Func<ScriptJobResult, bool>(FilterJobResultFunc)" OnRowClick=@GoToJobResultsPage Height="calc(100% - 90px - 10px)">
             <ToolBarContent>
                 <MudTextField @bind-Value=@_searchString Placeholder=@($"Search {ScriptJobService.JobResultList.GetResults().Count} items...")
                               Adornment="Adornment.Start" AdornmentIcon=@Icons.Material.Filled.Search IconSize="Size.Medium" Class="mt-0"></MudTextField>
             </ToolBarContent>
             <HeaderContent>
-                <MudTh Style="padding-left: 30px">
+                <MudTh>
                     <MudTableSortLabel SortBy="new Func<ScriptJobResult, object>(x=>x.Id)">Id</MudTableSortLabel>
                 </MudTh>
                 <MudTh>
@@ -46,7 +46,7 @@
                 </MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTh DataLabel="Id" Style="padding-left: 30px">@context.Id</MudTh>
+                <MudTh DataLabel="Id">@context.Id</MudTh>
                 <MudTh DataLabel="Script">@context.ScriptName</MudTh>
                 <MudTh DataLabel="Device">@context.DeviceName</MudTh>
                 <MudTh DataLabel="Status">
@@ -74,16 +74,25 @@
         }
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            ScriptJobFileHelper.LoadSavedJobs(ScriptJobService.JobList);
+            ScriptJobFileHelper.LoadSavedJobResults(ScriptJobService.JobResultList);
+            this.StateHasChanged();
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
     private void OnExecutionResultReceived(object sender, ScriptExecutionState newState)
     {
         InvokeAsync(this.StateHasChanged);
     }
 
-    private void TryGoToJobResults(TableRowClickEventArgs<ScriptJobResult> eventArgs)
+    private void GoToJobResultsPage(TableRowClickEventArgs<ScriptJobResult> eventArgs)
     {
         int resultId = eventArgs.Item.Id;
-
-        if (!ScriptJobService.JobResultList.HasResult(resultId)) return;
 
         NavigationManager.NavigateTo(PageRoute.ScriptJobResultDetailsWithId(resultId));
     }

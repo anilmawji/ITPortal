@@ -1,0 +1,16 @@
+﻿<div class=@GetClass()>
+    @ChildContent
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public RenderFragment ChildContent { get; set; } = null!;
+
+    [Parameter]
+    public bool Visible { get; set; }
+
+    public string GetClass()
+    {
+        return "slider " + (Visible ? "slide-in" : "slide-out");
+    }
+}

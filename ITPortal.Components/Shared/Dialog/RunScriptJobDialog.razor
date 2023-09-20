@@ -8,6 +8,12 @@
                     <MudSelectItem Value=@LocalhostDevice />
                 </MudSelect>
             </div>
+            <div class="input-line">
+                <MudSelect T="ScriptJobErrorAction" @bind-Value=@Result.ErrorAction Label="Error Action" Variant="Variant.Filled" Margin="Margin.Dense">
+                    <MudSelectItem Value=@ScriptJobErrorAction.Continue />
+                    <MudSelectItem Value=@ScriptJobErrorAction.Cancel />
+                </MudSelect>
+            </div>
             <MudCheckBox @bind-Checked=@Result.ShouldRunJobNow Color="Color.Secondary" Style="width:500px">Run Now</MudCheckBox>
             @if (!Result.ShouldRunJobNow)
             {
@@ -48,7 +54,7 @@
     // Temp: in the future accept the device name/ip as a parameter
     private const string LocalhostDevice = "Localhost";
 
-    public RunScriptJobDialogResult Result { get; set; } = new(LocalhostDevice);
+    public RunScriptJobDialogResult Result { get; set; } = new(LocalhostDevice, ScriptJobErrorAction.Continue);
 
     internal override void Submit() => MudDialog?.Close(DialogResult.Ok(Result));
 }

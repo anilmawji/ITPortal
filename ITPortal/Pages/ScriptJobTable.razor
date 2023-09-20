@@ -1,0 +1,334 @@
+<<<<<<< HEAD:ITPortal/Pages/ScriptJobTable.razor
+﻿@using CommunityToolkit.Maui.Storage;
+@attribute [Route(PageRoute.ScriptJobs)]
+=======
+﻿@attribute [Route(PageRoute.ScriptJobs)]
+@attribute [Authorize]
+>>>>>>> master:ITPortal/Pages/ScriptJobs.razor
+
+@inject IScriptJobService ScriptJobService
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+
+<<<<<<< HEAD:ITPortal/Pages/ScriptJobTable.razor
+@*@attribute [Authorize]*@
+
+<style>
+    /* adjust table border and hide overflowing content */
+    .mud-table {
+        border-radius: 8px;
+        border: solid 1px #D2D2D2;
+        overflow: hidden;
+    }
+
+    /* correct table height and color */
+    .mud-table-toolbar {
+        --mud-internal-toolbar-height: 48px !important;
+    }
+</style>
+
+=======
+>>>>>>> master:ITPortal/Pages/ScriptJobs.razor
+<PageContainer Title="PowerShell Jobs">
+    <div class="table-container">
+        <MudTable T="ScriptJob" Items=@ScriptJobService.JobList.GetJobs().Values Dense="true" Hover="true" FixedHeader="true" FixedFooter="true"
+                  Filter="new Func<ScriptJob, bool>(FilterJobFunc)" Height="calc(100% - 90px - 10px)" OnRowClick=@(() => InvokeAsync(this.StateHasChanged))
+                  MultiSelection="true" @bind-SelectedItems=@selectedJobs>
+            <ToolBarContent>
+                <MudTextField @bind-Value=@_searchString Placeholder=@($"Search {ScriptJobService.JobList.GetJobs().Count} items...")
+                              Adornment="Adornment.Start" AdornmentIcon=@Icons.Material.Filled.Search IconSize="Size.Medium" Class="mt-0" />
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Name)">Name</MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Script.FileName)">Script</MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.State)">Status</MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Description)">Description</MudTableSortLabel>
+                </MudTh>
+                <MudTh Style="text-align:right">
+                    @if (selectedJobs.Count > 0)
+                    {
+                        <MudIconButton Icon=@Icons.Material.Filled.FileDownload aria-label="export"
+                                       Style="margin-right: 4px" OnClick=@DownloadSelectedJobsAsync />
+                    }
+                    <MudIconButton Icon=@Icons.Material.Filled.FileUpload aria-label="import" OnClick=@PickJobFileAsync />
+                    <MudIconButton Icon=@Icons.Material.Filled.Add aria-label="add" OnClick=@GoToNewJobPage />
+                </MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTh DataLabel="Name">
+                    @context.Name
+                </MudTh>
+                <MudTh DataLabel="script">
+                    @context.Script.FileName
+                </MudTh>
+                <MudTh DataLabel="status">
+                    <ScriptJobStateChipText Job=@context />
+                </MudTh>
+                <MudTh DataLabel="Description">
+                    @context.Description.NormalizeLength(40)
+                </MudTh>
+                <MudTh Style="text-align:right">
+                    @if (context.State != ScriptJobState.Running)
+                    {
+                        <MudIconButton Icon=@Icons.Material.Filled.PlayArrow aria-label="start"
+                                       Style="margin-right: 4px" OnClick="() => OpenRunJobDialog(context)" />
+                        <MudIconButton Icon=@Icons.Material.Filled.Edit aria-label="edit"
+                                       Style="margin-right: 4px" OnClick="() => GoToEditJobPage(context)" />
+                    }
+                    else
+                    {
+                        <MudIconButton Icon=@Icons.Material.Filled.Stop aria-label="stop"
+                                       Style="margin-right: 4px" OnClick="() => OpenCancelJobDialog(context)" />
+                        <MudIconButton Icon=@Icons.Material.Filled.EditOff aria-label="edit"
+                                       Style="margin-right: 4px" />
+                    }
+                    <MudIconButton Icon=@Icons.Material.Filled.Delete aria-label="delete"
+                                   OnClick="() => OpenDeleteJobDialog(context.Name)" />
+                </MudTh>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager PageSizeOptions=@s_pageSizeOptions />
+            </PagerContent>
+        </MudTable>
+    </div>
+</PageContainer>
+
+@code {
+    private static readonly DialogOptions s_dialogOptions = new() {
+        CloseButton = true,
+        DisableBackdropClick = true,
+        MaxWidth = MaxWidth.ExtraSmall
+    };
+    private static readonly DialogParameters<Dialog> s_deleteJobDialogParameters = new();
+    private static readonly DialogParameters<RunScriptJobDialog> s_runJobDialogParameters = new();
+    private static readonly DialogParameters<Dialog> s_cancelJobDialogParameters = new();
+    private static readonly int[] s_pageSizeOptions = { 10, 20, 30 };
+
+    private static readonly PickOptions s_filePickOptions = new PickOptions()
+    {
+        // PickerTitle is used by macOS but not Windows - unreliable for providing information to user
+        PickerTitle = "Please select a Job file",
+        FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
+        {
+            { DevicePlatform.WinUI, new[] { ".json" } },
+            { DevicePlatform.macOS, new[] { "json" } }
+        })
+    };
+
+    private string _searchString = "";
+    private HashSet<ScriptJob> selectedJobs = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            InitializeDialogParameters();
+            ScriptJobFileHelper.LoadSavedJobs(ScriptJobService.JobList);
+            ScriptJobFileHelper.LoadSavedJobResults(ScriptJobService.JobResultList);
+            this.StateHasChanged();
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private void InitializeDialogParameters()
+    {
+        s_deleteJobDialogParameters.Add(dialog => dialog.ContentText, "Are you sure you want to delete this job? This action cannot be undone.");
+        s_deleteJobDialogParameters.Add(dialog => dialog.SubmitButtonText, "Delete");
+        s_deleteJobDialogParameters.Add(dialog => dialog.Color, Color.Error);
+
+        s_runJobDialogParameters.Add(dialog => dialog.SubmitButtonText, "Done");
+        s_runJobDialogParameters.Add(dialog => dialog.Color, Color.Secondary);
+
+        s_cancelJobDialogParameters.Add(dialog => dialog.ContentText, "Are you sure you want to stop execution of this job?");
+        s_cancelJobDialogParameters.Add(dialog => dialog.SubmitButtonText, "Yes");
+        s_cancelJobDialogParameters.Add(dialog => dialog.CancelButtonText, "No");
+        s_cancelJobDialogParameters.Add(dialog => dialog.Color, Color.Secondary);
+    }
+
+    private void GoToNewJobPage()
+    {
+        NavigationManager.NavigateTo(PageRoute.CreateScriptJob);
+    }
+
+    private async Task DownloadSelectedJobsAsync()
+    {
+        FolderPickerResult folderResult = await FolderPicker.Default.PickAsync(CancellationToken.None);
+
+        if (!folderResult.IsSuccessful) return;
+
+        foreach (ScriptJob selectedJob in selectedJobs)
+        {
+            foreach ((string jobName, ScriptJob job) in ScriptJobService.JobList.GetJobs())
+            {
+                if (jobName == selectedJob.Name)
+                {
+                    string jsonFilePath = Path.Combine(folderResult.Folder.Path, jobName + ".json");
+
+                    ScriptJobFileHelper.TryCreateJobFile(selectedJob, jsonFilePath);
+                    break;
+                }
+            }
+        }
+    }
+
+    private async Task PickJobFileAsync()
+    {
+        FileResult fileResult = await FileHelper.PickFileAsync(s_filePickOptions);
+
+        if (fileResult == null) return;
+
+        ScriptJob job = ScriptJobFileHelper.LoadJobFromJsonFile(fileResult.FullPath, ScriptJobService.JobList);
+
+        if (job == null) return;
+
+        this.StateHasChanged();
+    }
+
+    private async Task OpenRunJobDialog(ScriptJob job)
+    {
+        IDialogReference dialog = DialogService.Show<RunScriptJobDialog>("Run Job", s_runJobDialogParameters, s_dialogOptions);
+        DialogResult dialogResult = await dialog.Result;
+
+        if (dialogResult.Canceled) return;
+
+        var dialogResultData = dialogResult.Data as RunScriptJobDialogResult;
+
+        ScriptJobResult jobResult = RunJob(
+            job, job.Script.NewScriptOutputList(),
+            dialogResultData.DeviceName,
+            dialogResultData.ShouldRunJobNow,
+            dialogResultData.ErrorAction,
+            dialogResultData.ShouldViewJobResult
+        );
+
+        if (dialogResultData.ShouldViewJobResult)
+        {
+            NavigationManager.NavigateTo(PageRoute.ScriptJobResultDetailsWithId(jobResult.Id));
+        }
+        else
+        {
+            this.StateHasChanged();
+        }
+    }
+
+    private ScriptJobResult RunJob(ScriptJob job, ScriptOutputList outputList, string deviceName,
+        bool runJobNow, ScriptJobErrorAction errorAction, bool refreshPage)
+    {
+        ScriptJobResult jobResult;
+
+        if (errorAction == ScriptJobErrorAction.Cancel)
+        {
+            CancelJobOnErrorOutputReceived(job, outputList);
+        }
+
+        if (runJobNow)
+        {
+            jobResult = ScriptJobService.RunJob(job, deviceName, outputList);
+        }
+        else
+        {
+            //TODO: Schedule job to run at _runDate instead
+            jobResult = ScriptJobService.RunJob(job, deviceName, outputList);
+        }
+
+        // This is executed when the job is finished running
+        jobResult.RunJobTask.ContinueWith((resultTask) =>
+        {
+            ScriptJobFileHelper.TryCreateJobResultFile(jobResult);
+
+            if (refreshPage)
+            {
+                InvokeAsync(this.StateHasChanged);
+            }
+            outputList.Dispose();
+        });
+
+        return jobResult;
+    }
+
+    private void CancelJobOnErrorOutputReceived(ScriptJob job, ScriptOutputList outputList)
+    {
+        outputList.OutputChanged += (object sender, ScriptOutputChangedEventArgs e) =>
+        {
+            if (e.StreamType == ScriptOutputStreamType.Error)
+            {
+                CancelJob(job);
+            }
+        };
+    }
+
+    private async Task OpenCancelJobDialog(ScriptJob job)
+    {
+        IDialogReference dialog = DialogService.Show<Dialog>("Confirm Job Cancellation", s_cancelJobDialogParameters, s_dialogOptions);
+        DialogResult dialogResult = await dialog.Result;
+
+        if (dialogResult.Canceled) return;
+
+        CancelJob(job);
+    }
+
+    private void GoToEditJobPage(ScriptJob job)
+    {
+        NavigationManager.NavigateTo(PageRoute.EditScriptJobWithName(job.Name));
+    }
+
+    private async Task OpenDeleteJobDialog(string jobName)
+    {
+        IDialogReference dialog = DialogService.Show<DeleteScriptJobDialog>("Confirm Job Deletion", s_deleteJobDialogParameters, s_dialogOptions);
+        DialogResult dialogResult = await dialog.Result;
+
+        if (dialogResult.Canceled) return;
+
+        var dialogResultData = dialogResult.Data as DeleteScriptJobDialogResult;
+        ScriptJob job = ScriptJobService.JobList.TryGetJob(jobName);
+
+        if (dialogResultData.ShouldDeleteJobResults && job != null)
+        {
+            DeleteJobResults(job);
+        }
+        DeleteJob(jobName);
+    }
+
+    private void CancelJob(ScriptJob job)
+    {
+        job.Cancel();
+
+        InvokeAsync(this.StateHasChanged);
+    }
+
+    private void DeleteJob(string jobName)
+    {
+        ScriptJobService.JobList.Remove(jobName);
+        ScriptJobFileHelper.TryDeleteJobFile(jobName);
+
+        InvokeAsync(this.StateHasChanged);
+    }
+
+    private void DeleteJobResults(ScriptJob job)
+    {
+        List<ScriptJobResult> results = ScriptJobService.JobResultList.Remove(job);
+
+        foreach (ScriptJobResult result in results)
+        {
+            ScriptJobFileHelper.TryDeleteJobResultFile(result.Id);
+        }
+    }
+
+    private bool FilterJobFunc(ScriptJob job) => DoFilterJobFunc(job, _searchString);
+
+    private bool DoFilterJobFunc(ScriptJob job, string searchString)
+    {
+        return string.IsNullOrWhiteSpace(searchString)
+                    || job.Name.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase)
+                    || job.Script.FileName.Contains(searchString, StringComparison.OrdinalIgnoreCase)
+                    || job.State.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase)
+                    || job.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase);
+    }
+}

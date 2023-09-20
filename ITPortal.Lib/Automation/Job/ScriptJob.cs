@@ -1,6 +1,6 @@
 ﻿using ITPortal.Lib.Automation.Output;
 using ITPortal.Lib.Automation.Script;
-using ITPortal.Lib.Utilities.Extensions;
+using ITPortal.Lib.Utilities;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -28,72 +28,40 @@ public sealed class ScriptJob : IDisposable
         CreationTime = creationTime;
     }
 
+    public ScriptJob(string name, string description, AutomationScript script) : this(name, description, script, DateTime.Now) { }
+
     public ScriptJob(string name, AutomationScript script) : this(name, string.Empty, script, DateTime.Now) { }
 
-    public async Task<ScriptExecutionState> Run(string deviceName, ScriptOutputList scriptOutput, string cancellationMessage)
+    // TODO: use runDate to determine when to run the job
+    public async Task<ScriptExecutionState> Run(string deviceName, ScriptOutputList outputList,
+        string cancellationMessage, DateTime runDate = default)
     {
-        SetState(ScriptJobState.Running);
-
-        ScriptExecutionState executionResult = await Script.InvokeAsync(
+        Task<ScriptExecutionState> runScript = Script.InvokeAsync(
             deviceName,
-            scriptOutput,
+            outputList,
             cancellationMessage,
             _cancellationTokenSource.Token
         );
+
+        SetState(ScriptJobState.Running);
+        ScriptExecutionState executionResult = await runScript.ConfigureAwait(false);
         SetState(ScriptJobState.Idle);
 
+        _cancellationTokenSource.Dispose();
         _cancellationTokenSource = new();
 
         return executionResult;
     }
 
-    public Task<ScriptExecutionState> Run(string deviceName, string cancellationMessage)
-    {
-        return Run(deviceName, Script.NewScriptOutputList(), cancellationMessage);
-    }
-
     public void Cancel()
     {
-        if (State == ScriptJobState.Running)
-        {
-            _cancellationTokenSource?.Cancel();
-        }
+        _cancellationTokenSource?.Cancel();
     }
 
     private void SetState(ScriptJobState state)
     {
         State = state;
         StateChanged?.Invoke(this, State);
-    }
-
-    public static ScriptJob? TryLoadFromJsonFile(string filePath)
-    {
-        try
-        {
-            string jsonText = File.ReadAllText(filePath);
-            ScriptJob? job = JsonSerializer.Deserialize(jsonText, ScriptJobContext.Default.ScriptJob);
-
-            if (job == null)
-            {
-                return null;
-            }
-            string fileName = Path.GetFileNameWithoutExtension(filePath);
-
-            if (fileName != job.Name)
-            {
-                return null;
-            }
-            if (job.Script.FilePath != null)
-            {
-                job.Script.LoadContent(job.Script.FilePath);
-            }
-            return job;
-        }
-        catch (Exception e)
-        {
-            System.Diagnostics.Debug.WriteLine(e.Message);
-            return null;
-        }
     }
 
     public string ToJsonString()

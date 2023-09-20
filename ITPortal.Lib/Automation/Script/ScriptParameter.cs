@@ -1,4 +1,4 @@
-﻿using ITPortal.Lib.Utilities.Extensions;
+﻿using ITPortal.Lib.Utilities;
 using System.Management.Automation;
 using System.Runtime.Serialization;
 using System.Text.Json;

@@ -1,15 +1,25 @@
-﻿using ITPortal.Lib.Automation.Job.Result;
-
-namespace ITPortal.Lib.Automation.Job;
+﻿namespace ITPortal.Lib.Automation.Job;
 
 public class ScriptJobList
 {
-    private readonly Dictionary<string, ScriptJob> Jobs = new();
+    public bool LoadedFromJson { get; private set; }
 
+    private readonly Dictionary<string, ScriptJob> Jobs = new();
 
     public void Add(ScriptJob job)
     {
         Jobs.Add(job.Name, job);
+    }
+
+    public bool TryAdd(ScriptJob job)
+    {
+        if (!HasJob(job.Name))
+        {
+            Jobs.Add(job.Name, job);
+
+            return true;
+        }
+        return false;
     }
 
     public bool Remove(string jobName)
@@ -40,27 +50,6 @@ public class ScriptJobList
             return true;
         }
         return false;
-    }
-
-    public void LoadScriptJobs(string folderPath)
-    {
-        DirectoryInfo info = Directory.CreateDirectory(folderPath);
-        // Folder has just been created; no jobs to load
-        if (!info.Exists) return;
-
-        IEnumerable<string> filePaths = Directory.EnumerateFiles(folderPath);
-
-        foreach (string path in filePaths)
-        {
-            if (HasJob(Path.GetFileNameWithoutExtension(path))) continue;
-
-            ScriptJob? job = ScriptJob.TryLoadFromJsonFile(path);
-
-            if (job != null)
-            {
-                Add(job);
-            }
-        }
     }
 
     public bool HasJob(string jobName)

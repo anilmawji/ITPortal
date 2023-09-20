@@ -1,7 +1,7 @@
 ﻿using System.Management.Automation;
 using System.Text.Json;
 
-namespace ITPortal.Lib.Utilities.Extensions;
+namespace ITPortal.Lib.Utilities;
 
 public static class JsonElementExtensions
 {

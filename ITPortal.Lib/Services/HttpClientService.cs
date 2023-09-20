@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace ITPortal.Lib.Services.Core;
+namespace ITPortal.Lib.Services;
 
 public class HttpClientService : IHttpClientService
 {

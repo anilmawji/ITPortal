@@ -2,7 +2,7 @@
 using Microsoft.Identity.Client;
 using System.Net.Http.Headers;
 
-namespace ITPortal.Lib.Services.Authentication.External;
+namespace ITPortal.Lib.Services.Authentication;
 
 public sealed class MsalAuthenticationService : IAuthenticationService
 {

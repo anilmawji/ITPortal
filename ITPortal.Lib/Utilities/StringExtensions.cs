@@ -1,4 +1,4 @@
-﻿namespace ITPortal.Lib.Utilities.Extensions;
+﻿namespace ITPortal.Lib.Utilities;
 
 public static class StringExtensions
 {
@@ -38,8 +38,10 @@ public static class StringExtensions
         return input.Length <= maxLength ? input : input.Substring(0, maxLength);
     }
 
-    public static bool ContainsSpecialChars(this string input)
+    public static bool IsValidFileName(this string input)
     {
-        return input.Any(ch => !char.IsLetterOrDigit(ch));
+        char[] invalidChars = Path.GetInvalidFileNameChars();
+
+        return !input.Any(ch => invalidChars.Contains(ch));
     }
 }

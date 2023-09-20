@@ -1,6 +1,7 @@
 ﻿using ITPortal.Lib.Automation.Output;
 using ITPortal.Lib.Automation.Script;
-using ITPortal.Lib.Utilities.Extensions;
+using ITPortal.Lib.Utilities;
+using System.Management.Automation;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -50,30 +51,28 @@ public sealed class ScriptJobResult : IDisposable
         ExecutionResultReceived?.Invoke(this, newState);
     }
 
-    public static ScriptJobResult? TryLoadFromJsonFile(string filePath)
+    public static ScriptJobResult LoadFromJsonFile(string filePath)
     {
-        try
+        if (!File.Exists(filePath))
         {
-            string jsonText = File.ReadAllText(filePath);
-            ScriptJobResult? jobResult = JsonSerializer.Deserialize(jsonText, ScriptJobResultContext.Default.ScriptJobResult);
-
-            if (jobResult == null)
-            {
-                return null;
-            }
-            string fileName = Path.GetFileNameWithoutExtension(filePath);
-
-            if (fileName != jobResult.Id.ToString())
-            {
-                return null;
-            }
-            return jobResult;
+            throw new FileNotFoundException("Requested job result file does not exist: " + filePath);
         }
-        catch (Exception e)
+        string jsonText = File.ReadAllText(filePath);
+
+        ScriptJobResult? result = JsonSerializer.Deserialize(jsonText, ScriptJobResultContext.Default.ScriptJobResult);
+
+        if (result == null)
         {
-            System.Diagnostics.Debug.WriteLine(e.Message);
-            return null;
+            throw new InvalidDataException("Failed to deserialize job result file: " + filePath);
         }
+
+        string fileName = Path.GetFileNameWithoutExtension(filePath);
+
+        if (fileName != result?.Id.ToString())
+        {
+            throw new InvalidDataException("Failed to read job result file - file name does not match job id: " + filePath);
+        }
+        return result;
     }
 
     public string ToJsonString()
