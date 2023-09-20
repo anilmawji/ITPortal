@@ -1,12 +1,11 @@
 ﻿@attribute [Route(PageRoute.Login)]
+@attribute [AllowAnonymous]
 
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.Authorization
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
-
-@attribute [AllowAnonymous]
 
 <div class="background login-background">
     <LoginBox LogoPath="images/arcurve_logo.png">
@@ -24,7 +23,7 @@
 {
     public async Task PromptLogin()
     {
-        ExternalAuthStateProvider provider = (ExternalAuthStateProvider)AuthenticationStateProvider;
+        var provider = (ExternalAuthStateProvider)AuthenticationStateProvider;
 
         await provider.LogInAsync();
 
