@@ -1,17 +1,11 @@
-<<<<<<< HEAD:ITPortal/Pages/ScriptJobTable.razor
 ﻿@using CommunityToolkit.Maui.Storage;
+
 @attribute [Route(PageRoute.ScriptJobs)]
-=======
-﻿@attribute [Route(PageRoute.ScriptJobs)]
-@attribute [Authorize]
->>>>>>> master:ITPortal/Pages/ScriptJobs.razor
+@* @attribute [Authorize] *@
 
 @inject IScriptJobService ScriptJobService
 @inject IDialogService DialogService
 @inject NavigationManager NavigationManager
-
-<<<<<<< HEAD:ITPortal/Pages/ScriptJobTable.razor
-@*@attribute [Authorize]*@
 
 <style>
     /* adjust table border and hide overflowing content */
@@ -27,8 +21,6 @@
     }
 </style>
 
-=======
->>>>>>> master:ITPortal/Pages/ScriptJobs.razor
 <PageContainer Title="PowerShell Jobs">
     <div class="table-container">
         <MudTable T="ScriptJob" Items=@ScriptJobService.JobList.GetJobs().Values Dense="true" Hover="true" FixedHeader="true" FixedFooter="true"

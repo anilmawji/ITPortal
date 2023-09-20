@@ -1,8 +1,7 @@
-﻿@attribute [Route(PageRoute.Login)]
-@attribute [AllowAnonymous]
+﻿@using Microsoft.AspNetCore.Components.Authorization
 
-@using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.Authorization
+@attribute [Route(PageRoute.Login)]
+@attribute [AllowAnonymous]
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
