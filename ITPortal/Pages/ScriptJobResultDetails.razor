@@ -22,15 +22,9 @@
     .mud-tab.mud-tab-active .mud-badge {
         background-color: #0078D4 !important;
     }
-
-    .scroll2 {
-        scrollbar-width: auto;
-        overflow-y: scroll;
-        overflow-x: hidden;
-    }
 </style>
 
-<PageContainer Title="PowerShell Job Results" NestedTitle=@($"Result {Result.Id}") PreviousPage="/job-results">
+<PageContainer Title="PowerShell Job Results" NestedTitle=@($"Result {Result.Id}") PreviousPage="/job-results" Description="View execution details of a job">
     <div class="script-title">
         <p>Script: @Result.ScriptName</p>
         <div class="title-chip">

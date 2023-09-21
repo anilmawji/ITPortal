@@ -1,6 +1,6 @@
-﻿/* Title for a page in the portal */
-h1.title-container {
+﻿.title-container {
     margin-bottom: 40px;
+    display: inline-flex;
 }
 
 .main-content-container {
@@ -9,4 +9,9 @@ h1.title-container {
 
 .underlined {
     text-decoration: underline;
+}
+
+.tooltip {
+    margin-top: 4px;
+    margin-left: 6px;
 }

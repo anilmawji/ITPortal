@@ -20,10 +20,10 @@
     }
 </style>
 
-<PageContainer Title="PowerShell Job Results">
+<PageContainer Title="PowerShell Job Results" Description="View job execution results">
     <div class="table-container">
         <MudTable T="ScriptJobResult" Items=@ScriptJobService.JobResultList.GetResults().Values Dense="true" Hover="true" FixedHeader="true"
-                  Filter="new Func<ScriptJobResult, bool>(FilterJobResultFunc)" OnRowClick=@GoToJobResultsPage Height="calc(100% - 90px - 10px)">
+                  Filter="new Func<ScriptJobResult, bool>(FilterJobResultFunc)" OnRowClick=@TryGoToJobResultDetailsPage Height="calc(100% - 90px - 10px)">
             <ToolBarContent>
                 <MudTextField @bind-Value=@_searchString Placeholder=@($"Search {ScriptJobService.JobResultList.GetResults().Count} items...")
                               Adornment="Adornment.Start" AdornmentIcon=@Icons.Material.Filled.Search IconSize="Size.Medium" Class="mt-0"></MudTextField>
@@ -90,9 +90,12 @@
         InvokeAsync(this.StateHasChanged);
     }
 
-    private void GoToJobResultsPage(TableRowClickEventArgs<ScriptJobResult> eventArgs)
+    private void TryGoToJobResultDetailsPage(TableRowClickEventArgs<ScriptJobResult> eventArgs)
     {
         int resultId = eventArgs.Item.Id;
+
+        // TODO: toast notification of result not found error
+        if (!ScriptJobService.JobResultList.HasResult(resultId)) return;
 
         NavigationManager.NavigateTo(PageRoute.ScriptJobResultDetailsWithId(resultId));
     }

@@ -1,25 +1,33 @@
 ﻿<div class="main-content-container">
-    <h1 class="title-container">
-        @if (NestedTitle != null)
+    <div class="title-container">
+        <h1>
+            @if (NestedTitle != null)
+            {
+                <a class="underlined" href=@PreviousPage>@Title</a>
+                <span> > @NestedTitle</span>
+            }
+            else
+            {
+                <span>@Title</span>
+            }
+        </h1>
+        @if (Description != null)
         {
-            <a class="underlined" href=@PreviousPage>@Title</a>
-            <span> > @NestedTitle</span>
-        }
-        else
-        {
-            <span>
-                @Title
-                <MudTooltip Delay="500" Duration="300" Text="Testing testing testing 1234" Arrow="true">
+            <div class="tooltip">
+                <MudTooltip Delay="500" Duration="300" Text=@Description Arrow="true">
                     <MudIcon Icon="@Icons.Material.Outlined.Info"></MudIcon>
                 </MudTooltip>
-            </span>
+            </div>
         }
-    </h1>
+    </div>
     @ChildContent
 </div>
 
 
 @code {
+    [Parameter, EditorRequired]
+    public RenderFragment ChildContent { get; set; } = null!;
+
     [Parameter]
     public string? Title { get; set; }
 
@@ -29,6 +37,6 @@
     [Parameter]
     public string? NestedTitle { get; set; }
 
-    [Parameter, EditorRequired]
-    public RenderFragment ChildContent { get; set; } = null!;
+    [Parameter]
+    public string? Description { get; set; }
 }

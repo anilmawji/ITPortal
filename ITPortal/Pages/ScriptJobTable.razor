@@ -25,7 +25,7 @@
     }
 </style>
 
-<PageContainer Title="PowerShell Jobs">
+<PageContainer Title="PowerShell Jobs" Description="Track and execute PowerShell scripts">
     <div class="table-container">
         <MudTable T="ScriptJob" Items=@ScriptJobService.JobList.GetJobs().Values Dense="true" Hover="true" FixedHeader="true" FixedFooter="true"
                   Filter="new Func<ScriptJob, bool>(FilterJobFunc)" Height="calc(100% - 90px - 10px)" OnRowClick=@(() => InvokeAsync(this.StateHasChanged))
@@ -51,14 +51,14 @@
                     @if (selectedJobs.Count > 0)
                     {
                         <MudTooltip Delay="500" Text="Download selected jobs">
-                            <MudIconButton Icon=@Icons.Material.Filled.FileDownload OnClick=@DownloadSelectedJobsAsync Style="margin-right: 8px" />
+                            <MudIconButton Icon=@Icons.Material.Filled.FileDownload OnClick=@DownloadSelectedJobsAsync Style="margin-right: 6px" />
                         </MudTooltip>
                     }
                     <MudTooltip Delay="500" Text="Import job">
-                        <MudIconButton Icon=@Icons.Material.Filled.FileUpload OnClick=@PickJobFileAsync Style="margin-right: 8px" />
+                        <MudIconButton Icon=@Icons.Material.Filled.FileUpload OnClick=@PickJobFileAsync Style="margin-right: 4px" />
                     </MudTooltip>
                     <MudTooltip Delay="500" Text="New job">
-                        <MudFab StartIcon="@Icons.Material.Filled.Add" Color="Color.Secondary" Size="Size.Small" OnClick=@GoToNewJobPage />
+                        <MudFab StartIcon="@Icons.Material.Filled.Add" Color="Color.Secondary" Size="Size.Small" Style="margin-right: 4px" OnClick=@GoToNewJobPage />
                     </MudTooltip>
                 </MudTh>
             </HeaderContent>
