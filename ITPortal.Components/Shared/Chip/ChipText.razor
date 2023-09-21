@@ -1,7 +1,7 @@
 ﻿<div class="chip">
     @*Colors must be given in hex in order to add transparency ('21' = 13% transparence)*@
     <div class="chip-text" style="--chip-color:@Color; --chip-background-color:@(Color + "21")">
-        <span>@Text</span>
+        <span>@ChildContent</span>
     </div>
 </div>
 
@@ -9,6 +9,6 @@
     [Parameter]
     public string Color { get; set; } = "#747474";
 
-    [Parameter]
-    public string Text { get; set; } = string.Empty;
+    [Parameter, EditorRequired]
+    public RenderFragment ChildContent { get; set; } = null!;
 }

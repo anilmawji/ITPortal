@@ -1,6 +1,8 @@
 ﻿@implements IDisposable
 
-<ChipText Color=@Result.ExecutionState.GetColor() Text=@Result.ExecutionState.ToStringFast() />
+<ChipText Color=@Result.ExecutionState.GetColor()>
+    @Result.ExecutionState.ToStringFast()
+</ChipText>
 
 @code {
     [Parameter, EditorRequired]
