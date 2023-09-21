@@ -7,7 +7,12 @@
         }
         else
         {
-            <span>@Title</span>
+            <span>
+                @Title
+                <MudTooltip Delay="500" Duration="300" Text="Testing testing testing 1234" Arrow="true">
+                    <MudIcon Icon="@Icons.Material.Outlined.Info"></MudIcon>
+                </MudTooltip>
+            </span>
         }
     </h1>
     @ChildContent

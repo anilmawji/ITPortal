@@ -50,11 +50,16 @@
                 <MudTh Style="text-align:right">
                     @if (selectedJobs.Count > 0)
                     {
-                        <MudIconButton Icon=@Icons.Material.Filled.FileDownload aria-label="export"
-                                       Style=@($"margin-right: {IconPadding}px") OnClick=@DownloadSelectedJobsAsync />
+                        <MudTooltip Delay="500" Text="Download selected jobs">
+                            <MudIconButton Icon=@Icons.Material.Filled.FileDownload OnClick=@DownloadSelectedJobsAsync Style="margin-right: 8px" />
+                        </MudTooltip>
                     }
-                    <MudIconButton Icon=@Icons.Material.Filled.FileUpload aria-label="import" OnClick=@PickJobFileAsync />
-                    <MudIconButton Icon=@Icons.Material.Filled.Add aria-label="add" OnClick=@GoToNewJobPage />
+                    <MudTooltip Delay="500" Text="Import job">
+                        <MudIconButton Icon=@Icons.Material.Filled.FileUpload OnClick=@PickJobFileAsync Style="margin-right: 8px" />
+                    </MudTooltip>
+                    <MudTooltip Delay="500" Text="New job">
+                        <MudFab StartIcon="@Icons.Material.Filled.Add" Color="Color.Secondary" Size="Size.Small" OnClick=@GoToNewJobPage />
+                    </MudTooltip>
                 </MudTh>
             </HeaderContent>
             <RowTemplate>
@@ -73,20 +78,15 @@
                 <MudTh Style="text-align:right">
                     @if (context.State != ScriptJobState.Running)
                     {
-                        <MudIconButton Icon=@Icons.Material.Filled.PlayArrow aria-label="start"
-                                       Style=@($"margin-right: {IconPadding}px") OnClick="() => OpenRunJobDialog(context)" />
-                        <MudIconButton Icon=@Icons.Material.Filled.Edit aria-label="edit"
-                                       Style=@($"margin-right: {IconPadding}px") OnClick="() => GoToEditJobPage(context)" />
+                        <MudIconButton Icon=@Icons.Material.Filled.PlayArrow OnClick="() => OpenRunJobDialog(context)" Style="margin-right: 4px" />
+                        <MudIconButton Icon=@Icons.Material.Filled.Edit OnClick="() => GoToEditJobPage(context)" Style="margin-right: 4px" />
                     }
                     else
                     {
-                        <MudIconButton Icon=@Icons.Material.Filled.Stop aria-label="stop"
-                                       Style=@($"margin-right: {IconPadding}px") OnClick="() => OpenCancelJobDialog(context)" />
-                        <MudIconButton Icon=@Icons.Material.Filled.EditOff aria-label="edit"
-                                       Style=@($"margin-right: {IconPadding}px") />
+                        <MudIconButton Icon=@Icons.Material.Filled.Stop OnClick="() => OpenCancelJobDialog(context)" Style="margin-right: 4px" />
+                        <MudIconButton Icon=@Icons.Material.Filled.EditOff Style="margin-right: 4px" />
                     }
-                    <MudIconButton Icon=@Icons.Material.Filled.Delete aria-label="delete"
-                                   OnClick="() => OpenDeleteJobDialog(context.Name)" />
+                    <MudIconButton Icon=@Icons.Material.Filled.Delete OnClick="() => OpenDeleteJobDialog(context.Name)" />
                 </MudTh>
             </RowTemplate>
             <PagerContent>
@@ -97,8 +97,6 @@
 </PageContainer>
 
 @code {
-    private const int IconPadding = 4;
-
     private static readonly DialogOptions s_dialogOptions = new() {
         CloseButton = true,
         DisableBackdropClick = true,
