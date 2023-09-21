@@ -1,20 +1,50 @@
-﻿<div class="scroll output-container">
-    @if (OutputList != null)
-    {
-        @for (int i = 0; i < OutputList.Count; i++)
-        {
-            ScriptOutputMessage message = OutputList.ElementAt(i);
+﻿@implements IDisposable
 
-            <div class="output-message" style=@(message.StreamType != ScriptOutputStreamType.Standard ? $"color:{message.StreamType.GetColor()}" : "")>
-                <MudText>
-                    @(message.Data)
-                </MudText>
-            </div>
-        }
+<div class="scroll output-container">
+    @for (int i = 0; i < _messages?.Count; i++)
+    {
+        ScriptOutputMessage message = _messages.ElementAt(i);
+
+        <div class="output-message" style=@GetMessageStyle(message)>
+            @(message.Data)
+        </div>
     }
 </div>
 
 @code {
     [Parameter, EditorRequired]
-    public IReadOnlyList<ScriptOutputMessage> OutputList { get; set; } = null!;
+    public ScriptOutputList OutputList { get; set; } = null!;
+
+    [Parameter]
+    public ScriptOutputStreamType? StreamType { get; set; }
+
+    [Parameter]
+    public Action? OnOutputAdded { get; set; }
+
+    private IReadOnlyList<ScriptOutputMessage>? _messages;
+
+    protected override void OnInitialized()
+    {
+        _messages = StreamType != null
+            ? OutputList.GetMessagesFilteredByStream((ScriptOutputStreamType)StreamType)
+            : OutputList.GetMessages();
+
+        OutputList.OutputChanged += OnOutputChanged;
+    }
+
+    private void OnOutputChanged(object? sender, ScriptOutputChangedEventArgs args)
+    {
+        OnOutputAdded?.Invoke();
+        InvokeAsync(this.StateHasChanged);
+    }
+
+    private string GetMessageStyle(ScriptOutputMessage message)
+    {
+        return message.StreamType != ScriptOutputStreamType.Standard ? $"color:{message.StreamType.GetColor()}" : "";
+    }
+
+    public void Dispose()
+    {
+        OutputList.OutputChanged -= OnOutputChanged;
+    }
 }

@@ -3,6 +3,10 @@
 @attribute [Route(PageRoute.ScriptJobs)]
 @* @attribute [Authorize] *@
 
+@using Microsoft.JSInterop;
+
+@inject IJSRuntime JSRuntime
+
 @inject IScriptJobService ScriptJobService
 @inject IDialogService DialogService
 @inject NavigationManager NavigationManager

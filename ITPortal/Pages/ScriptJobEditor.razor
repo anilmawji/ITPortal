@@ -53,7 +53,17 @@
         @if (_job.Script.IsContentLoaded())
         {
             <PageSection Title="Parameters">
-                <ScriptParameterGroup Script=@_job.Script/>
+                @if (_job.Script.Parameters.Any())
+                {
+                    @foreach (ScriptParameter parameter in _job.Script.Parameters)
+                    {
+                        <ScriptParameterView Parameter=@parameter />
+                    }
+                }
+                else
+                {
+                    <p>This script does not accept any parameters.</p>
+                }
             </PageSection>
         }
 
