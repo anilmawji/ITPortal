@@ -13,9 +13,11 @@
 html {
     height: 100%; /* fallback CSS for IE 4-6 and older browsers. note: without this setting, body below cannot achieve 100% height. */
     height: 100vh; /* overrides 100% height in modern HTML5 browsers and uses the viewport's height. only works in modern HTML5 browsers */
+    scroll-behavior: smooth !important;
 }
 
 body {
+    scroll-behavior: smooth !important;
     width: auto; /* allows content to grow beyond the page without overflow */
     height: auto; /* allows content to grow beyond the page without overflow */
     min-height: 100%; /* starts web page with 100% height. Fallback for IE 4-6 and older browsers */

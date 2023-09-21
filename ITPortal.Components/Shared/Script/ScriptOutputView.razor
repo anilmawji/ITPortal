@@ -1,6 +1,10 @@
-﻿@implements IDisposable
+﻿@using Microsoft.JSInterop
 
-<div class="scroll output-container">
+@implements IDisposable
+
+@inject IJSRuntime JSRuntime
+
+<div class="scroll" id="output-container">
     @for (int i = 0; i < _messages?.Count; i++)
     {
         ScriptOutputMessage message = _messages.ElementAt(i);
@@ -18,9 +22,6 @@
     [Parameter]
     public ScriptOutputStreamType? StreamType { get; set; }
 
-    [Parameter]
-    public Action? OnOutputAdded { get; set; }
-
     private IReadOnlyList<ScriptOutputMessage>? _messages;
 
     protected override void OnInitialized()
@@ -34,13 +35,14 @@
 
     private void OnOutputChanged(object? sender, ScriptOutputChangedEventArgs args)
     {
-        OnOutputAdded?.Invoke();
-        InvokeAsync(this.StateHasChanged);
+        JSRuntime.InvokeVoidAsync("scrollToBottom", "output-container");
     }
 
     private string GetMessageStyle(ScriptOutputMessage message)
     {
-        return message.StreamType != ScriptOutputStreamType.Standard ? $"color:{message.StreamType.GetColor()}" : "";
+        return message != null && message.StreamType != ScriptOutputStreamType.Standard
+                    ? $"color:{message.StreamType.GetColor()}"
+                    : string.Empty;
     }
 
     public void Dispose()

@@ -1,10 +1,7 @@
-﻿@using Microsoft.JSInterop
-
-@attribute [Route(PageRoute.ScriptJobResultDetails)]
+﻿@attribute [Route(PageRoute.ScriptJobResultDetails)]
 @* @attribute [Authorize] *@
 
 @inject NavigationManager NavigationManager
-@inject IJSRuntime JSRuntime
 
 @inherits ScriptJobResultBase
 
@@ -24,6 +21,12 @@
 
     .mud-tab.mud-tab-active .mud-badge {
         background-color: #0078D4 !important;
+    }
+
+    .scroll2 {
+        scrollbar-width: auto;
+        overflow-y: scroll;
+        overflow-x: hidden;
     }
 </style>
 
@@ -73,7 +76,6 @@
             </MudTabPanel>
         }
     </MudTabs>
-@*     <ScriptOutputGroup ScriptOutput=@Result.ScriptOutput @ref=@OutputGroup /> *@
 </PageContainer>
 
 @code {
@@ -99,7 +101,6 @@
         {
             Result.ScriptOutput.OutputChanged += OnOutputChanged;
         }
-        JSRuntime.InvokeVoidAsync("scrollToBottom");
     }
 
     private void OnOutputChanged(object sender, ScriptOutputChangedEventArgs _)

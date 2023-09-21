@@ -98,7 +98,7 @@ public sealed class PowerShellScript : AutomationScript
         {
             outputList.Add(cancellationMessage, ScriptOutputStreamType.Warning);
 
-            return shell.HadErrors || outputList.HasErrorMessages() ? ScriptExecutionState.Error : ScriptExecutionState.Stopped;
+            return ScriptExecutionState.Stopped;
         }
         catch (PipelineStoppedException e)
         {
