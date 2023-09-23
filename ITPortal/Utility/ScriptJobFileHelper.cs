@@ -1,11 +1,10 @@
 ﻿using ITPortal.Lib.Automation.Job;
-using ITPortal.Lib.Automation.Job.Result;
 using ITPortal.Lib.Utility;
 using System.Text.Json;
 
 namespace ITPortal.Utility;
 
-public class ScriptJobFileHelper
+public static class ScriptJobFileHelper
 {
     private static readonly string JobsPath = Path.Combine(FileSystem.Current.AppDataDirectory, "jobs");
     private static readonly string JobResultsPath = Path.Combine(FileSystem.Current.AppDataDirectory, "job_results");

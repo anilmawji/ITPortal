@@ -1,4 +1,4 @@
-﻿using ITPortal.Lib.Automation.Job.Result;
+﻿using ITPortal.Lib.Automation.Job;
 using ITPortal.Utility;
 using MudBlazor;
 

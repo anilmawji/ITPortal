@@ -1,4 +1,9 @@
-﻿@attribute [Route(PageRoute.ScriptJobResultDetails)]
+﻿@using ITPortal.Models
+@using ITPortal.Components.Shared.Script
+@using ITPortal.Lib.Automation.Script
+@using ITPortal.Lib.Automation.Output
+
+@attribute [Route(PageRoute.ScriptJobResultDetails)]
 @* @attribute [Authorize] *@
 
 @inject NavigationManager NavigationManager
@@ -27,7 +32,7 @@
 <PageContainer Title="PowerShell Job Results" NestedTitle=@($"Result {Result.Id}") PreviousPage="/job-results" Description="View execution details of a job">
     <div class="script-title">
         <p>Script: @Result.ScriptName</p>
-        <ScriptExecutionStateChipText Result=@Result OnResultReceived=@(() => InvokeAsync(this.StateHasChanged))/>
+        <ScriptExecutionStateChip Result=@Result OnResultReceived=@(() => InvokeAsync(this.StateHasChanged))/>
     </div>
     <div class="section">
         <p>Job: @Result.JobName</p>
@@ -43,13 +48,13 @@
     <div class="section">
         <MudGrid Spacing="2">
             <MudItem>
-                <MudButton @onclick=@TryCancelJob Variant="Variant.Filled" Color="Color.Secondary"
+                <MudButton OnClick=@TryCancelJob Variant="Variant.Filled" Color="Color.Secondary"
                            Style="color:white" Disabled=@(Job == null || Result.ExecutionState != ScriptExecutionState.Running)>
                     <MudText>Cancel</MudText>
                 </MudButton>
             </MudItem>
             <MudItem>
-                <MudButton @onclick=@GoToEditJob Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" Disabled=@(Job == null)>
+                <MudButton OnClick=@GoToEditJob Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" Disabled=@(Job == null)>
                     <MudText>Edit Job</MudText>
                 </MudButton>
             </MudItem>

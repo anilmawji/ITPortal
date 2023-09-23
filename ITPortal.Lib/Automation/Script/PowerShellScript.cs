@@ -1,5 +1,4 @@
 ﻿using ITPortal.Lib.Automation.Output;
-using ITPortal.Lib.Automation.Script.Parameter;
 using System.Management.Automation;
 using System.Management.Automation.Language;
 using System.Management.Automation.Runspaces;

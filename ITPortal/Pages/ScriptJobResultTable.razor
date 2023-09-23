@@ -1,4 +1,8 @@
-﻿@attribute [Route(PageRoute.ScriptJobResults)]
+﻿@using ITPortal.Lib.Services
+@using ITPortal.Lib.Automation
+@using ITPortal.Lib.Automation.Job
+
+@attribute [Route(PageRoute.ScriptJobResults)]
 @* @attribute [Authorize] *@
 
 @inject IScriptJobService ScriptJobService
@@ -48,7 +52,7 @@
                 <MudTh DataLabel="Script">@context.ScriptName</MudTh>
                 <MudTh DataLabel="Device">@context.DeviceName</MudTh>
                 <MudTh DataLabel="Status">
-                    <ScriptExecutionStateChipText Result=@context />
+                    <ScriptExecutionStateChip Result=@context />
                 </MudTh>
                 <MudTh DataLabel="ExecutionTime">@context.ExecutionTime</MudTh>
             </RowTemplate>

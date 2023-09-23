@@ -1,6 +1,6 @@
-﻿using ITPortal.Lib.Automation.Job.Result;
+﻿using Microsoft.AspNetCore.Components;
 using ITPortal.Lib.Services;
-using Microsoft.AspNetCore.Components;
+using ITPortal.Lib.Automation.Job;
 
 namespace ITPortal.Models;
 

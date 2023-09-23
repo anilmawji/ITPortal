@@ -5,7 +5,7 @@ using Windows.Storage.Pickers;
 
 namespace ITPortal.Utility;
 
-public sealed class FileHelper
+public static class FileHelper
 {
     public static async Task<FileResult> PickFileAsync(PickOptions options)
     {

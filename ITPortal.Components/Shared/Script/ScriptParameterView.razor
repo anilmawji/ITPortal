@@ -1,4 +1,6 @@
-﻿@* Cannot use two-way binding since Parameter.Value is an 'object' that has its type assigned at runtime *@
+﻿@using ITPortal.Lib.Automation.Script
+
+@* Cannot use two-way binding since Parameter.Value is an 'object' that has its type assigned at runtime *@
 @if (ScriptParameter.IsType(typeof(string)))
 {
     <div class="input-line">
@@ -84,32 +86,6 @@ else
 }
 
 @code {
-    private static readonly string[] s_extendedInputFieldTriggers = { "body", "description", "message" };
-
-    private const char Delimiter = ' ';
-    private const int ChipsMaxWidth = 80;
-
     [Parameter, EditorRequired]
     public ScriptParameter ScriptParameter { get; set; } = null!;
-
-    private string ParameterName = string.Empty;
-    private string RequiredError = string.Empty;
-
-    protected override void OnInitialized()
-    {
-        ParameterName = ScriptParameter.Name.FirstCharToUpper();
-        RequiredError = ParameterName + " is a required field";
-    }
-
-    // Provide a larger input field depending on the name of the parameter
-    private int GetNumLinesInTextField()
-    {
-        return s_extendedInputFieldTriggers.Contains(ScriptParameter.Name) ? 10 : 1;
-    }
-
-    private IEnumerable<string> ValidateArray(List<string> parameterArray)
-    {
-        //if (parameterArray.Count == 0 && )
-        yield return "aaa";
-    }
 }

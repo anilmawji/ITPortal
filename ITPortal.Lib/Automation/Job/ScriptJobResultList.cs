@@ -1,4 +1,4 @@
-﻿namespace ITPortal.Lib.Automation.Job.Result;
+﻿namespace ITPortal.Lib.Automation.Job;
 
 public sealed class ScriptJobResultList
 {

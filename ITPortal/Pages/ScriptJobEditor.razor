@@ -1,4 +1,8 @@
-﻿@attribute [Route(PageRoute.CreateScriptJob)]
+﻿@using ITPortal.Lib.Services
+@using ITPortal.Lib.Automation.Script
+@using ITPortal.Components.Shared.Script
+
+@attribute [Route(PageRoute.CreateScriptJob)]
 @attribute [Route(PageRoute.EditScriptJob)]
 @*@attribute [Authorize]*@
 
@@ -21,7 +25,7 @@
         <PageSection Title="Script">
             <div class="input-line">
                 <FilePickerContainer FileName=@_job.Script.FileName>
-                    <MudButton @onclick=@PickAndLoadScript Variant="Variant.Filled" Size="Size.Small">
+                    <MudButton OnClick=@PickAndLoadScript Variant="Variant.Filled" Size="Size.Small">
                         <MudText>Choose File</MudText>
                     </MudButton>
                 </FilePickerContainer>
@@ -32,17 +36,17 @@
                 <ScriptContentView Script=@_job.Script/>
                 <MudGrid Spacing="2">
                     <MudItem>
-                        <MudButton @onclick=@RefreshScript Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
+                        <MudButton OnClick=@RefreshScript Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
                             <MudText>Refresh</MudText>
                         </MudButton>
                     </MudItem>
                     <MudItem>
-                        <MudButton @onclick=@EditScript Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
+                        <MudButton OnClick=@EditScript Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
                             <MudText>Edit</MudText>
                         </MudButton>
                     </MudItem>
                     <MudItem>
-                        <MudButton @onclick=@RemoveScript Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
+                        <MudButton OnClick=@RemoveScript Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
                             <MudText>Remove</MudText>
                         </MudButton>
                     </MudItem>
@@ -72,12 +76,12 @@
             <div class="create-job-buttons">
                 <MudGrid Spacing="2">
                     <MudItem>
-                        <MudButton @onclick=@GoToJobs Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
+                        <MudButton OnClick=@GoToJobs Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
                             <MudText>Cancel</MudText>
                         </MudButton>
                     </MudItem>
                     <MudItem>
-                        <MudButton @onclick=@TrySaveJob Variant="Variant.Filled" Color="Color.Secondary" Style="color:white"
+                        <MudButton OnClick=@TrySaveJob Variant="Variant.Filled" Color="Color.Secondary" Style="color:white"
                                    Disabled="!_job.Script.IsContentLoaded()">
                             @if (_creatingNewJob)
                             {

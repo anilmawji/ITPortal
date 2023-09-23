@@ -3,7 +3,6 @@ using ITPortal.Components.Models.Dialog;
 using ITPortal.Components.Shared.Dialog;
 using ITPortal.Components.Utility;
 using ITPortal.Lib.Automation.Job;
-using ITPortal.Lib.Automation.Job.Result;
 using ITPortal.Lib.Automation.Output;
 using ITPortal.Utility;
 using MudBlazor;

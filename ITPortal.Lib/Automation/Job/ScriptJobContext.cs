@@ -1,5 +1,4 @@
-﻿using ITPortal.Lib.Automation.Script.Parameter;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace ITPortal.Lib.Automation.Job;

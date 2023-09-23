@@ -1,7 +1,6 @@
-﻿namespace ITPortal.Components.Models.Dialog
+﻿namespace ITPortal.Components.Models.Dialog;
+
+public sealed class DeleteScriptJobDialogResult
 {
-    public sealed class DeleteScriptJobDialogResult
-    {
-        public bool ShouldDeleteJobResults { get; internal set; }
-    }
+    public bool ShouldDeleteJobResults { get; internal set; }
 }

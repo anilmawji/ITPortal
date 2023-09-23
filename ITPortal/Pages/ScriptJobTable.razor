@@ -1,4 +1,7 @@
 ﻿@using CommunityToolkit.Maui.Storage;
+@using ITPortal.Lib.Services
+@using ITPortal.Lib.Automation
+@using ITPortal.Lib.Automation.Job
 
 @attribute [Route(PageRoute.ScriptJobs)]
 @* @attribute [Authorize] *@
@@ -70,7 +73,7 @@
                     @context.Script.FileName
                 </MudTh>
                 <MudTh DataLabel="status">
-                    <ScriptJobStateChipText Job=@context />
+                    <ScriptJobStateChip Job=@context />
                 </MudTh>
                 <MudTh DataLabel="Description">
                     @context.Description.NormalizeLength(40)

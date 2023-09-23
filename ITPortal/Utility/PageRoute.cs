@@ -1,6 +1,6 @@
 ﻿namespace ITPortal.Utility;
 
-public class PageRoute
+public static class PageRoute
 {
     public const string Login = "/login";
 

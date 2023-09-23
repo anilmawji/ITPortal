@@ -1,8 +1,8 @@
 ﻿using ITPortal.Lib.Services;
 using ITPortal.Lib.Services.Authentication;
-using ITPortal.Lib.Services.Core;
 using Microsoft.Extensions.Configuration;
 using MudBlazor.Services;
+using CommunityToolkit.Maui;
 
 namespace ITPortal;
 public static class MauiProgram
@@ -11,18 +11,25 @@ public static class MauiProgram
     {
         var builder = MauiApp.CreateBuilder();
 
-        builder.UseMauiApp<App>().ConfigureFonts(fonts =>
-        {
-            fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-        });
+        builder.UseMauiApp<App>()
+            .ConfigureFonts(fonts => {
+                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+             })
+            .UseMauiCommunityToolkit();
 
         builder.Services.AddMauiBlazorWebView();
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();
 #endif
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+
+        IConfigurationRoot configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json")
+            .Build();
+
         builder.Configuration.AddConfiguration(configuration);
+
         ConfigureServices(builder.Services);
+
         return builder.Build();
     }
 
