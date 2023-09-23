@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Identity.Client;
+﻿using Microsoft.Identity.Client;
 using System.Net.Http.Headers;
 
 namespace ITPortal.Lib.Services.Authentication;

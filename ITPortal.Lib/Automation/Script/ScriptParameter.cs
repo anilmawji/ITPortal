@@ -1,8 +1,8 @@
-﻿using ITPortal.Lib.Utility;
-using System.Management.Automation;
+﻿using System.Management.Automation;
 using System.Runtime.Serialization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using ITPortal.Lib.Utility;
 
 namespace ITPortal.Lib.Automation.Script;
 

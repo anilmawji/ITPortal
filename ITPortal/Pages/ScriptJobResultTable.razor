@@ -3,7 +3,7 @@
 @using ITPortal.Lib.Automation.Job
 
 @attribute [Route(PageRoute.ScriptJobResults)]
-@* @attribute [Authorize] *@
+@attribute [AllowAnonymous]
 
 @inject IScriptJobService ScriptJobService
 @inject NavigationManager NavigationManager

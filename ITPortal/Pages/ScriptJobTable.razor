@@ -1,15 +1,13 @@
-﻿@using CommunityToolkit.Maui.Storage;
+﻿@using Microsoft.JSInterop
+@using CommunityToolkit.Maui.Storage
 @using ITPortal.Lib.Services
 @using ITPortal.Lib.Automation
 @using ITPortal.Lib.Automation.Job
 
 @attribute [Route(PageRoute.ScriptJobs)]
-@* @attribute [Authorize] *@
-
-@using Microsoft.JSInterop;
+@attribute [AllowAnonymous]
 
 @inject IJSRuntime JSRuntime
-
 @inject IScriptJobService ScriptJobService
 @inject IDialogService DialogService
 @inject NavigationManager NavigationManager

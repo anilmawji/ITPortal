@@ -2,7 +2,6 @@
 using ITPortal.Lib.Automation.Script;
 using ITPortal.Lib.Utility;
 using ITPortal.Utility;
-using MudBlazor;
 
 namespace ITPortal.Pages;
 
@@ -19,7 +18,7 @@ public sealed partial class ScriptJobEditor
         })
     };
 
-    private MudForm _jobForm;
+    private MudBlazor.MudForm _jobForm;
     private string _headerTitle;
     private string[] _errors = Array.Empty<string>();
 
