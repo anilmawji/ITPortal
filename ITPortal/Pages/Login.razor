@@ -15,13 +15,15 @@
             Sign in with Microsoft
         </button>
         <div class="login-container-bottom">
-            <a href="https://github.com/anilmawji/ITPortal">Support</a>
+            <a href=@RepoLink>Support</a>
         </div>
     </LoginBox>
 </div>
 
 @code
 {
+    private const string RepoLink = "https://github.com/anilmawji/ITPortal";
+
     public async Task PromptLogin()
     {
         var provider = (ExternalAuthStateProvider)AuthenticationStateProvider;

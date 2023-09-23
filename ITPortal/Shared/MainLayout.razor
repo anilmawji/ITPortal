@@ -4,6 +4,7 @@
 @inherits LayoutComponentBase
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
 
 <MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@IsDarkMode" Theme="_currentTheme" />
 <MudDialogProvider />
@@ -30,13 +31,12 @@
                        Class="nav-button"
                        OnClick=@ThemeToggle />
     </MudAppBar>
-    @*	<AuthorizeView>
-    <Authorized>*@
-    <MudDrawer @bind-Open=@IsDrawerOpen ClipMode="DrawerClipMode.Always" Elevation="1">
-        <NavMenu />
-    </MudDrawer>
-    @*		</Authorized>
-    </AuthorizeView>*@
+    @if (NavigationManager.GetPage() != PageRoute.Login)
+    {
+        <MudDrawer @bind-Open=@IsDrawerOpen ClipMode="DrawerClipMode.Always" Elevation="1">
+            <NavMenu />
+        </MudDrawer>
+    }
     <MudMainContent>
         @Body
     </MudMainContent>
