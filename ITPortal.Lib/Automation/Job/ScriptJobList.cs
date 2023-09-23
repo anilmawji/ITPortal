@@ -44,12 +44,10 @@ public class ScriptJobList
         {
             return false;
         }
-        if (job.TrySetName(newJobName))
-        {
-            Add(job);
-            return true;
-        }
-        return false;
+        job.Name = newJobName;
+        Add(job);
+
+        return true;
     }
 
     public bool HasJob(string jobName)

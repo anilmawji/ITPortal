@@ -23,7 +23,7 @@ public sealed class ScriptJobService : IScriptJobService
             runDate
         );
         ScriptJobResult jobResult = new(
-            JobResultList.NextResultId,
+            JobResultList.GetNextResultId(),
             job.Name,
             job.Script.FileName,
             deviceName,
@@ -31,6 +31,8 @@ public sealed class ScriptJobService : IScriptJobService
             scriptOutput,
             runJobTask
         );
+
+        System.Diagnostics.Debug.WriteLine(jobResult.Id);
 
         JobResultList.Add(jobResult);
         runJobTask.ContinueWith(task => jobResult.InvokeExecutionResultReceived(task.Result));

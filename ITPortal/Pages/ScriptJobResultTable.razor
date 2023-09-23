@@ -84,7 +84,6 @@
         int resultId = eventArgs.Item.Id;
 
         // TODO: toast notification of result not found error
-        if (!ScriptJobService.JobResultList.HasResult(resultId)) return;
 
         NavigationManager.NavigateTo(PageRoute.ScriptJobResultDetailsWithId(resultId));
     }

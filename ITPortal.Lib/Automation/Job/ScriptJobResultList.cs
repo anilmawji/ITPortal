@@ -13,10 +13,20 @@ public sealed class ScriptJobResultList
         MaxResults = maxResults;
     }
 
+    public int GetNextResultId()
+    {
+        while (HasResult(NextResultId))
+        {
+            NextResultId++;
+        }
+        return NextResultId;
+    }
+
     public void Add(ScriptJobResult result)
     {
-        JobResults.Add(NextResultId, result);
+        JobResults.Add(result.Id, result);
 
+        // Update lowest result id
         if (LowestResultId > result.Id || LowestResultId == -1)
         {
             LowestResultId = result.Id;
@@ -24,45 +34,42 @@ public sealed class ScriptJobResultList
         // Cap the results list to store only the most recent results
         if (JobResults.Count > MaxResults)
         {
-            JobResults.Remove(LowestResultId);
+            Remove(LowestResultId);
         }
-        NextResultId++;
     }
 
-    public bool TryAdd(ScriptJobResult result)
+    public bool Remove(int id)
     {
-        if (!HasResult(result.Id))
+        if (JobResults.Remove(id))
         {
-            Add(result);
-
+            if (id < NextResultId)
+            {
+                NextResultId = id;
+            }
             return true;
         }
         return false;
     }
 
-    public bool Remove(int id)
-    {
-        return JobResults.Remove(id);
-    }
-
     public List<ScriptJobResult> Remove(ScriptJob job)
     {
-        List<ScriptJobResult> results = new();
+        List<ScriptJobResult> removedResults = new();
 
+        // Remove all job results associated with the job
         foreach ((int id, ScriptJobResult result) in JobResults)
         {
             if (result.JobName == job.Name)
             {
-                results.Add(result);
-                JobResults.Remove(id);
+                removedResults.Add(result);
+                Remove(id);
             }
         }
-        return results;
+        return removedResults;
     }
 
     public bool HasResult(int resultId)
     {
-        return JobResults.GetValueOrDefault(resultId) != default;
+        return JobResults.GetValueOrDefault(resultId) != default(ScriptJobResult);
     }
 
     public ScriptJobResult? TryGetResult(int id)

@@ -87,7 +87,10 @@
         // Very important to make sure ScriptJobResultBase is populated
         base.OnInitialized();
 
-        Job = ScriptJobService.JobList.TryGetJob(Result.JobName);
+        if (Result != null)
+        {
+            Job = ScriptJobService.JobList.TryGetJob(Result.JobName);
+        }
     }
 
     private string GetTabName(ScriptOutputStreamType streamType)

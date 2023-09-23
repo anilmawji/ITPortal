@@ -8,7 +8,7 @@ namespace ITPortal.Lib.Automation.Job;
 
 public sealed class ScriptJob : IDisposable
 {
-    public string Name { get; private set; }
+    public string Name { get; set; }
     public string Description { get; set; }
     public AutomationScript Script { get; private set; }
     public DateTime CreationTime { get; private set; }
@@ -67,17 +67,6 @@ public sealed class ScriptJob : IDisposable
     public string ToJsonString()
     {
         return JsonSerializer.Serialize(this, ScriptJobContext.Default.ScriptJob);
-    }
-
-    public bool TrySetName(string name)
-    {
-        if (name.IsValidFileName())
-        {
-            Name = name;
-
-            return true;
-        }
-        return false;
     }
 
     public bool IsIdle()
