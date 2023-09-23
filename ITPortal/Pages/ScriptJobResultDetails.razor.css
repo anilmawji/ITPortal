@@ -1,12 +1,8 @@
 ﻿.script-title {
     display: flex;
-    font-size: 20px;
+    gap: 10px;
     margin-bottom: 20px;
-}
-
-.title-chip {
-    margin-left: 10px;
-    font-size: 16px;
+    line-height: 34px;
 }
 
 .section {
