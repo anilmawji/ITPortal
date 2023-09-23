@@ -75,7 +75,7 @@ else if (ScriptParameter.IsType(typeof(bool[])))
         <MudExtensions.MudChipField T="bool" Label=@ParameterName Margin="Margin.Dense" Required=@ScriptParameter.Mandatory
                                     Values=@((List<string>)ScriptParameter.Value) Delimiter=@Delimiter FullWidth="true" ChipColor="Color.Default"
                                     ChipVariant="Variant.Text" ChipSize="Size.Medium" WrapChips="true" ChipsMaxWidth=@ChipsMaxWidth Closeable="true"
-                                    Variant="Variant.Filled" RequiredError=@RequiredError />
+                                    Variant="Variant.Filled" RequiredError=@RequiredError Validation="@(new Func<List<string>, IEnumerable<string>>(ValidateArray))" />
     </div>
 }
 else
@@ -105,5 +105,11 @@ else
     private int GetNumLinesInTextField()
     {
         return s_extendedInputFieldTriggers.Contains(ScriptParameter.Name) ? 10 : 1;
+    }
+
+    private IEnumerable<string> ValidateArray(List<string> parameterArray)
+    {
+        //if (parameterArray.Count == 0 && )
+        yield return "aaa";
     }
 }

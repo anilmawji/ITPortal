@@ -1,5 +1,6 @@
 ﻿using ITPortal.Lib.Automation.Output;
 using ITPortal.Lib.Automation.Script.Parameter;
+using Microsoft.IdentityModel.Tokens;
 using System.Management.Automation;
 using System.Management.Automation.Language;
 using System.Management.Automation.Runspaces;
@@ -106,7 +107,7 @@ public sealed class PowerShellScript : AutomationScript
 
             return ScriptExecutionState.Stopped;
         }
-        catch (InvalidOperationException e)
+        catch (Exception e)
         {
             outputList.Add(e.Message, ScriptOutputStreamType.Error);
 

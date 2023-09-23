@@ -1,4 +1,4 @@
-﻿using ITPortal.Components.Utilities;
+﻿using ITPortal.Components.Utility;
 
 namespace ITPortal.Components.Models.Dialog
 {

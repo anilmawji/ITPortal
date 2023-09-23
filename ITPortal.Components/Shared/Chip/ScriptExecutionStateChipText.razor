@@ -1,8 +1,31 @@
 ﻿@implements IDisposable
 
-<ChipText Color=@Result.ExecutionState.GetColor()>
+@*customize mud chip appearance*@
+<style>
+    .mud-chip-text.mud-chip-color-success {
+        background-color: var(--mud-palette-success-hover);
+        border: 1px solid var(--mud-palette-success);
+    }
+
+    .mud-chip-text.mud-chip-color-warning {
+        background-color: var(--mud-palette-warning-hover);
+        border: 1px solid var(--mud-palette-warning);
+    }
+
+    .mud-chip-text.mud-chip-color-error {
+        background-color: var(--mud-palette-error-hover);
+        border: 1px solid var(--mud-palette-error);
+    }
+
+    .mud-chip-text.mud-chip-color-secondary {
+        background-color: var(--mud-palette-secondary-hover);
+        border: 1px solid var(--mud-palette-secondary);
+    }
+</style>
+
+<MudChip Variant="Variant.Text" Size="Size.Small" Icon=@GetIcon() Label="true" Color=@GetColor()>
     @Result.ExecutionState.ToStringFast()
-</ChipText>
+</MudChip>
 
 @code {
     [Parameter, EditorRequired]
@@ -11,6 +34,22 @@
     [Parameter]
     public Action? OnResultReceived { get; set; }
 
+    private static readonly IReadOnlyDictionary<ScriptExecutionState, MudBlazor.Color> MudColorMap = new Dictionary<ScriptExecutionState, MudBlazor.Color>()
+    {
+        { ScriptExecutionState.Running, Color.Secondary },
+        { ScriptExecutionState.Success, Color.Success   },
+        { ScriptExecutionState.Stopped, Color.Warning   },
+        { ScriptExecutionState.Error,   Color.Error     }
+    };
+
+    private static readonly IReadOnlyDictionary<ScriptExecutionState, string> MudIconMap = new Dictionary<ScriptExecutionState, string>()
+    {
+        { ScriptExecutionState.Running, Icons.Material.Outlined.AccessTime   },
+        { ScriptExecutionState.Success, Icons.Material.Outlined.CheckCircle  },
+        { ScriptExecutionState.Stopped, Icons.Material.Outlined.Cancel       },
+        { ScriptExecutionState.Error,   Icons.Material.Outlined.ErrorOutline }
+    };
+
     protected override void OnInitialized()
     {
         Result.ExecutionResultReceived += OnExecutionResultReceived;
@@ -18,11 +57,18 @@
 
     private void OnExecutionResultReceived(object? sender, ScriptExecutionState newState)
     {
-        if (OnResultReceived != null)
-        {
-            OnResultReceived.Invoke();
-        }
+        OnResultReceived?.Invoke();
         InvokeAsync(this.StateHasChanged);
+    }
+
+    private string GetIcon()
+    {
+        return MudIconMap[Result.ExecutionState];
+    }
+
+    private MudBlazor.Color GetColor()
+    {
+        return MudColorMap[Result.ExecutionState];
     }
 
     public void Dispose()

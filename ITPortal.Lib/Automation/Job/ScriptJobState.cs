@@ -1,4 +1,4 @@
-﻿using ITPortal.Lib.Utilities;
+﻿using ITPortal.Lib.Utility;
 
 namespace ITPortal.Lib.Automation.Job;
 

@@ -1,9 +1,9 @@
 ﻿using ITPortal.Lib.Automation.Job;
 using ITPortal.Lib.Automation.Job.Result;
-using ITPortal.Lib.Utilities;
+using ITPortal.Lib.Utility;
 using System.Text.Json;
 
-namespace ITPortal.Utilities;
+namespace ITPortal.Utility;
 
 public class ScriptJobFileHelper
 {

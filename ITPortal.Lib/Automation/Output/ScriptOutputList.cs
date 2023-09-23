@@ -1,4 +1,4 @@
-﻿using ITPortal.Lib.Utilities;
+﻿using ITPortal.Lib.Utility;
 using Microsoft.IdentityModel.Tokens;
 using System.Text.Json.Serialization;
 

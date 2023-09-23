@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace ITPortal.Components.Utilities;
+namespace ITPortal.Components.Utility;
 
 public static class ColorHelper
 {
