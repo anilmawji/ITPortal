@@ -1,6 +1,4 @@
-﻿using ITPortal.Lib.Utilities;
-
-namespace ITPortal.Lib.Automation.Script;
+﻿namespace ITPortal.Lib.Automation.Script;
 
 public enum ScriptLoadState
 {
@@ -11,18 +9,6 @@ public enum ScriptLoadState
 
 public static class ScriptLoadStateExtensions
 {
-    public static readonly IReadOnlyDictionary<ScriptLoadState, string> Colors = new Dictionary<ScriptLoadState, string>()
-    {
-        { ScriptLoadState.Unloaded, StateColors.Grey  },
-        { ScriptLoadState.Success,  StateColors.Green },
-        { ScriptLoadState.Failed,   StateColors.Red   },
-    };
-
-    public static string GetColor(this ScriptLoadState state)
-    {
-        return Colors[state];
-    }
-
     public static string ToStringFast(this ScriptLoadState state)
     {
         return state switch

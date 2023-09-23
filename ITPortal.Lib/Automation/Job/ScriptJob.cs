@@ -1,14 +1,14 @@
 ﻿using ITPortal.Lib.Automation.Output;
 using ITPortal.Lib.Automation.Script;
-using ITPortal.Lib.Utilities;
+using ITPortal.Lib.Utility;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace ITPortal.Lib.Automation.Job;
 
-public sealed class ScriptJob : IDisposable
+public class ScriptJob : IDisposable
 {
-    public string Name { get; private set; }
+    public string Name { get; set; }
     public string Description { get; set; }
     public AutomationScript Script { get; private set; }
     public DateTime CreationTime { get; private set; }
@@ -69,13 +69,6 @@ public sealed class ScriptJob : IDisposable
         return JsonSerializer.Serialize(this, ScriptJobContext.Default.ScriptJob);
     }
 
-    public bool TrySetName(string name)
-    {
-        // TODO: string validation
-        Name = name;
-        return false;
-    }
-
     public bool IsIdle()
     {
         return State == ScriptJobState.Idle;
@@ -94,5 +87,6 @@ public sealed class ScriptJob : IDisposable
     public void Dispose()
     {
         StateChanged.DisposeSubscriptions();
+        GC.SuppressFinalize(this);
     }
 }

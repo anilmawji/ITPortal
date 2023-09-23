@@ -1,4 +1,4 @@
-﻿namespace ITPortal.Lib.Utilities;
+﻿namespace ITPortal.Lib.Utility;
 
 public enum LogEvent
 {
@@ -13,17 +13,16 @@ public static class Logger
     private static readonly string LogDirPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");
     private static readonly string NewLine = Environment.NewLine;
 
-    public static void AddMessage(LogEvent eventType, string message, bool printToDebug = true)
+    public static void AddMessage(LogEvent eventType, string message)
     {
         if (!File.Exists(LogDirPath))
         {
             Directory.CreateDirectory(LogDirPath);
         }
 
-        if (printToDebug)
-        {
-            System.Diagnostics.Debug.WriteLine(message);
-        }
+#if DEBUG
+        System.Diagnostics.Debug.WriteLine(message);
+#endif
 
         string timestamp = DateTime.Now.ToLocalTime().ToString("HH:mm:ss");
         string logMessage = $"[{timestamp}] => {eventType.ToString().ToUpper()}: {NewLine}{message}{NewLine}";

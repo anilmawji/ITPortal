@@ -1,41 +1,43 @@
-﻿@* Cannot use two-way binding since Parameter.Value is an 'object' that has its type assigned at runtime *@
-@if (Parameter.IsType(typeof(string)))
+﻿@using ITPortal.Lib.Automation.Script
+
+@* Cannot use two-way binding since Parameter.Value is an 'object' that has its type assigned at runtime *@
+@if (ScriptParameter.IsType(typeof(string)))
 {
     <div class="input-line">
         <MudTextField T="string" Label=@ParameterName Lines=@GetNumLinesInTextField() Variant="Variant.Filled" Margin="Margin.Dense"
-                      Required=@Parameter.Mandatory Text=@((string)Parameter.Value) TextChanged="(text) => Parameter.Value = text"
+                      Required=@ScriptParameter.Mandatory Text=@((string)ScriptParameter.Value) TextChanged="(text) => ScriptParameter.Value = text"
                       RequiredError=@RequiredError />
     </div>
 }
-else if (Parameter.IsType(typeof(int)))
+else if (ScriptParameter.IsType(typeof(int)))
 {
     <div class="small-input-line">
         <MudNumericField T="int" Label=@ParameterName Variant="Variant.Filled" Margin="Margin.Dense"
-                         Required=@Parameter.Mandatory Value=@((int)Parameter.Value) ValueChanged="(num) => Parameter.Value = num"
+                         Required=@ScriptParameter.Mandatory Value=@((int)ScriptParameter.Value) ValueChanged="(num) => ScriptParameter.Value = num"
                          RequiredError=@RequiredError />
     </div>
 }
-else if (Parameter.IsBinaryType())
+else if (ScriptParameter.IsBinaryType())
 {
     <div class="small-input-line">
-        <MudSwitch T="bool" Label=@ParameterName Required=@Parameter.Mandatory Color="Color.Secondary"
-                   Checked=@((bool)Parameter.Value) CheckedChanged="(checkedValue) => Parameter.Value = checkedValue"
+        <MudSwitch T="bool" Label=@ParameterName Required=@ScriptParameter.Mandatory Color="Color.Secondary"
+                   Checked=@((bool)ScriptParameter.Value) CheckedChanged="(checkedValue) => ScriptParameter.Value = checkedValue"
                    RequiredError=@RequiredError />
     </div>
 }
-else if (Parameter.IsType(typeof(DateTime)))
+else if (ScriptParameter.IsType(typeof(DateTime)))
 {
     // No need to explicitly update "date" since it references Parameter.Value which is being updated every time the date changes
-    DateTime date = (DateTime)Parameter.Value;
+    DateTime date = (DateTime)ScriptParameter.Value;
     TimeSpan time = date.TimeOfDay;
 
     <div class="small-input-line mud-date">
-        <MudDatePicker Label=@ParameterName Variant="Variant.Filled" Margin="Margin.Dense" Required=@Parameter.Mandatory
+        <MudDatePicker Label=@ParameterName Variant="Variant.Filled" Margin="Margin.Dense" Required=@ScriptParameter.Mandatory
                        PickerVariant="PickerVariant.Inline" Date=@date
                        DateChanged="(newDate) => {
                            if (newDate != null)
                            {
-                               Parameter.Value = ((DateTime)newDate).Date.Add(time);
+                               ScriptParameter.Value = ((DateTime)newDate).Date.Add(time);
                            }
                        }"
                        RequiredError=@RequiredError />
@@ -45,37 +47,37 @@ else if (Parameter.IsType(typeof(DateTime)))
                            if (newTime != null)
                            {
                                time = (TimeSpan)newTime;
-                               Parameter.Value = date.Date.Add(time);
+                               ScriptParameter.Value = date.Date.Add(time);
                            }
                        }"
                        RequiredError=@RequiredError />
     </div>
 }
-else if (Parameter.IsType(typeof(string[])))
+else if (ScriptParameter.IsType(typeof(string[])))
 {
     <div class="input-line">
-        <MudExtensions.MudChipField T="string" Label=@ParameterName Margin="Margin.Dense" Required=@Parameter.Mandatory
-                                    Values=@((List<string>)Parameter.Value) Delimiter=@Delimiter FullWidth="true" ChipColor="Color.Default"
+        <MudExtensions.MudChipField T="string" Label=@ParameterName Margin="Margin.Dense" Required=@ScriptParameter.Mandatory
+                                    Values=@((List<string>)ScriptParameter.Value) Delimiter=@Delimiter FullWidth="true" ChipColor="Color.Default"
                                     ChipVariant="Variant.Text" ChipSize="Size.Medium" WrapChips="true" ChipsMaxWidth=@ChipsMaxWidth Closeable="true"
                                     Variant="Variant.Filled" RequiredError=@RequiredError />
     </div>
 }
-else if (Parameter.IsType(typeof(int[])))
+else if (ScriptParameter.IsType(typeof(int[])))
 {
     <div class="input-line">
-        <MudExtensions.MudChipField T="int" Label=@ParameterName Margin="Margin.Dense" Required=@Parameter.Mandatory
-                                    Values=@((List<string>)Parameter.Value) Delimiter=@Delimiter FullWidth="true" ChipColor="Color.Default"
+        <MudExtensions.MudChipField T="int" Label=@ParameterName Margin="Margin.Dense" Required=@ScriptParameter.Mandatory
+                                    Values=@((List<string>)ScriptParameter.Value) Delimiter=@Delimiter FullWidth="true" ChipColor="Color.Default"
                                     ChipVariant="Variant.Text" ChipSize="Size.Medium" WrapChips="true" ChipsMaxWidth=@ChipsMaxWidth Closeable="true"
                                     Variant="Variant.Filled" RequiredError=@RequiredError />
     </div>
 }
-else if (Parameter.IsType(typeof(bool[])))
+else if (ScriptParameter.IsType(typeof(bool[])))
 {
     <div class="input-line">
-        <MudExtensions.MudChipField T="bool" Label=@ParameterName Margin="Margin.Dense" Required=@Parameter.Mandatory
-                                    Values=@((List<string>)Parameter.Value) Delimiter=@Delimiter FullWidth="true" ChipColor="Color.Default"
+        <MudExtensions.MudChipField T="bool" Label=@ParameterName Margin="Margin.Dense" Required=@ScriptParameter.Mandatory
+                                    Values=@((List<string>)ScriptParameter.Value) Delimiter=@Delimiter FullWidth="true" ChipColor="Color.Default"
                                     ChipVariant="Variant.Text" ChipSize="Size.Medium" WrapChips="true" ChipsMaxWidth=@ChipsMaxWidth Closeable="true"
-                                    Variant="Variant.Filled" RequiredError=@RequiredError />
+                                    Variant="Variant.Filled" RequiredError=@RequiredError Validation="@(new Func<List<string>, IEnumerable<string>>(ValidateArray))" />
     </div>
 }
 else
@@ -84,26 +86,6 @@ else
 }
 
 @code {
-    private static readonly string[] s_extendedInputFieldTriggers = { "body", "description", "message" };
-
-    private const char Delimiter = ' ';
-    private const int ChipsMaxWidth = 80;
-
     [Parameter, EditorRequired]
-    public ScriptParameter Parameter { get; set; } = null!;
-
-    private string ParameterName = string.Empty;
-    private string RequiredError = string.Empty;
-
-    protected override void OnInitialized()
-    {
-        ParameterName = Parameter.Name.FirstCharToUpper();
-        RequiredError = ParameterName + " is a required field";
-    }
-
-    // Provide a larger input field depending on the name of the parameter
-    private int GetNumLinesInTextField()
-    {
-        return s_extendedInputFieldTriggers.Contains(Parameter.Name) ? 10 : 1;
-    }
+    public ScriptParameter ScriptParameter { get; set; } = null!;
 }

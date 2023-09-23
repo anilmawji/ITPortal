@@ -1,7 +1,9 @@
-﻿@attribute [Route(PageRoute.ScriptJobResults)]
-@* @attribute [Authorize] *@
+﻿@using ITPortal.Lib.Services
+@using ITPortal.Lib.Automation
+@using ITPortal.Lib.Automation.Job
 
-@implements IDisposable
+@attribute [Route(PageRoute.ScriptJobResults)]
+@* @attribute [Authorize] *@
 
 @inject IScriptJobService ScriptJobService
 @inject NavigationManager NavigationManager
@@ -20,10 +22,10 @@
     }
 </style>
 
-<PageContainer Title="PowerShell Job Results">
+<PageContainer Title="PowerShell Job Results" Description="View job execution results">
     <div class="table-container">
         <MudTable T="ScriptJobResult" Items=@ScriptJobService.JobResultList.GetResults().Values Dense="true" Hover="true" FixedHeader="true"
-                  Filter="new Func<ScriptJobResult, bool>(FilterJobResultFunc)" OnRowClick=@GoToJobResultsPage Height="calc(100% - 90px - 10px)">
+                  Filter="new Func<ScriptJobResult, bool>(FilterJobResultFunc)" OnRowClick=@TryGoToJobResultDetailsPage Height="calc(100% - 90px - 10px)">
             <ToolBarContent>
                 <MudTextField @bind-Value=@_searchString Placeholder=@($"Search {ScriptJobService.JobResultList.GetResults().Count} items...")
                               Adornment="Adornment.Start" AdornmentIcon=@Icons.Material.Filled.Search IconSize="Size.Medium" Class="mt-0"></MudTextField>
@@ -50,7 +52,7 @@
                 <MudTh DataLabel="Script">@context.ScriptName</MudTh>
                 <MudTh DataLabel="Device">@context.DeviceName</MudTh>
                 <MudTh DataLabel="Status">
-                    <ScriptExecutionStateChipText Result=@context />
+                    <ScriptExecutionStateChip Result=@context />
                 </MudTh>
                 <MudTh DataLabel="ExecutionTime">@context.ExecutionTime</MudTh>
             </RowTemplate>
@@ -60,58 +62,3 @@
         </MudTable>
     </div>
 </PageContainer>
-
-@code {
-    private static readonly int[] s_pageSizeOptions = { 10, 20, 30 };
-
-    private string _searchString = "";
-
-    protected override void OnInitialized()
-    {
-        foreach (ScriptJobResult result in ScriptJobService.JobResultList.GetResults().Values)
-        {
-            result.ExecutionResultReceived += OnExecutionResultReceived;
-        }
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            ScriptJobFileHelper.LoadSavedJobs(ScriptJobService.JobList);
-            ScriptJobFileHelper.LoadSavedJobResults(ScriptJobService.JobResultList);
-            this.StateHasChanged();
-        }
-        await base.OnAfterRenderAsync(firstRender);
-    }
-
-    private void OnExecutionResultReceived(object sender, ScriptExecutionState newState)
-    {
-        InvokeAsync(this.StateHasChanged);
-    }
-
-    private void GoToJobResultsPage(TableRowClickEventArgs<ScriptJobResult> eventArgs)
-    {
-        int resultId = eventArgs.Item.Id;
-
-        NavigationManager.NavigateTo(PageRoute.ScriptJobResultDetailsWithId(resultId));
-    }
-
-    private bool FilterJobResultFunc(ScriptJobResult result) => DoFilterJobResultFunc(result, _searchString);
-
-    private bool DoFilterJobResultFunc(ScriptJobResult result, string searchString)
-    {
-        return string.IsNullOrWhiteSpace(searchString)
-                    || result.Id.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase)
-                    || result.ScriptName.Contains(searchString, StringComparison.OrdinalIgnoreCase)
-                    || result.ExecutionState.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase);
-    }
-
-    public void Dispose()
-    {
-        foreach (ScriptJobResult result in ScriptJobService.JobResultList.GetResults().Values)
-        {
-            result.ExecutionResultReceived -= OnExecutionResultReceived;
-        }
-    }
-}

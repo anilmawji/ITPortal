@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using HttpHeaders = System.Net.Http.Headers;
 
 namespace ITPortal.Lib.Services;
 
@@ -14,8 +15,8 @@ public class HttpClientService : IHttpClientService
     public HttpClientService(HttpClient httpClient)
     {
         Client = httpClient;
-        Client.DefaultRequestHeaders.UserAgent.Add(new System.Net.Http.Headers.ProductInfoHeaderValue("ITPTest", "1.0"));
-        Client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+        Client.DefaultRequestHeaders.UserAgent.Add(new HttpHeaders.ProductInfoHeaderValue("ITPTest", "1.0"));
+        Client.DefaultRequestHeaders.Accept.Add(new HttpHeaders.MediaTypeWithQualityHeaderValue("application/json"));
     }
 
     public async Task<T?> GetModelAsync<T>(string url)

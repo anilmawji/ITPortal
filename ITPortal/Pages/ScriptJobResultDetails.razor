@@ -1,16 +1,38 @@
-﻿@attribute [Route(PageRoute.ScriptJobResultDetails)]
+﻿@using ITPortal.Models
+@using ITPortal.Components.Shared.Script
+@using ITPortal.Lib.Automation.Script
+@using ITPortal.Lib.Automation.Output
+
+@attribute [Route(PageRoute.ScriptJobResultDetails)]
 @* @attribute [Authorize] *@
 
 @inject NavigationManager NavigationManager
 
 @inherits ScriptJobResultBase
 
-<PageContainer Title="PowerShell Job Results" NestedTitle=@($"Result {Result.Id}") PreviousPage="/job-results">
+<style>
+    /* override default mud table colors */
+    .mud-tab-slider {
+        background-color: #0078D4;
+    }
+
+    .mud-tab.mud-tab-active {
+        color: #0078D4;
+    }
+
+    .mud-tab .mud-badge {
+        background-color: #000000 !important;
+    }
+
+    .mud-tab.mud-tab-active .mud-badge {
+        background-color: #0078D4 !important;
+    }
+</style>
+
+<PageContainer Title="PowerShell Job Results" NestedTitle=@($"Result {Result.Id}") PreviousPage="/job-results" Description="View execution details of a job">
     <div class="script-title">
         <p>Script: @Result.ScriptName</p>
-        <div class="title-chip">
-            <ScriptExecutionStateChipText Result=@Result OnResultReceived=@(() => InvokeAsync(this.StateHasChanged))/>
-        </div>
+        <ScriptExecutionStateChip Result=@Result OnResultReceived=@(() => InvokeAsync(this.StateHasChanged))/>
     </div>
     <div class="section">
         <p>Job: @Result.JobName</p>
@@ -26,48 +48,29 @@
     <div class="section">
         <MudGrid Spacing="2">
             <MudItem>
-                <MudButton @onclick=@TryCancelJob Variant="Variant.Filled" Color="Color.Secondary"
+                <MudButton OnClick=@TryCancelJob Variant="Variant.Filled" Color="Color.Secondary"
                            Style="color:white" Disabled=@(Job == null || Result.ExecutionState != ScriptExecutionState.Running)>
                     <MudText>Cancel</MudText>
                 </MudButton>
             </MudItem>
             <MudItem>
-                <MudButton @onclick=@GoToEditJob Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" Disabled=@(Job == null)>
+                <MudButton OnClick=@GoToEditJob Variant="Variant.Filled" Color="Color.Secondary" Style="color:white" Disabled=@(Job == null)>
                     <MudText>Edit Job</MudText>
                 </MudButton>
             </MudItem>
         </MudGrid>
     </div>
-    <ScriptOutputGroup ScriptOutput=@Result.ScriptOutput @ref=@OutputGroup />
-</PageContainer>
-
-@code {
-    ScriptJob Job;
-    ScriptOutputGroup OutputGroup;
-
-    protected override void OnInitialized()
-    {
-        // Very important to make sure ScriptJobResultBase is populated
-        base.OnInitialized();
-
-        Job = ScriptJobService.JobList.TryGetJob(Result.JobName);
-    }
-
-    private void TryCancelJob()
-    {
-        if (Job != null)
+    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+        <MudTabPanel Text="All Output" BadgeData=@GetOutputLineCountText(Result.ScriptOutput.GetMessages())>
+            <ScriptOutputView OutputList=@Result.ScriptOutput />
+        </MudTabPanel>
+        @foreach ((ScriptOutputStreamType streamType, int numLines) in Result.ScriptOutput.StreamLineCounts)
         {
-            Job.Cancel();
+            if (numLines == 0) continue;
+
+            <MudTabPanel Text=@GetTabName(streamType) Icon=@TabIcons[streamType]>
+                <ScriptOutputView OutputList=@Result.ScriptOutput StreamType=@streamType />
+            </MudTabPanel>
         }
-    }
-
-    private void GoToEditJob()
-    {
-        NavigationManager.NavigateTo(PageRoute.EditScriptJobWithName(Job.Name));
-    }
-
-    public void Dispose()
-    {
-        OutputGroup.Dispose();
-    }
-}
+    </MudTabs>
+</PageContainer>

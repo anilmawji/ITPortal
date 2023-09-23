@@ -1,4 +1,4 @@
-﻿.output-container {
+﻿#output-container {
     width: 100%;
     height: calc(100vh - 510px);
     min-height: 240px;

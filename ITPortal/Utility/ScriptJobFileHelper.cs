@@ -1,17 +1,21 @@
 ﻿using ITPortal.Lib.Automation.Job;
-using ITPortal.Lib.Automation.Job.Result;
-using ITPortal.Lib.Utilities;
+using ITPortal.Lib.Utility;
 using System.Text.Json;
 
-namespace ITPortal.Utilities;
+namespace ITPortal.Utility;
 
-public class ScriptJobFileHelper
+public static class ScriptJobFileHelper
 {
     private static readonly string JobsPath = Path.Combine(FileSystem.Current.AppDataDirectory, "jobs");
     private static readonly string JobResultsPath = Path.Combine(FileSystem.Current.AppDataDirectory, "job_results");
 
     private static bool IsJobsLoaded = false;
     private static bool IsJobResultsLoaded = false;
+
+    public static bool Loaded()
+    {
+        return IsJobsLoaded && IsJobResultsLoaded;
+    }
 
     public static void LoadSavedJobs(ScriptJobList list)
     {
@@ -134,7 +138,7 @@ public class ScriptJobFileHelper
             Logger.AddMessage(LogEvent.Warning, $"Warning - file name of \'{jsonFilePath}\' does not match job result id \'{result.Id}\'");
         }
 
-        if (Path.GetDirectoryName(jsonFilePath) != JobsPath)
+        if (Path.GetDirectoryName(jsonFilePath) != JobResultsPath)
         {
             try
             {

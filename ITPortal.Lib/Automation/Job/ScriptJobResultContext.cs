@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace ITPortal.Lib.Automation.Job.Result;
+namespace ITPortal.Lib.Automation.Job;
 
 [JsonSourceGenerationOptions(
     GenerationMode = JsonSourceGenerationMode.Default,

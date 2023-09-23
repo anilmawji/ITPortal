@@ -1,9 +1,11 @@
-﻿@inherits DialogBase
+﻿@using ITPortal.Components.Models.Dialog
+
+@inherits DialogBase
 
 <MudDialog>
     <DialogContent>
         <div style="width:300px">
-            <MudCheckBox @bind-Checked=@Result.ShouldDeleteJobResults Color="Color.Secondary">Remove Job Results</MudCheckBox>
+            <MudCheckBox @bind-Checked=@Result.ShouldDeleteJobResults Color="Color.Secondary">Delete Job Results</MudCheckBox>
         </div>
     </DialogContent>
     <DialogActions>

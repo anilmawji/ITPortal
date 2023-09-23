@@ -3,9 +3,9 @@ using System.Text;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 
-namespace ITPortal.Utilities;
+namespace ITPortal.Utility;
 
-public sealed class FileHelper
+public static class FileHelper
 {
     public static async Task<FileResult> PickFileAsync(PickOptions options)
     {

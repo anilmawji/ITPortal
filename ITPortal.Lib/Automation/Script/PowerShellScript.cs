@@ -1,5 +1,4 @@
 ﻿using ITPortal.Lib.Automation.Output;
-using ITPortal.Lib.Automation.Script.Parameter;
 using System.Management.Automation;
 using System.Management.Automation.Language;
 using System.Management.Automation.Runspaces;
@@ -7,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace ITPortal.Lib.Automation.Script;
 
-public sealed class PowerShellScript : AutomationScript
+public class PowerShellScript : AutomationScript
 {
     private static readonly InitialSessionState _initialPowerShellState;
 
@@ -98,7 +97,7 @@ public sealed class PowerShellScript : AutomationScript
         {
             outputList.Add(cancellationMessage, ScriptOutputStreamType.Warning);
 
-            return shell.HadErrors || outputList.HasErrorMessages() ? ScriptExecutionState.Error : ScriptExecutionState.Stopped;
+            return ScriptExecutionState.Stopped;
         }
         catch (PipelineStoppedException e)
         {
@@ -106,7 +105,7 @@ public sealed class PowerShellScript : AutomationScript
 
             return ScriptExecutionState.Stopped;
         }
-        catch (InvalidOperationException e)
+        catch (Exception e)
         {
             outputList.Add(e.Message, ScriptOutputStreamType.Error);
 

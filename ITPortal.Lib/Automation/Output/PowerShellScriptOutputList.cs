@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace ITPortal.Lib.Automation.Output;
 
-public sealed class PowerShellScriptOutputList : ScriptOutputList
+public class PowerShellScriptOutputList : ScriptOutputList
 {
     public PowerShellScriptOutputList() : base() { }
 

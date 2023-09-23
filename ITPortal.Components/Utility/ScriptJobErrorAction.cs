@@ -1,4 +1,4 @@
-﻿namespace ITPortal.Components.Utilities;
+﻿namespace ITPortal.Components.Utility;
 
 public enum ScriptJobErrorAction
 {

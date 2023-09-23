@@ -1,13 +1,12 @@
 ﻿using ITPortal.Lib.Automation.Output;
 using ITPortal.Lib.Automation.Script;
-using ITPortal.Lib.Utilities;
-using System.Management.Automation;
+using ITPortal.Lib.Utility;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace ITPortal.Lib.Automation.Job.Result;
+namespace ITPortal.Lib.Automation.Job;
 
-public sealed class ScriptJobResult : IDisposable
+public class ScriptJobResult : IDisposable
 {
     public int Id { get; private set; }
     public string JobName { get; private set; }
@@ -51,30 +50,6 @@ public sealed class ScriptJobResult : IDisposable
         ExecutionResultReceived?.Invoke(this, newState);
     }
 
-    public static ScriptJobResult LoadFromJsonFile(string filePath)
-    {
-        if (!File.Exists(filePath))
-        {
-            throw new FileNotFoundException("Requested job result file does not exist: " + filePath);
-        }
-        string jsonText = File.ReadAllText(filePath);
-
-        ScriptJobResult? result = JsonSerializer.Deserialize(jsonText, ScriptJobResultContext.Default.ScriptJobResult);
-
-        if (result == null)
-        {
-            throw new InvalidDataException("Failed to deserialize job result file: " + filePath);
-        }
-
-        string fileName = Path.GetFileNameWithoutExtension(filePath);
-
-        if (fileName != result?.Id.ToString())
-        {
-            throw new InvalidDataException("Failed to read job result file - file name does not match job id: " + filePath);
-        }
-        return result;
-    }
-
     public string ToJsonString()
     {
         return JsonSerializer.Serialize(this, ScriptJobResultContext.Default.ScriptJobResult);
@@ -83,5 +58,6 @@ public sealed class ScriptJobResult : IDisposable
     public void Dispose()
     {
         ExecutionResultReceived.DisposeSubscriptions();
+        GC.SuppressFinalize(this);
     }
 }

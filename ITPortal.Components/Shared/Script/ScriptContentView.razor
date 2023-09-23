@@ -1,4 +1,6 @@
-﻿﻿@if (Script.IsContentLoaded())
+﻿@using ITPortal.Lib.Automation.Script
+
+﻿@if (Script.IsContentLoaded())
 {
     <p class="scroll script-content">
         @foreach (string line in Script.Content)

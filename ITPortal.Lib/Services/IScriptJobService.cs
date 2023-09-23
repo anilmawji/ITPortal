@@ -1,5 +1,4 @@
 ﻿using ITPortal.Lib.Automation.Job;
-using ITPortal.Lib.Automation.Job.Result;
 using ITPortal.Lib.Automation.Output;
 
 namespace ITPortal.Lib.Services;

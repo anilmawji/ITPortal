@@ -1,20 +1,26 @@
-﻿<div class="scroll output-container">
-    @if (OutputList != null)
-    {
-        @for (int i = 0; i < OutputList.Count; i++)
-        {
-            ScriptOutputMessage message = OutputList.ElementAt(i);
+﻿@using Microsoft.JSInterop
+@using ITPortal.Lib.Automation.Output
+@using ITPortal.Lib.Automation.Script
 
-            <div class="output-message" style=@(message.StreamType != ScriptOutputStreamType.Standard ? $"color:{message.StreamType.GetColor()}" : "")>
-                <MudText>
-                    @(message.Data)
-                </MudText>
-            </div>
-        }
+@implements IDisposable
+
+@inject IJSRuntime JSRuntime
+
+<div class="scroll" id="output-container">
+    @for (int i = 0; i < _messages?.Count; i++)
+    {
+        ScriptOutputMessage message = _messages.ElementAt(i);
+
+        <div class="output-message" style=@GetMessageStyle(message)>
+            @(message.Data)
+        </div>
     }
 </div>
 
 @code {
     [Parameter, EditorRequired]
-    public IReadOnlyList<ScriptOutputMessage> OutputList { get; set; } = null!;
+    public ScriptOutputList OutputList { get; set; } = null!;
+
+    [Parameter]
+    public ScriptOutputStreamType? StreamType { get; set; }
 }

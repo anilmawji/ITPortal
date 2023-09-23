@@ -1,12 +1,12 @@
-﻿using ITPortal.Lib.Utilities;
+﻿using ITPortal.Lib.Utility;
 using System.Management.Automation;
 using System.Runtime.Serialization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace ITPortal.Lib.Automation.Script.Parameter;
+namespace ITPortal.Lib.Automation.Script;
 
-public sealed class ScriptParameter
+public class ScriptParameter
 {
     public const string UnknownValue = "Unknown";
 
@@ -81,6 +81,11 @@ public sealed class ScriptParameter
     public bool IsBinaryType()
     {
         return TypeName == typeof(bool).AssemblyQualifiedName || TypeName == typeof(SwitchParameter).AssemblyQualifiedName;
+    }
+
+    public bool IsArray()
+    {
+        return Value.GetType() == typeof(List<string>);
     }
 
     public override string? ToString()

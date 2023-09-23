@@ -13,9 +13,11 @@
 html {
     height: 100%; /* fallback CSS for IE 4-6 and older browsers. note: without this setting, body below cannot achieve 100% height. */
     height: 100vh; /* overrides 100% height in modern HTML5 browsers and uses the viewport's height. only works in modern HTML5 browsers */
+    scroll-behavior: smooth !important;
 }
 
 body {
+    scroll-behavior: smooth !important;
     width: auto; /* allows content to grow beyond the page without overflow */
     height: auto; /* allows content to grow beyond the page without overflow */
     min-height: 100%; /* starts web page with 100% height. Fallback for IE 4-6 and older browsers */
@@ -49,9 +51,8 @@ body {
     background-color: rgba(0,0,0,.03) !important;
 }
 
-/* correct position of multiselection boxes */
-.mud-table-row .mud-table-cell {
-    padding-left: 20px !important;
+.mud-table-row .mud-table-cell .mud-table-cell-checkbox .mud-input-control-input-container .mud-checkbox {
+    padding-left: 4px;
 }
 
 /* workaround to make mudtable resize with window */
@@ -61,3 +62,9 @@ body {
     grid-template-columns: minmax(0,1fr);
     grid-template-rows: minmax(0,1fr);
 }
+
+.mud-chip.mud-chip-size-medium {
+    height: 28px !important;
+    padding: 0 10px;
+}
+
