@@ -1,8 +1,6 @@
 ﻿@attribute [Route(PageRoute.ScriptJobResults)]
 @* @attribute [Authorize] *@
 
-@implements IDisposable
-
 @inject IScriptJobService ScriptJobService
 @inject NavigationManager NavigationManager
 
@@ -68,10 +66,6 @@
 
     protected override void OnInitialized()
     {
-        foreach (ScriptJobResult result in ScriptJobService.JobResultList.GetResults().Values)
-        {
-            result.ExecutionResultReceived += OnExecutionResultReceived;
-        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -83,11 +77,6 @@
             this.StateHasChanged();
         }
         await base.OnAfterRenderAsync(firstRender);
-    }
-
-    private void OnExecutionResultReceived(object sender, ScriptExecutionState newState)
-    {
-        InvokeAsync(this.StateHasChanged);
     }
 
     private void TryGoToJobResultDetailsPage(TableRowClickEventArgs<ScriptJobResult> eventArgs)
@@ -108,13 +97,5 @@
                     || result.Id.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase)
                     || result.ScriptName.Contains(searchString, StringComparison.OrdinalIgnoreCase)
                     || result.ExecutionState.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase);
-    }
-
-    public void Dispose()
-    {
-        foreach (ScriptJobResult result in ScriptJobService.JobResultList.GetResults().Values)
-        {
-            result.ExecutionResultReceived -= OnExecutionResultReceived;
-        }
     }
 }

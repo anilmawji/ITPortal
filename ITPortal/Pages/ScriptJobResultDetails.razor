@@ -88,16 +88,6 @@
         base.OnInitialized();
 
         Job = ScriptJobService.JobList.TryGetJob(Result.JobName);
-
-        if (Result.ScriptOutput != null)
-        {
-            Result.ScriptOutput.OutputChanged += OnOutputChanged;
-        }
-    }
-
-    private void OnOutputChanged(object sender, ScriptOutputChangedEventArgs _)
-    {
-        InvokeAsync(this.StateHasChanged);
     }
 
     private string GetTabName(ScriptOutputStreamType streamType)
@@ -118,19 +108,11 @@
 
     private void TryCancelJob()
     {
-        if (Job != null)
-        {
-            Job.Cancel();
-        }
+        Job?.Cancel();
     }
 
     private void GoToEditJob()
     {
         NavigationManager.NavigateTo(PageRoute.EditScriptJobWithName(Job.Name));
-    }
-
-    public void Dispose()
-    {
-        Result.ScriptOutput.OutputChanged -= OnOutputChanged;
     }
 }

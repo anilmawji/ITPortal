@@ -134,7 +134,7 @@ public class ScriptJobFileHelper
             Logger.AddMessage(LogEvent.Warning, $"Warning - file name of \'{jsonFilePath}\' does not match job result id \'{result.Id}\'");
         }
 
-        if (Path.GetDirectoryName(jsonFilePath) != JobsPath)
+        if (Path.GetDirectoryName(jsonFilePath) != JobResultsPath)
         {
             try
             {

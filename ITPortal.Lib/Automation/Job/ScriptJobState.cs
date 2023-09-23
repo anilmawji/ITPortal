@@ -1,6 +1,4 @@
-﻿using ITPortal.Lib.Utility;
-
-namespace ITPortal.Lib.Automation.Job;
+﻿namespace ITPortal.Lib.Automation.Job;
 
 public enum ScriptJobState
 {
@@ -11,18 +9,6 @@ public enum ScriptJobState
 
 public static class ScriptJobStateExtensions
 {
-    public static readonly IReadOnlyDictionary<ScriptJobState, string> Colors = new Dictionary<ScriptJobState, string>()
-    {
-        { ScriptJobState.Idle,      StateColors.Grey },
-        { ScriptJobState.Scheduled, StateColors.Grey },
-        { ScriptJobState.Running,   StateColors.Blue },
-    };
-
-    public static string GetColor(this ScriptJobState state)
-    {
-        return Colors[state];
-    }
-
     public static string ToStringFast(this ScriptJobState state)
     {
         return state switch

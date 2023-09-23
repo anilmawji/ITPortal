@@ -62,7 +62,7 @@ public sealed class ScriptJobResultList
 
     public bool HasResult(int resultId)
     {
-        return JobResults.GetValueOrDefault(resultId) != default(ScriptJobResult);
+        return JobResults.GetValueOrDefault(resultId) != default;
     }
 
     public ScriptJobResult? TryGetResult(int id)
