@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace ITPortal.Lib.Automation.Script.Parameter;
 
-public sealed class ScriptParameter
+public class ScriptParameter
 {
     public const string UnknownValue = "Unknown";
 

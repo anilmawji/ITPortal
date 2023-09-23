@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace ITPortal.Lib.Automation.Job.Result;
 
-public sealed class ScriptJobResult : IDisposable
+public class ScriptJobResult : IDisposable
 {
     public int Id { get; private set; }
     public string JobName { get; private set; }
@@ -58,5 +58,6 @@ public sealed class ScriptJobResult : IDisposable
     public void Dispose()
     {
         ExecutionResultReceived.DisposeSubscriptions();
+        GC.SuppressFinalize(this);
     }
 }

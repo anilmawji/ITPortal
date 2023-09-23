@@ -1,6 +1,5 @@
 ﻿using ITPortal.Lib.Automation.Output;
 using ITPortal.Lib.Automation.Script.Parameter;
-using Microsoft.IdentityModel.Tokens;
 using System.Management.Automation;
 using System.Management.Automation.Language;
 using System.Management.Automation.Runspaces;
@@ -8,7 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace ITPortal.Lib.Automation.Script;
 
-public sealed class PowerShellScript : AutomationScript
+public class PowerShellScript : AutomationScript
 {
     private static readonly InitialSessionState _initialPowerShellState;
 
