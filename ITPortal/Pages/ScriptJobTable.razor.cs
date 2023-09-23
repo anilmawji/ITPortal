@@ -107,6 +107,9 @@ public sealed partial class ScriptJobTable
 
     private async Task OpenRunJobDialog(ScriptJob job)
     {
+        // TODO: display toast notification that files are still loading
+        if (!ScriptJobFileHelper.Loaded()) return;
+
         IDialogReference dialog = DialogService.Show<RunScriptJobDialog>("Run Job", s_runJobDialogParameters, s_dialogOptions);
         DialogResult dialogResult = await dialog.Result;
 

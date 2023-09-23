@@ -13,6 +13,11 @@ public class ScriptJobFileHelper
     private static bool IsJobsLoaded = false;
     private static bool IsJobResultsLoaded = false;
 
+    public static bool Loaded()
+    {
+        return IsJobsLoaded && IsJobResultsLoaded;
+    }
+
     public static void LoadSavedJobs(ScriptJobList list)
     {
         if (IsJobsLoaded) return;

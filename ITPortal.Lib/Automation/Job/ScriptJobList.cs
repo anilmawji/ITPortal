@@ -2,8 +2,6 @@
 
 public class ScriptJobList
 {
-    public bool LoadedFromJson { get; private set; }
-
     private readonly Dictionary<string, ScriptJob> Jobs = new();
 
     public void Add(ScriptJob job)
