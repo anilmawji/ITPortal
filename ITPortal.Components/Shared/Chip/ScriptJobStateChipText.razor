@@ -11,17 +11,22 @@
         background-color: var(--mud-palette-secondary-hover);
         border: 1px solid var(--mud-palette-secondary);
     }
+
+    .mud-chip-text {
+        margin-left: 0;
+        margin-right: 0;
+    }
 </style>
 
 @if (Job.State != ScriptJobState.Idle)
 {
-    <MudChip Variant="Variant.Text" Size="Size.Small" Icon=@GetIcon() Label="true" Color=@GetColor()>
+    <MudChip Variant="Variant.Text" Size="Size.Medium" Icon=@GetIcon() Label="true" Color=@GetColor()>
         @Job.State.ToStringFast()
     </MudChip>
 }
 else
 {
-    <MudChip Variant="Variant.Text" Size="Size.Small" Label="true" Color=@GetColor()>
+    <MudChip Variant="Variant.Text" Size="Size.Medium" Label="true" Color=@GetColor()>
         @Job.State.ToStringFast()
     </MudChip>
 }

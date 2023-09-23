@@ -51,9 +51,8 @@ body {
     background-color: rgba(0,0,0,.03) !important;
 }
 
-/* correct position of multiselection boxes */
-.mud-table-row .mud-table-cell {
-    padding-left: 20px !important;
+.mud-table-row .mud-table-cell .mud-table-cell-checkbox .mud-input-control-input-container .mud-checkbox {
+    padding-left: 4px;
 }
 
 /* workaround to make mudtable resize with window */
@@ -63,3 +62,9 @@ body {
     grid-template-columns: minmax(0,1fr);
     grid-template-rows: minmax(0,1fr);
 }
+
+.mud-chip.mud-chip-size-medium {
+    height: 28px !important;
+    padding: 0 10px;
+}
+

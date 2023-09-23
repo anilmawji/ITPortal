@@ -21,9 +21,14 @@
         background-color: var(--mud-palette-secondary-hover);
         border: 1px solid var(--mud-palette-secondary);
     }
+
+    .mud-chip-text {
+        margin-left: 0;
+        margin-right: 0;
+    }
 </style>
 
-<MudChip Variant="Variant.Text" Size="Size.Small" Icon=@GetIcon() Label="true" Color=@GetColor()>
+<MudChip Variant="Variant.Text" Size="Size.Medium" Icon=@GetIcon() Label="true" Color=@GetColor()>
     @Result.ExecutionState.ToStringFast()
 </MudChip>
 
