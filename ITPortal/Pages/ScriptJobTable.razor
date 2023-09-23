@@ -31,7 +31,7 @@
 <PageContainer Title="PowerShell Jobs" Description="Track and execute PowerShell scripts">
     <div class="table-container">
         <MudTable T="ScriptJob" Items=@ScriptJobService.JobList.GetJobs().Values Dense="true" Hover="true" FixedHeader="true" FixedFooter="true"
-                  Filter="new Func<ScriptJob, bool>(FilterJobFunc)" Height="calc(100% - 90px - 10px)" OnRowClick=@(() => InvokeAsync(this.StateHasChanged))
+                  Filter="new Func<ScriptJob, bool>(FilterJobFunc)" Height="calc(100% - 100px)" OnRowClick=@(() => InvokeAsync(this.StateHasChanged))
                   MultiSelection="true" @bind-SelectedItems=@selectedJobs>
             <ToolBarContent>
                 <MudTextField @bind-Value=@_searchString Placeholder=@($"Search {ScriptJobService.JobList.GetJobs().Count} items...")

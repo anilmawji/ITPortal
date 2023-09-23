@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace ITPortal.Lib.Services.Authentication;
+namespace ITPortal.Lib.Services;
 
 public class AzureAdSettings
 {
