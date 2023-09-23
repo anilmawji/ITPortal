@@ -38,4 +38,7 @@
 @code {
     [Parameter, EditorRequired]
     public ScriptJobResult Result { get; set; } = null!;
+
+    [Parameter]
+    public Action? OnResultReceived { get; set; }
 }

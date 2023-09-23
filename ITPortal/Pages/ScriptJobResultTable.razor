@@ -25,7 +25,7 @@
 <PageContainer Title="PowerShell Job Results" Description="View job execution results">
     <div class="table-container">
         <MudTable T="ScriptJobResult" Items=@ScriptJobService.JobResultList.GetResults().Values Dense="true" Hover="true" FixedHeader="true"
-                  Filter="new Func<ScriptJobResult, bool>(FilterJobResultFunc)" OnRowClick=@TryGoToJobResultDetailsPage Height="calc(100% - 90px - 10px)">
+                  Filter="new Func<ScriptJobResult, bool>(FilterJobResultFunc)" OnRowClick=@TryGoToJobResultDetailsPage Height="calc(100% - 100px)">
             <ToolBarContent>
                 <MudTextField @bind-Value=@_searchString Placeholder=@($"Search {ScriptJobService.JobResultList.GetResults().Count} items...")
                               Adornment="Adornment.Start" AdornmentIcon=@Icons.Material.Filled.Search IconSize="Size.Medium" Class="mt-0"></MudTextField>
