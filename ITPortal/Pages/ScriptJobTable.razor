@@ -79,15 +79,23 @@
                 <MudTh Style="text-align:right">
                     @if (context.State != ScriptJobState.Running)
                     {
-                        <MudIconButton Icon=@Icons.Material.Filled.PlayArrow OnClick="() => OpenRunJobDialog(context)" Style="margin-right: 4px" />
-                        <MudIconButton Icon=@Icons.Material.Filled.Edit OnClick="() => GoToEditJobPage(context)" Style="margin-right: 4px" />
+                        <MudTooltip Delay="500" Text="Run job">
+                            <MudIconButton Icon=@Icons.Material.Filled.PlayArrow OnClick="() => OpenRunJobDialog(context)" Style="margin-right: 4px" />
+                        </MudTooltip>
+                        <MudTooltip Delay="500" Text="Edit job">
+                            <MudIconButton Icon=@Icons.Material.Filled.Edit OnClick="() => GoToEditJobPage(context)" Style="margin-right: 4px" />
+                        </MudTooltip>
                     }
                     else
                     {
-                        <MudIconButton Icon=@Icons.Material.Filled.Stop OnClick="() => OpenCancelJobDialog(context)" Style="margin-right: 4px" />
+                        <MudTooltip Delay="500" Text="Cancel job">
+                            <MudIconButton Icon=@Icons.Material.Filled.Stop OnClick="() => OpenCancelJobDialog(context)" Style="margin-right: 4px" />
+                        </MudTooltip>
                         <MudIconButton Icon=@Icons.Material.Filled.EditOff Style="margin-right: 4px" />
                     }
-                    <MudIconButton Icon=@Icons.Material.Filled.Delete OnClick="() => OpenDeleteJobDialog(context.Name)" />
+                    <MudTooltip Delay="500" Text="Delete job">
+                        <MudIconButton Icon=@Icons.Material.Filled.Delete OnClick="() => OpenDeleteJobDialog(context.Name)" />
+                    </MudTooltip>
                 </MudTh>
             </RowTemplate>
             <PagerContent>

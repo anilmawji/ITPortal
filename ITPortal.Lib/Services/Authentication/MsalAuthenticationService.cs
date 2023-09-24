@@ -68,7 +68,7 @@ public sealed class MsalAuthenticationService : IAuthenticationService
         {
             result = await _authenticationClient.AcquireTokenInteractive(_settings.Scopes)
                 .WithTenantId(_settings.TenantId)
-                .WithParentActivityOrWindow(DeviceWindowHandler.WindowHandle)
+                .WithParentActivityOrWindow(DeviceWindowHelper.WindowHandle)
                 .ExecuteAsync(cancellationToken)
                 .ConfigureAwait(false);
 

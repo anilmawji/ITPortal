@@ -18,6 +18,8 @@ public sealed partial class ScriptJobEditor
         })
     };
 
+    private static string s_pageDescription;
+
     private MudBlazor.MudForm _jobForm;
     private string _headerTitle;
     private string[] _errors = Array.Empty<string>();
@@ -32,6 +34,7 @@ public sealed partial class ScriptJobEditor
     {
         if (JobName == null)
         {
+            s_pageDescription = "Create new job";
             _newJobName = string.Empty;
             _initialJobName = ScriptJobService.JobList.GetUniqueDefaultJobName();
             _job = new ScriptJob(_initialJobName, new PowerShellScript());
@@ -40,6 +43,7 @@ public sealed partial class ScriptJobEditor
         }
         else
         {
+            s_pageDescription = "Modify job properties";
             _initialJobName = JobName;
             _newJobName = _initialJobName;
             _job = ScriptJobService.JobList.TryGetJob(JobName);

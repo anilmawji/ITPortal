@@ -4,7 +4,6 @@
 @inherits LayoutComponentBase
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@inject NavigationManager NavigationManager
 
 <MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@IsDarkMode" Theme="_currentTheme" />
 <MudDialogProvider />
@@ -15,11 +14,7 @@
         <div class="appbar-background" style=@AppbarBackgroundStyle()>
             <div />
         </div>
-        <AuthorizeView>
-            <Authorized>
-                <MudIconButton Icon=@Icons.Material.Filled.Menu Color="Color.Inherit" Edge="Edge.Start" OnClick=@DrawerToggle />
-            </Authorized>
-        </AuthorizeView>
+        <MudIconButton Icon=@Icons.Material.Filled.Menu Color="Color.Inherit" Edge="Edge.Start" OnClick=@DrawerToggle />
         <div class="appbar-logo-container">
             <img src="images/arcurve_it_portal_logo.png" class="appbar-logo" />
             <p>IT Portal</p>
@@ -31,12 +26,9 @@
                        Class="nav-button"
                        OnClick=@ThemeToggle />
     </MudAppBar>
-    @if (NavigationManager.GetPage() != PageRoute.Login)
-    {
-        <MudDrawer @bind-Open=@IsDrawerOpen ClipMode="DrawerClipMode.Always" Elevation="1">
-            <NavMenu />
-        </MudDrawer>
-    }
+    <MudDrawer @bind-Open=@IsDrawerOpen ClipMode="DrawerClipMode.Always" Elevation="1">
+        <NavMenu />
+    </MudDrawer>
     <MudMainContent>
         @Body
     </MudMainContent>

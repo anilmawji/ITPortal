@@ -1,6 +1,6 @@
 ﻿namespace ITPortal;
 
-public static class DeviceWindowHandler
+public static class DeviceWindowHelper
 {
     public static IntPtr WindowHandle { get; set; }
 }
