@@ -28,10 +28,15 @@ public sealed partial class ScriptJobEditor
     private string _initialJobName;
     private string _newJobName;
     private bool _creatingNewJob;
-    private bool _canSaveJob;
+    private bool _jobHasValidState;
+    private bool _jobFieldChanged;
+    private bool _jobScriptChanged;
 
     protected override void OnInitialized()
     {
+        _jobFieldChanged = false;
+        _jobScriptChanged = false;
+
         if (JobName == null)
         {
             s_pageDescription = "Create new job";
@@ -49,6 +54,11 @@ public sealed partial class ScriptJobEditor
             _job = ScriptJobService.JobList.TryGetJob(JobName);
             _headerTitle = $"Edit Job \"{JobName}\"";
         }
+    }
+
+    private void OnFieldChanged()
+    {
+        _jobFieldChanged = true;
     }
 
     private IEnumerable<string> ValidateJobName(string jobName)
@@ -88,13 +98,18 @@ public sealed partial class ScriptJobEditor
 
         _job.Script.LoadContent(fileResult.FullPath);
         _job.Script.LoadParameters();
-        this.StateHasChanged();
+        _jobScriptChanged = true;
+
+        StateHasChanged();
     }
 
     private void RefreshScript()
     {
-        _job.Script.Refresh();
-        this.StateHasChanged();
+        if (_job.Script.TryRefresh())
+        {
+            _jobScriptChanged = true;
+            InvokeAsync(StateHasChanged);
+        }
     }
 
     private void EditScript()
@@ -107,7 +122,9 @@ public sealed partial class ScriptJobEditor
     private void RemoveScript()
     {
         _job.Script.Unload();
-        this.StateHasChanged();
+        _jobScriptChanged = true;
+
+        InvokeAsync(StateHasChanged);
     }
 
     private void GoToJobs()
@@ -119,7 +136,7 @@ public sealed partial class ScriptJobEditor
     {
         await _jobForm.Validate();
 
-        if (!_canSaveJob) return;
+        if (!_jobHasValidState) return;
 
         if (_creatingNewJob)
         {
@@ -132,6 +149,11 @@ public sealed partial class ScriptJobEditor
         UpdateJobName();
         ScriptJobFileHelper.TryCreateJobFile(_job);
         GoToJobs();
+    }
+
+    private bool CanTrySaveJob()
+    {
+        return _job.Script.IsContentLoaded() && (_jobFieldChanged || _jobScriptChanged);
     }
 
     private void UpdateJobName()

@@ -58,13 +58,16 @@ public abstract class AutomationScript
         ContentLoadState = ScriptLoadState.Success;
     }
 
-    public void Refresh()
+    public bool TryRefresh()
     {
         if (FilePath != null && ContentLoadState == ScriptLoadState.Success)
         {
             DoLoadContent(FilePath);
             LoadParameters();
+
+            return true;
         }
+        return false;
     }
 
     public abstract bool LoadParameters();
