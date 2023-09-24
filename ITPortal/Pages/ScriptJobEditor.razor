@@ -10,7 +10,7 @@
 @inject NavigationManager NavigationManager
 
 <PageContainer Title="PowerShell Jobs" NestedTitle=@_headerTitle PreviousPage="/jobs" Description=@s_pageDescription>
-    <MudForm @ref=@_jobForm @bind-IsValid=@_jobHasValidState @bind-Errors=@_errors FieldChanged=@OnFieldChanged>
+    <MudForm @ref=@_jobForm @bind-IsValid=@_jobHasValidState @bind-Errors=@_errors FieldChanged=@OnJobFieldChanged>
         <PageSection Title="Job Details">
             <div class="input-line">
                 <MudTextField T="string" @bind-Value=@_newJobName Label="Name" Variant="Variant.Filled" Margin="Margin.Dense"
@@ -76,21 +76,14 @@
             <div class="create-job-buttons">
                 <MudGrid Spacing="2">
                     <MudItem>
-                        <MudButton OnClick=@GoToJobs Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
+                        <MudButton OnClick=@CancelJobChanges Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
                             <MudText>Cancel</MudText>
                         </MudButton>
                     </MudItem>
                     <MudItem>
                         <MudButton OnClick=@TrySaveJob Variant="Variant.Filled" Color="Color.Secondary" Style="color:white"
                                    Disabled="!CanTrySaveJob()">
-                            @if (_creatingNewJob)
-                            {
-                                <MudText>Done</MudText>
-                            }
-                            else
-                            {
-                                <MudText>Save</MudText>
-                            }
+                            <MudText>@(_creatingNewJob ? "Done" : "Save")</MudText>
                         </MudButton>
                     </MudItem>
                 </MudGrid>

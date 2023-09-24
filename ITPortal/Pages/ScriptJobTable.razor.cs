@@ -44,8 +44,8 @@ public sealed partial class ScriptJobTable
         {
             InitializeDialogParameters();
             ScriptJobFileHelper.LoadSavedJobs(ScriptJobService.JobList);
-            ScriptJobFileHelper.LoadSavedJobResults(ScriptJobService.JobResultList);
-            this.StateHasChanged();
+            ScriptJobResultFileHelper.LoadSavedJobResults(ScriptJobService.JobResultList);
+            StateHasChanged();
         }
         await base.OnAfterRenderAsync(firstRender);
     }
@@ -97,18 +97,18 @@ public sealed partial class ScriptJobTable
 
         if (fileResult == null) return;
 
-        ScriptJob job = ScriptJobFileHelper.LoadJobFromJsonFile(fileResult.FullPath, ScriptJobService.JobList);
+        ScriptJob job = ScriptJobFileHelper.LoadJobFromJsonFile(fileResult.FullPath);
 
         if (job == null) return;
 
-        this.StateHasChanged();
+        if (ScriptJobFileHelper.TryAddJobToList(job, ScriptJobService.JobList))
+        {
+            StateHasChanged();
+        }
     }
 
     private async Task OpenRunJobDialog(ScriptJob job)
     {
-        // TODO: display toast notification that files are still loading
-        if (!ScriptJobFileHelper.Loaded()) return;
-
         IDialogReference dialog = DialogService.Show<RunScriptJobDialog>("Run Job", s_runJobDialogParameters, s_dialogOptions);
         DialogResult dialogResult = await dialog.Result;
 
@@ -130,7 +130,7 @@ public sealed partial class ScriptJobTable
         }
         else
         {
-            this.StateHasChanged();
+            StateHasChanged();
         }
     }
 
@@ -157,11 +157,11 @@ public sealed partial class ScriptJobTable
         // This is executed when the job is finished running
         jobResult.RunJobTask.ContinueWith((resultTask) =>
         {
-            ScriptJobFileHelper.TryCreateJobResultFile(jobResult);
+            ScriptJobResultFileHelper.TryCreateJobResultFile(jobResult);
 
             if (refreshPage)
             {
-                InvokeAsync(this.StateHasChanged);
+                InvokeAsync(StateHasChanged);
             }
             outputList.Dispose();
         });
@@ -219,7 +219,7 @@ public sealed partial class ScriptJobTable
     {
         job.Cancel();
 
-        InvokeAsync(this.StateHasChanged);
+        InvokeAsync(StateHasChanged);
     }
 
     private void DeleteJob(string jobName)
@@ -227,7 +227,7 @@ public sealed partial class ScriptJobTable
         ScriptJobService.JobList.Remove(jobName);
         ScriptJobFileHelper.TryDeleteJobFile(jobName);
 
-        InvokeAsync(this.StateHasChanged);
+        InvokeAsync(StateHasChanged);
     }
 
     private void DeleteJobResults(ScriptJob job)
@@ -236,13 +236,13 @@ public sealed partial class ScriptJobTable
 
         foreach (ScriptJobResult result in results)
         {
-            ScriptJobFileHelper.TryDeleteJobResultFile(result.Id);
+            ScriptJobResultFileHelper.TryDeleteJobResultFile(result.Id);
         }
     }
 
     private bool FilterJobFunc(ScriptJob job) => DoFilterJobFunc(job, _searchString);
 
-    private bool DoFilterJobFunc(ScriptJob job, string searchString)
+    private static bool DoFilterJobFunc(ScriptJob job, string searchString)
     {
         return string.IsNullOrWhiteSpace(searchString)
                     || job.Name.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase)

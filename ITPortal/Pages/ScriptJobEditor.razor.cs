@@ -7,7 +7,7 @@ namespace ITPortal.Pages;
 
 public sealed partial class ScriptJobEditor
 {
-    private static readonly PickOptions s_filePickOptions = new PickOptions()
+    private static readonly PickOptions s_filePickOptions = new()
     {
         // PickerTitle is used by macOS but not Windows - unreliable for providing information to user
         PickerTitle = "Please select a PowerShell script file",
@@ -56,7 +56,7 @@ public sealed partial class ScriptJobEditor
         }
     }
 
-    private void OnFieldChanged()
+    private void OnJobFieldChanged()
     {
         _jobFieldChanged = true;
     }
@@ -127,8 +127,13 @@ public sealed partial class ScriptJobEditor
         InvokeAsync(StateHasChanged);
     }
 
-    private void GoToJobs()
+    private void CancelJobChanges()
     {
+        if (!_creatingNewJob && (_jobScriptChanged || _jobFieldChanged))
+        {
+            string filePath = ScriptJobFileHelper.GetJobJsonFilePath(_job.Name);
+            ScriptJobFileHelper.TryReloadJobFromJsonFile(filePath, ScriptJobService.JobList);
+        }
         NavigationManager.NavigateTo(PageRoute.ScriptJobs);
     }
 
@@ -148,7 +153,7 @@ public sealed partial class ScriptJobEditor
         }
         UpdateJobName();
         ScriptJobFileHelper.TryCreateJobFile(_job);
-        GoToJobs();
+        NavigationManager.NavigateTo(PageRoute.ScriptJobs);
     }
 
     private bool CanTrySaveJob()

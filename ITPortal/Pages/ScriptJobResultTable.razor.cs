@@ -15,8 +15,8 @@ public sealed partial class ScriptJobResultTable
         if (firstRender)
         {
             ScriptJobFileHelper.LoadSavedJobs(ScriptJobService.JobList);
-            ScriptJobFileHelper.LoadSavedJobResults(ScriptJobService.JobResultList);
-            this.StateHasChanged();
+            ScriptJobResultFileHelper.LoadSavedJobResults(ScriptJobService.JobResultList);
+            StateHasChanged();
         }
         await base.OnAfterRenderAsync(firstRender);
     }
