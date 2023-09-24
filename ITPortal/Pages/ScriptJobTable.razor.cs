@@ -6,7 +6,6 @@ using ITPortal.Lib.Automation.Job;
 using ITPortal.Lib.Automation.Output;
 using ITPortal.Utility;
 using MudBlazor;
-using Color = MudBlazor.Color;
 
 namespace ITPortal.Pages;
 
@@ -18,12 +17,10 @@ public sealed partial class ScriptJobTable
         DisableBackdropClick = true,
         MaxWidth = MaxWidth.ExtraSmall
     };
-
     private static readonly DialogParameters<Dialog> s_deleteJobDialogParameters = new();
     private static readonly DialogParameters<RunScriptJobDialog> s_runJobDialogParameters = new();
     private static readonly DialogParameters<Dialog> s_cancelJobDialogParameters = new();
     private static readonly int[] s_pageSizeOptions = { 20, 50, 100 };
-
     private static readonly PickOptions s_filePickOptions = new()
     {
         // PickerTitle is used by macOS but not Windows - unreliable for providing information to user
@@ -50,19 +47,19 @@ public sealed partial class ScriptJobTable
         await base.OnAfterRenderAsync(firstRender);
     }
 
-    private void InitializeDialogParameters()
+    private static void InitializeDialogParameters()
     {
         s_deleteJobDialogParameters.Add(dialog => dialog.ContentText, "Are you sure you want to delete this job? This action cannot be undone.");
         s_deleteJobDialogParameters.Add(dialog => dialog.SubmitButtonText, "Delete");
-        s_deleteJobDialogParameters.Add(dialog => dialog.Color, Color.Error);
+        s_deleteJobDialogParameters.Add(dialog => dialog.Color, MudBlazor.Color.Error);
 
         s_runJobDialogParameters.Add(dialog => dialog.SubmitButtonText, "Done");
-        s_runJobDialogParameters.Add(dialog => dialog.Color, Color.Secondary);
+        s_runJobDialogParameters.Add(dialog => dialog.Color, MudBlazor.Color.Secondary);
 
         s_cancelJobDialogParameters.Add(dialog => dialog.ContentText, "Are you sure you want to stop execution of this job?");
         s_cancelJobDialogParameters.Add(dialog => dialog.SubmitButtonText, "Yes");
         s_cancelJobDialogParameters.Add(dialog => dialog.CancelButtonText, "No");
-        s_cancelJobDialogParameters.Add(dialog => dialog.Color, Color.Secondary);
+        s_cancelJobDialogParameters.Add(dialog => dialog.Color, MudBlazor.Color.Secondary);
     }
 
     private void GoToNewJobPage()
