@@ -41,6 +41,11 @@ public abstract class AutomationScript
         ContentLoadState = ScriptLoadState.Success;
     }
 
+    private string GetContentString()
+    {
+        return string.Join("\n", Content);
+    }
+
     public void LoadContent(string filePath)
     {
         ArgumentNullException.ThrowIfNull(filePath, nameof(filePath));
@@ -90,11 +95,6 @@ public abstract class AutomationScript
         ContentString = string.Empty;
         Parameters.Clear();
         ContentLoadState = ScriptLoadState.Unloaded;
-    }
-
-    private string GetContentString()
-    {
-        return string.Join("\n", Content);
     }
 
     public bool IsContentUnloaded()

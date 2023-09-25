@@ -73,18 +73,18 @@ public sealed class ScriptJobResultCollection : ICollection<ScriptJobResult>
         return removedResults;
     }
 
-    public void Clear() => JobResults.Clear();
-
-    public bool Contains(ScriptJobResult result) => JobResults.ContainsKey(result.Id);
-
-    public bool Contains(int resultId) => JobResults.ContainsKey(resultId);
-
     public ScriptJobResult? GetResult(int id)
     {
         JobResults.TryGetValue(id, out ScriptJobResult? result);
 
         return result;
     }
+
+    public void Clear() => JobResults.Clear();
+
+    public bool Contains(ScriptJobResult result) => JobResults.ContainsKey(result.Id);
+
+    public bool Contains(int resultId) => JobResults.ContainsKey(resultId);
 
     public void CopyTo(ScriptJobResult[] array, int arrayIndex)
     {
