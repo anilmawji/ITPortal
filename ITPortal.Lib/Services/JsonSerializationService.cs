@@ -7,7 +7,6 @@ namespace ITPortal.Lib.Services;
 public class JsonSerializationService<T> : IObjectSerializationService<T>
 {
     public string SaveFolderPath { get; private set; }
-    public bool IsLoaded { get; private set; }
     public bool LoggingEnabled { get; private set; }
     public JsonTypeInfo<T> TypeInfo { get; private set; }
 
@@ -21,7 +20,7 @@ public class JsonSerializationService<T> : IObjectSerializationService<T>
 
     public string GetFilePath(string fileName)
     {
-        return Path.Combine(SaveFolderPath, fileName + ".json");
+        return Path.Combine(SaveFolderPath, Guid.NewGuid() + ".json");
     }
 
     private void TryLogEvent(LogEvent eventType, string message)
@@ -34,13 +33,6 @@ public class JsonSerializationService<T> : IObjectSerializationService<T>
 
     public void LoadFromSaveFolder(ICollection<T> objList)
     {
-        // TODO: extract isLoaded from this class to the caller
-        if (IsLoaded)
-        {
-            return;
-        }
-        IsLoaded = true;
-
         DirectoryInfo info = Directory.CreateDirectory(SaveFolderPath);
 
         // Jobs folder has just been created; no jobs to load

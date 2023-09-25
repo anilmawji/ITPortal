@@ -14,8 +14,14 @@ public sealed partial class ScriptJobResultTable
     {
         if (firstRender)
         {
-            ScriptJobSerializer.LoadFromSaveFolder(ScriptJobService.Jobs);
-            ScriptJobResultSerializer.LoadFromSaveFolder(ScriptJobService.JobResults);
+            if (ScriptJobService.Jobs.Count == 0)
+            {
+                ScriptJobSerializer.LoadFromSaveFolder(ScriptJobService.Jobs);
+            }
+            if (ScriptJobService.JobResults.Count == 0)
+            {
+                ScriptJobResultSerializer.LoadFromSaveFolder(ScriptJobService.JobResults);
+            }
             StateHasChanged();
         }
         await base.OnAfterRenderAsync(firstRender);
