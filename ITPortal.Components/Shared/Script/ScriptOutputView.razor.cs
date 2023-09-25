@@ -19,7 +19,7 @@ public sealed partial class ScriptOutputView
     private void OnOutputChanged(object? sender, ScriptOutputChangedEventArgs args)
     {
         JSRuntime.InvokeVoidAsync("scrollToBottom", "output-container");
-        InvokeAsync(this.StateHasChanged);
+        InvokeAsync(StateHasChanged);
     }
 
     private static string GetMessageStyle(ScriptOutputMessage message)

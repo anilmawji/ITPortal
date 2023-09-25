@@ -8,6 +8,8 @@
 @attribute [AllowAnonymous]
 
 @inject IJSRuntime JSRuntime
+@inject IObjectSerializationService<ScriptJob> ScriptJobSerializer
+@inject IObjectSerializationService<ScriptJobResult> ScriptJobResultSerializer
 @inject IScriptJobService ScriptJobService
 @inject IDialogService DialogService
 @inject NavigationManager NavigationManager

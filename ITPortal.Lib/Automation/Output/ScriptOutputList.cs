@@ -17,7 +17,7 @@ public abstract class ScriptOutputList : IDisposable
 
     public ScriptOutputList()
     {
-        Output = new();
+        Output = new List<ScriptOutputMessage>();
     }
 
     public ScriptOutputList(List<ScriptOutputMessage> output, Dictionary<ScriptOutputStreamType, int> streamLineCounts)

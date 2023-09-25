@@ -31,6 +31,7 @@ public sealed partial class ScriptJobTable
             { DevicePlatform.macOS, new[] { "json" } }
         })
     };
+    private static readonly IDictionary<string, EventHandler<ScriptOutputChangedEventArgs>> OutputChangedEvents = new Dictionary<string, EventHandler<ScriptOutputChangedEventArgs>>();
 
     private string _searchString = "";
     private HashSet<ScriptJob> selectedJobs = new();
@@ -40,8 +41,8 @@ public sealed partial class ScriptJobTable
         if (firstRender)
         {
             InitializeDialogParameters();
-            ScriptJobFileHelper.LoadSavedJobs(ScriptJobService.JobList);
-            ScriptJobResultFileHelper.LoadSavedJobResults(ScriptJobService.JobResultList);
+            ScriptJobService.AddJobsFromSaveFolder(ScriptJobSerializer);
+            ScriptJobService.AddJobResultsFromSaveFolder(ScriptJobResultSerializer);
             StateHasChanged();
         }
         await base.OnAfterRenderAsync(firstRender);
@@ -81,7 +82,7 @@ public sealed partial class ScriptJobTable
                 {
                     string jsonFilePath = Path.Combine(folderResult.Folder.Path, jobName + ".json");
 
-                    ScriptJobFileHelper.TryCreateJobFile(selectedJob, jsonFilePath);
+                    ScriptJobSerializer.TryCreateFile(selectedJob, jsonFilePath);
                     break;
                 }
             }
@@ -94,11 +95,11 @@ public sealed partial class ScriptJobTable
 
         if (fileResult == null) return;
 
-        ScriptJob job = ScriptJobFileHelper.LoadJobFromJsonFile(fileResult.FullPath);
+        ScriptJob job = ScriptJobSerializer.LoadFromFile(fileResult.FullPath);
 
         if (job == null) return;
 
-        if (ScriptJobFileHelper.TryAddJobToList(job, ScriptJobService.JobList))
+        if (ScriptJobService.JobList.TryAdd(job))
         {
             StateHasChanged();
         }
@@ -154,7 +155,8 @@ public sealed partial class ScriptJobTable
         // This is executed when the job is finished running
         jobResult.RunJobTask.ContinueWith((resultTask) =>
         {
-            ScriptJobResultFileHelper.TryCreateJobResultFile(jobResult);
+            string filePath = ScriptJobResultSerializer.GetFilePath(jobResult.Id.ToString());
+            ScriptJobResultSerializer.TryCreateFile(jobResult, filePath);
 
             if (refreshPage)
             {
@@ -168,13 +170,18 @@ public sealed partial class ScriptJobTable
 
     private void CancelJobOnErrorOutputReceived(ScriptJob job, ScriptOutputList outputList)
     {
-        outputList.OutputChanged += (object sender, ScriptOutputChangedEventArgs e) =>
+        if (OutputChangedEvents.ContainsKey(job.Name)) return;
+
+        void DoCancelJobOnErrorOutputReceived(object sender, ScriptOutputChangedEventArgs e)
         {
             if (e.StreamType == ScriptOutputStreamType.Error)
             {
                 CancelJob(job);
             }
-        };
+        }
+
+        OutputChangedEvents[job.Name] = DoCancelJobOnErrorOutputReceived;
+        outputList.OutputChanged += DoCancelJobOnErrorOutputReceived;
     }
 
     private async Task OpenCancelJobDialog(ScriptJob job)
@@ -210,6 +217,11 @@ public sealed partial class ScriptJobTable
             DeleteJobResults(job);
         }
         DeleteJob(jobName);
+
+        if (OutputChangedEvents.ContainsKey(job.Name))
+        {
+            //outputList.OutputChanged -= OutputChangedEvents[job.Name];
+        }
     }
 
     private void CancelJob(ScriptJob job)
@@ -222,7 +234,7 @@ public sealed partial class ScriptJobTable
     private void DeleteJob(string jobName)
     {
         ScriptJobService.JobList.Remove(jobName);
-        ScriptJobFileHelper.TryDeleteJobFile(jobName);
+        ScriptJobSerializer.TryDeleteFile(jobName);
 
         InvokeAsync(StateHasChanged);
     }
@@ -233,7 +245,7 @@ public sealed partial class ScriptJobTable
 
         foreach (ScriptJobResult result in results)
         {
-            ScriptJobResultFileHelper.TryDeleteJobResultFile(result.Id);
+            ScriptJobSerializer.TryDeleteFile(result.Id.ToString());
         }
     }
 

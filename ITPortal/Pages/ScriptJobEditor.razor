@@ -1,4 +1,5 @@
 ﻿@using ITPortal.Lib.Services
+@using ITPortal.Lib.Automation.Job
 @using ITPortal.Lib.Automation.Script
 @using ITPortal.Components.Shared.Script
 
@@ -6,6 +7,7 @@
 @attribute [Route(PageRoute.EditScriptJob)]
 @attribute [AllowAnonymous]
 
+@inject IObjectSerializationService<ScriptJob> ScriptJobSerializer
 @inject IScriptJobService ScriptJobService
 @inject NavigationManager NavigationManager
 

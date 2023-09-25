@@ -58,6 +58,7 @@ public sealed partial class ScriptJobEditor
 
     private void OnJobFieldChanged()
     {
+        System.Diagnostics.Debug.WriteLine("changed");
         _jobFieldChanged = true;
     }
 
@@ -131,8 +132,10 @@ public sealed partial class ScriptJobEditor
     {
         if (!_creatingNewJob && (_jobScriptChanged || _jobFieldChanged))
         {
-            string filePath = ScriptJobFileHelper.GetJobJsonFilePath(_job.Name);
-            ScriptJobFileHelper.TryReloadJobFromJsonFile(filePath, ScriptJobService.JobList);
+            string filePath = ScriptJobSerializer.GetFilePath(_job.Name);
+            ScriptJob job = ScriptJobSerializer.LoadFromFile(filePath);
+
+            ScriptJobService.JobList.ReplaceJob(job);
         }
         NavigationManager.NavigateTo(PageRoute.ScriptJobs);
     }
@@ -149,23 +152,22 @@ public sealed partial class ScriptJobEditor
         }
         else
         {
-            ScriptJobFileHelper.TryDeleteJobFile(_job.Name);
+            ScriptJobSerializer.TryDeleteFile(_job.Name);
         }
-        UpdateJobName();
-        ScriptJobFileHelper.TryCreateJobFile(_job);
+
+        if (_newJobName != string.Empty && _newJobName != _initialJobName)
+        {
+            ScriptJobService.JobList.UpdateJobName(_job, _newJobName);
+        }
+
+        string filePath = ScriptJobSerializer.GetFilePath(_job.Name);
+        ScriptJobSerializer.TryCreateFile(_job, filePath);
+
         NavigationManager.NavigateTo(PageRoute.ScriptJobs);
     }
 
     private bool CanTrySaveJob()
     {
         return _job.Script.IsContentLoaded() && (_jobFieldChanged || _jobScriptChanged);
-    }
-
-    private void UpdateJobName()
-    {
-        if (_newJobName != string.Empty && _newJobName != _initialJobName)
-        {
-            ScriptJobService.JobList.UpdateJobName(_job, _newJobName);
-        }
     }
 }

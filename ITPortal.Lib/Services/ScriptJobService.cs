@@ -8,8 +8,29 @@ public sealed class ScriptJobService : IScriptJobService
 {
     public const int MaxResults = 50;
 
+    //TODO: remove jobList from here, move it to caller code
     public ScriptJobList JobList { get; private set; } = new();
     public ScriptJobResultList JobResultList { get; private set; } = new(MaxResults);
+
+    public void AddJobsFromSaveFolder(IObjectSerializationService<ScriptJob> jobSerializer)
+    {
+        IEnumerable<ScriptJob> jobs = jobSerializer.LoadFromSaveFolder();
+
+        foreach (ScriptJob job in jobs)
+        {
+            JobList.Add(job);
+        }
+    }
+
+    public void AddJobResultsFromSaveFolder(IObjectSerializationService<ScriptJobResult> resultSerializer)
+    {
+        IEnumerable<ScriptJobResult> results = resultSerializer.LoadFromSaveFolder();
+
+        foreach (ScriptJobResult result in results)
+        {
+            JobResultList.Add(result);
+        }
+    }
 
     public ScriptJobResult RunJob(ScriptJob job, string deviceName, ScriptOutputList scriptOutput, DateTime runDate = default)
     {

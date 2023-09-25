@@ -36,8 +36,8 @@ public static class MauiProgram
     public static void ConfigureServices(IServiceCollection services)
     {
         services.AddMudServices();
-        services.AddMsalAuthentication();
-        services.AddSingleton<IScriptJobService, ScriptJobService>();
+        services.AddMsalAuthenticationServices();
+        services.AddScriptJobServices(FileSystem.Current.AppDataDirectory);
         services.AddScoped<IGraphClientService, GraphClientService>();
         services.AddGitHubServices();
     }

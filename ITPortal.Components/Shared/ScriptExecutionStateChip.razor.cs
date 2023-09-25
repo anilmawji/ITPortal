@@ -28,7 +28,7 @@ public sealed partial class ScriptExecutionStateChip
     private void OnExecutionResultReceived(object? sender, ScriptExecutionState newState)
     {
         OnResultReceived?.Invoke();
-        InvokeAsync(this.StateHasChanged);
+        InvokeAsync(StateHasChanged);
     }
 
     private string GetIcon()

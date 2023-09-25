@@ -50,11 +50,6 @@ public class ScriptJobResult : IDisposable
         ExecutionResultReceived?.Invoke(this, newState);
     }
 
-    public string ToJsonString()
-    {
-        return JsonSerializer.Serialize(this, ScriptJobResultContext.Default.ScriptJobResult);
-    }
-
     public void Dispose()
     {
         ExecutionResultReceived.DisposeSubscriptions();

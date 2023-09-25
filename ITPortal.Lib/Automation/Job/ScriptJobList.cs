@@ -25,6 +25,17 @@ public class ScriptJobList
         return Jobs.Remove(jobName);
     }
 
+    public bool ReplaceJob(ScriptJob newJob)
+    {
+        if (Remove(newJob.Name))
+        {
+            Add(newJob);
+
+            return true;
+        }
+        return false;
+    }
+
     public string GetUniqueDefaultJobName()
     {
         string name = $"Job({Jobs.Count})";

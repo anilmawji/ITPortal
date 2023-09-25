@@ -19,7 +19,7 @@ public static class DependencyInjectionExtensions
         return serviceCollection;
     }
 
-    public static IServiceCollection AddMsalAuthentication(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddMsalAuthenticationServices(this IServiceCollection serviceCollection)
     {
         serviceCollection.TryAddAuthorizationCore();
         serviceCollection.TryAddTransient<AzureAdSettings>();

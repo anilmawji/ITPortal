@@ -14,14 +14,14 @@ public sealed partial class ScriptJobResultTable
     {
         if (firstRender)
         {
-            ScriptJobFileHelper.LoadSavedJobs(ScriptJobService.JobList);
-            ScriptJobResultFileHelper.LoadSavedJobResults(ScriptJobService.JobResultList);
+            ScriptJobService.AddJobsFromSaveFolder(ScriptJobSerializer);
+            ScriptJobService.AddJobResultsFromSaveFolder(ScriptJobResultSerializer);
             StateHasChanged();
         }
         await base.OnAfterRenderAsync(firstRender);
     }
 
-    private void TryGoToJobResultDetailsPage(TableRowClickEventArgs<ScriptJobResult> eventArgs)
+    private void GoToJobResultDetailsPage(TableRowClickEventArgs<ScriptJobResult> eventArgs)
     {
         int resultId = eventArgs.Item.Id;
 

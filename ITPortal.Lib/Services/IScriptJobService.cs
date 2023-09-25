@@ -8,7 +8,8 @@ public interface IScriptJobService
     public ScriptJobList JobList { get; }
     public ScriptJobResultList JobResultList { get; }
 
+    public void AddJobsFromSaveFolder(IObjectSerializationService<ScriptJob> jobSerializer);
+    public void AddJobResultsFromSaveFolder(IObjectSerializationService<ScriptJobResult> resultSerializer);
     public ScriptJobResult RunJob(ScriptJob job, string deviceName, ScriptOutputList scriptOutput, DateTime runDate = default);
-
     public ScriptJobResult RunJob(ScriptJob job, string deviceName, DateTime runDate = default);
 }

@@ -22,7 +22,7 @@ public sealed partial class ScriptJobStateChip
         Job.StateChanged += OnStateChanged;
     }
 
-    private void OnStateChanged(object? sender, ScriptJobState newState) => InvokeAsync(this.StateHasChanged);
+    private void OnStateChanged(object? sender, ScriptJobState newState) => InvokeAsync(StateHasChanged);
 
     private string GetIcon()
     {

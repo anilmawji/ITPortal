@@ -1,7 +1,6 @@
 ﻿using ITPortal.Lib.Automation.Output;
 using ITPortal.Lib.Automation.Script;
 using ITPortal.Lib.Utility;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace ITPortal.Lib.Automation.Job;
@@ -26,6 +25,11 @@ public class ScriptJob : IDisposable
         Description = description;
         Script = script;
         CreationTime = creationTime;
+
+        if (Script.FilePath != null)
+        {
+            Script.LoadContent(Script.FilePath);
+        }
     }
 
     public ScriptJob(string name, string description, AutomationScript script) : this(name, description, script, DateTime.Now) { }
@@ -62,11 +66,6 @@ public class ScriptJob : IDisposable
     {
         State = state;
         StateChanged?.Invoke(this, State);
-    }
-
-    public string ToJsonString()
-    {
-        return JsonSerializer.Serialize(this, ScriptJobContext.Default.ScriptJob);
     }
 
     public bool IsIdle()
