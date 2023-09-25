@@ -25,11 +25,11 @@ public sealed partial class ScriptJobResultDetails
 
         if (Result != null)
         {
-            Job = ScriptJobService.JobList.TryGetJob(Result.JobName);
+            Job = ScriptJobService.Jobs.GetJob(Result.JobName);
         }
     }
 
-    private string GetTabName(ScriptOutputStreamType streamType)
+    private static string GetTabName(ScriptOutputStreamType streamType)
     {
         if (streamType == ScriptOutputStreamType.Warning || streamType == ScriptOutputStreamType.Error)
         {
@@ -38,14 +38,14 @@ public sealed partial class ScriptJobResultDetails
         return streamType.ToStringFast();
     }
 
-    private string GetOutputLineCountText(IReadOnlyList<ScriptOutputMessage> messages)
+    private static string GetOutputLineCountText(IReadOnlyList<ScriptOutputMessage> messages)
     {
         int numMessages = messages.Count;
 
         return numMessages <= 99 ? numMessages.ToString() : "99+";
     }
 
-    private void TryCancelJob()
+    private void CancelJob()
     {
         Job?.Cancel();
     }

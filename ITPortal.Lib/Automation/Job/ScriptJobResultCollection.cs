@@ -1,21 +1,25 @@
-﻿namespace ITPortal.Lib.Automation.Job;
+﻿using System.Collections;
 
-public sealed class ScriptJobResultList
+namespace ITPortal.Lib.Automation.Job;
+
+public sealed class ScriptJobResultCollection : ICollection<ScriptJobResult>
 {
     public int MaxResults { get; private set; }
     public int NextResultId { get; private set; } = 0;
     public int LowestResultId { get; private set; } = -1;
+    public int Count => JobResults.Count;
+    public bool IsReadOnly => false;
 
     private readonly Dictionary<int, ScriptJobResult> JobResults = new();
 
-    public ScriptJobResultList(int maxResults)
+    public ScriptJobResultCollection(int maxResults)
     {
         MaxResults = maxResults;
     }
 
     public int GetNextResultId()
     {
-        while (HasResult(NextResultId))
+        while (Contains(NextResultId))
         {
             NextResultId++;
         }
@@ -37,6 +41,8 @@ public sealed class ScriptJobResultList
             Remove(LowestResultId);
         }
     }
+
+    public bool Remove(ScriptJobResult result) => Remove(result.Id);
 
     public bool Remove(int id)
     {
@@ -67,20 +73,30 @@ public sealed class ScriptJobResultList
         return removedResults;
     }
 
-    public bool HasResult(int resultId)
-    {
-        return JobResults.GetValueOrDefault(resultId) != default(ScriptJobResult);
-    }
+    public void Clear() => JobResults.Clear();
 
-    public ScriptJobResult? TryGetResult(int id)
+    public bool Contains(ScriptJobResult result) => JobResults.ContainsKey(result.Id);
+
+    public bool Contains(int resultId) => JobResults.ContainsKey(resultId);
+
+    public ScriptJobResult? GetResult(int id)
     {
         JobResults.TryGetValue(id, out ScriptJobResult? result);
 
         return result;
     }
 
-    public IReadOnlyDictionary<int, ScriptJobResult> GetResults()
+    public void CopyTo(ScriptJobResult[] array, int arrayIndex)
     {
-        return JobResults.AsReadOnly();
+        int index = arrayIndex;
+
+        foreach (ScriptJobResult result in JobResults.Values)
+        {
+            array[index++] = result;
+        }
     }
+
+    public IEnumerator<ScriptJobResult> GetEnumerator() => JobResults.Values.GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator() => JobResults.Values.GetEnumerator();
 }

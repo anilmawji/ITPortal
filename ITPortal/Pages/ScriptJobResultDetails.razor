@@ -48,7 +48,7 @@
     <div class="section">
         <MudGrid Spacing="2">
             <MudItem>
-                <MudButton OnClick=@TryCancelJob Variant="Variant.Filled" Color="Color.Secondary"
+                <MudButton OnClick=@CancelJob Variant="Variant.Filled" Color="Color.Secondary"
                            Style="color:white" Disabled=@(Job == null || Result.ExecutionState != ScriptExecutionState.Running)>
                     <MudText>Cancel</MudText>
                 </MudButton>

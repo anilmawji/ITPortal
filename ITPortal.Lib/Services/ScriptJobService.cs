@@ -9,28 +9,8 @@ public sealed class ScriptJobService : IScriptJobService
     public const int MaxResults = 50;
 
     //TODO: remove jobList from here, move it to caller code
-    public ScriptJobList JobList { get; private set; } = new();
-    public ScriptJobResultList JobResultList { get; private set; } = new(MaxResults);
-
-    public void AddJobsFromSaveFolder(IObjectSerializationService<ScriptJob> jobSerializer)
-    {
-        IEnumerable<ScriptJob> jobs = jobSerializer.LoadFromSaveFolder();
-
-        foreach (ScriptJob job in jobs)
-        {
-            JobList.Add(job);
-        }
-    }
-
-    public void AddJobResultsFromSaveFolder(IObjectSerializationService<ScriptJobResult> resultSerializer)
-    {
-        IEnumerable<ScriptJobResult> results = resultSerializer.LoadFromSaveFolder();
-
-        foreach (ScriptJobResult result in results)
-        {
-            JobResultList.Add(result);
-        }
-    }
+    public ScriptJobCollection Jobs { get; private set; } = new();
+    public ScriptJobResultCollection JobResults { get; private set; } = new(MaxResults);
 
     public ScriptJobResult RunJob(ScriptJob job, string deviceName, ScriptOutputList scriptOutput, DateTime runDate = default)
     {
@@ -43,7 +23,7 @@ public sealed class ScriptJobService : IScriptJobService
             runDate
         );
         ScriptJobResult jobResult = new(
-            JobResultList.GetNextResultId(),
+            JobResults.GetNextResultId(),
             job.Name,
             job.Script.FileName,
             deviceName,
@@ -54,7 +34,7 @@ public sealed class ScriptJobService : IScriptJobService
 
         System.Diagnostics.Debug.WriteLine(jobResult.Id);
 
-        JobResultList.Add(jobResult);
+        JobResults.Add(jobResult);
         runJobTask.ContinueWith(task => jobResult.InvokeExecutionResultReceived(task.Result));
 
         return jobResult;

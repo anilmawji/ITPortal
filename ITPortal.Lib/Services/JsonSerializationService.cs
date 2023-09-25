@@ -32,12 +32,12 @@ public class JsonSerializationService<T> : IObjectSerializationService<T>
         }
     }
 
-    public IEnumerable<T> LoadFromSaveFolder()
+    public void LoadFromSaveFolder(ICollection<T> objList)
     {
         // TODO: extract isLoaded from this class to the caller
         if (IsLoaded)
         {
-            return Enumerable.Empty<T>();
+            return;
         }
         IsLoaded = true;
 
@@ -46,11 +46,10 @@ public class JsonSerializationService<T> : IObjectSerializationService<T>
         // Jobs folder has just been created; no jobs to load
         if (!info.Exists)
         {
-            return Enumerable.Empty<T>();
+            return;
         }
 
         IEnumerable<string> filePaths = Directory.EnumerateFiles(SaveFolderPath);
-        List<T> results = new();
 
         foreach (string path in filePaths)
         {
@@ -58,10 +57,8 @@ public class JsonSerializationService<T> : IObjectSerializationService<T>
 
             if (result == null) continue;
 
-            results.Add(result);
+            objList.Add(result);
         }
-
-        return results;
     }
 
     public T? LoadFromFile(string jsonFilePath)
@@ -76,7 +73,7 @@ public class JsonSerializationService<T> : IObjectSerializationService<T>
         }
         catch (JsonException e)
         {
-            TryLogEvent(LogEvent.Error, $"Failed to deserialize job result \'{fileName}\': {e.Message}");
+            TryLogEvent(LogEvent.Error, $"Failed to deserialize file \'{fileName}\': {e.Message}");
 
             return default;
         }
@@ -89,7 +86,7 @@ public class JsonSerializationService<T> : IObjectSerializationService<T>
             }
             catch (Exception e)
             {
-                TryLogEvent(LogEvent.Warning, $"Failed to copy job result file to \'{SaveFolderPath}\': {e.Message}");
+                TryLogEvent(LogEvent.Warning, $"Failed to copy file to \'{SaveFolderPath}\': {e.Message}");
             }
         }
 
@@ -106,7 +103,7 @@ public class JsonSerializationService<T> : IObjectSerializationService<T>
         }
         catch (Exception e)
         {
-            TryLogEvent(LogEvent.Error, $"Failed to create job result file \'{filePath}\': {e.Message}");
+            TryLogEvent(LogEvent.Error, $"Failed to create file \'{filePath}\': {e.Message}");
 
             return false;
         }
@@ -124,7 +121,7 @@ public class JsonSerializationService<T> : IObjectSerializationService<T>
         }
         catch (Exception e)
         {
-            TryLogEvent(LogEvent.Error, $"Failed to delete job result file \'{filePath}\': {e.Message}");
+            TryLogEvent(LogEvent.Error, $"Failed to delete file \'{filePath}\': {e.Message}");
 
             return false;
         }

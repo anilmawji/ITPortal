@@ -41,8 +41,8 @@ public sealed partial class ScriptJobTable
         if (firstRender)
         {
             InitializeDialogParameters();
-            ScriptJobService.AddJobsFromSaveFolder(ScriptJobSerializer);
-            ScriptJobService.AddJobResultsFromSaveFolder(ScriptJobResultSerializer);
+            ScriptJobSerializer.LoadFromSaveFolder(ScriptJobService.Jobs);
+            ScriptJobResultSerializer.LoadFromSaveFolder(ScriptJobService.JobResults);
             StateHasChanged();
         }
         await base.OnAfterRenderAsync(firstRender);
@@ -76,11 +76,11 @@ public sealed partial class ScriptJobTable
 
         foreach (ScriptJob selectedJob in selectedJobs)
         {
-            foreach (string jobName in ScriptJobService.JobList.GetJobs().Keys)
+            foreach (ScriptJob job in ScriptJobService.Jobs)
             {
-                if (jobName == selectedJob.Name)
+                if (job.Name == selectedJob.Name)
                 {
-                    string jsonFilePath = Path.Combine(folderResult.Folder.Path, jobName + ".json");
+                    string jsonFilePath = Path.Combine(folderResult.Folder.Path, job.Name + ".json");
 
                     ScriptJobSerializer.TryCreateFile(selectedJob, jsonFilePath);
                     break;
@@ -99,7 +99,7 @@ public sealed partial class ScriptJobTable
 
         if (job == null) return;
 
-        if (ScriptJobService.JobList.TryAdd(job))
+        if (ScriptJobService.Jobs.TryAdd(job))
         {
             StateHasChanged();
         }
@@ -197,7 +197,7 @@ public sealed partial class ScriptJobTable
     private void GoToEditJobPage(ScriptJob job)
     {
         // TODO: toast notification of job not found error
-        if (!ScriptJobService.JobList.HasJob(job.Name)) return;
+        if (!ScriptJobService.Jobs.Contains(job.Name)) return;
 
         NavigationManager.NavigateTo(PageRoute.EditScriptJobWithName(job.Name));
     }
@@ -210,7 +210,7 @@ public sealed partial class ScriptJobTable
         if (dialogResult.Canceled) return;
 
         var dialogResultData = dialogResult.Data as DeleteScriptJobDialogResult;
-        ScriptJob job = ScriptJobService.JobList.TryGetJob(jobName);
+        ScriptJob job = ScriptJobService.Jobs.GetJob(jobName);
 
         if (dialogResultData.ShouldDeleteJobResults && job != null)
         {
@@ -233,7 +233,7 @@ public sealed partial class ScriptJobTable
 
     private void DeleteJob(string jobName)
     {
-        ScriptJobService.JobList.Remove(jobName);
+        ScriptJobService.Jobs.Remove(jobName);
         ScriptJobSerializer.TryDeleteFile(jobName);
 
         InvokeAsync(StateHasChanged);
@@ -241,7 +241,7 @@ public sealed partial class ScriptJobTable
 
     private void DeleteJobResults(ScriptJob job)
     {
-        List<ScriptJobResult> results = ScriptJobService.JobResultList.Remove(job);
+        List<ScriptJobResult> results = ScriptJobService.JobResults.Remove(job);
 
         foreach (ScriptJobResult result in results)
         {

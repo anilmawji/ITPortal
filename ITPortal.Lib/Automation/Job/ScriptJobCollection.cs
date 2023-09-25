@@ -1,7 +1,12 @@
-﻿namespace ITPortal.Lib.Automation.Job;
+﻿using System.Collections;
 
-public class ScriptJobList
+namespace ITPortal.Lib.Automation.Job;
+
+public class ScriptJobCollection : ICollection<ScriptJob>
 {
+    public int Count => Jobs.Count;
+    public bool IsReadOnly => false;
+
     private readonly Dictionary<string, ScriptJob> Jobs = new();
 
     public void Add(ScriptJob job)
@@ -11,7 +16,7 @@ public class ScriptJobList
 
     public bool TryAdd(ScriptJob job)
     {
-        if (!HasJob(job.Name))
+        if (!Contains(job.Name))
         {
             Jobs.Add(job.Name, job);
 
@@ -19,6 +24,8 @@ public class ScriptJobList
         }
         return false;
     }
+
+    public bool Remove(ScriptJob job) => Remove(job.Name);
 
     public bool Remove(string jobName)
     {
@@ -40,7 +47,7 @@ public class ScriptJobList
     {
         string name = $"Job({Jobs.Count})";
 
-        while (HasJob(name))
+        while (Contains(name))
         {
             name += "(1)";
         }
@@ -59,20 +66,30 @@ public class ScriptJobList
         return true;
     }
 
-    public bool HasJob(string jobName)
-    {
-        return Jobs.GetValueOrDefault(jobName) != default(ScriptJob);
-    }
-
-    public ScriptJob? TryGetJob(string jobName)
+    public ScriptJob? GetJob(string jobName)
     {
         Jobs.TryGetValue(jobName, out ScriptJob? result);
 
         return result;
     }
 
-    public IReadOnlyDictionary<string, ScriptJob> GetJobs()
+    public void Clear() => Jobs.Clear();
+
+    public bool Contains(ScriptJob job) => Jobs.ContainsKey(job.Name);
+
+    public bool Contains(string jobName) => Jobs.ContainsKey(jobName);
+
+    public void CopyTo(ScriptJob[] array, int arrayIndex)
     {
-        return Jobs.AsReadOnly();
+        int index = arrayIndex;
+
+        foreach (ScriptJob job in Jobs.Values)
+        {
+            array[index++] = job;
+        }
     }
+
+    public IEnumerator<ScriptJob> GetEnumerator() => Jobs.Values.GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator() => Jobs.Values.GetEnumerator();
 }

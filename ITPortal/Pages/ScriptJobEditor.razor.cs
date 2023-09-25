@@ -41,7 +41,7 @@ public sealed partial class ScriptJobEditor
         {
             s_pageDescription = "Create new job";
             _newJobName = string.Empty;
-            _initialJobName = ScriptJobService.JobList.GetUniqueDefaultJobName();
+            _initialJobName = ScriptJobService.Jobs.GetUniqueDefaultJobName();
             _job = new ScriptJob(_initialJobName, new PowerShellScript());
             _headerTitle = "New Job";
             _creatingNewJob = true;
@@ -51,7 +51,7 @@ public sealed partial class ScriptJobEditor
             s_pageDescription = "Modify job properties";
             _initialJobName = JobName;
             _newJobName = _initialJobName;
-            _job = ScriptJobService.JobList.TryGetJob(JobName);
+            _job = ScriptJobService.Jobs.GetJob(JobName);
             _headerTitle = $"Edit Job \"{JobName}\"";
         }
     }
@@ -73,7 +73,7 @@ public sealed partial class ScriptJobEditor
         {
             yield return "Job name must be less than 30 characters in length";
         }
-        if (ScriptJobService.JobList.HasJob(jobName) && (_creatingNewJob || jobName != _initialJobName))
+        if (ScriptJobService.Jobs.Contains(jobName) && (_creatingNewJob || jobName != _initialJobName))
         {
             yield return "Job name must be unique";
         }
@@ -135,7 +135,7 @@ public sealed partial class ScriptJobEditor
             string filePath = ScriptJobSerializer.GetFilePath(_job.Name);
             ScriptJob job = ScriptJobSerializer.LoadFromFile(filePath);
 
-            ScriptJobService.JobList.ReplaceJob(job);
+            ScriptJobService.Jobs.ReplaceJob(job);
         }
         NavigationManager.NavigateTo(PageRoute.ScriptJobs);
     }
@@ -148,7 +148,7 @@ public sealed partial class ScriptJobEditor
 
         if (_creatingNewJob)
         {
-            ScriptJobService.JobList.Add(_job);
+            ScriptJobService.Jobs.Add(_job);
         }
         else
         {
@@ -157,7 +157,7 @@ public sealed partial class ScriptJobEditor
 
         if (_newJobName != string.Empty && _newJobName != _initialJobName)
         {
-            ScriptJobService.JobList.UpdateJobName(_job, _newJobName);
+            ScriptJobService.Jobs.UpdateJobName(_job, _newJobName);
         }
 
         string filePath = ScriptJobSerializer.GetFilePath(_job.Name);

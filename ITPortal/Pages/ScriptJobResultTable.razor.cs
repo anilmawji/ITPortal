@@ -14,8 +14,8 @@ public sealed partial class ScriptJobResultTable
     {
         if (firstRender)
         {
-            ScriptJobService.AddJobsFromSaveFolder(ScriptJobSerializer);
-            ScriptJobService.AddJobResultsFromSaveFolder(ScriptJobResultSerializer);
+            ScriptJobSerializer.LoadFromSaveFolder(ScriptJobService.Jobs);
+            ScriptJobResultSerializer.LoadFromSaveFolder(ScriptJobService.JobResults);
             StateHasChanged();
         }
         await base.OnAfterRenderAsync(firstRender);
@@ -26,7 +26,7 @@ public sealed partial class ScriptJobResultTable
         int resultId = eventArgs.Item.Id;
 
         // TODO: toast notification of result not found error
-        if (!ScriptJobService.JobResultList.HasResult(resultId)) return;
+        if (!ScriptJobService.JobResults.Contains(resultId)) return;
 
         NavigationManager.NavigateTo(PageRoute.ScriptJobResultDetailsWithId(resultId));
     }

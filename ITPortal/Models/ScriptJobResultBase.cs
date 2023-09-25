@@ -16,6 +16,6 @@ public class ScriptJobResultBase : ComponentBase
 
     protected override void OnInitialized()
     {
-        Result = ScriptJobService.JobResultList.TryGetResult(Id);
+        Result = ScriptJobService.JobResults.GetResult(Id);
     }
 }
