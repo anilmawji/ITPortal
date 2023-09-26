@@ -31,7 +31,6 @@ public sealed partial class ScriptJobTable
             { DevicePlatform.macOS, new[] { "json" } }
         })
     };
-    private static readonly IDictionary<string, EventHandler<ScriptOutputChangedEventArgs>> OutputChangedEvents = new Dictionary<string, EventHandler<ScriptOutputChangedEventArgs>>();
 
     private string _searchString = "";
     private HashSet<ScriptJob> selectedJobs = new();
@@ -176,18 +175,13 @@ public sealed partial class ScriptJobTable
 
     private void CancelJobOnErrorOutputReceived(ScriptJob job, ScriptOutputList outputList)
     {
-        if (OutputChangedEvents.ContainsKey(job.Name)) return;
-
-        void DoCancelJobOnErrorOutputReceived(object sender, ScriptOutputChangedEventArgs e)
+        outputList.OutputChanged += (object sender, ScriptOutputChangedEventArgs e) =>
         {
             if (e.StreamType == ScriptOutputStreamType.Error)
             {
                 CancelJob(job);
             }
-        }
-
-        OutputChangedEvents[job.Name] = DoCancelJobOnErrorOutputReceived;
-        outputList.OutputChanged += DoCancelJobOnErrorOutputReceived;
+        };
     }
 
     private async Task OpenCancelJobDialog(ScriptJob job)
@@ -223,11 +217,6 @@ public sealed partial class ScriptJobTable
             DeleteJobResults(job);
         }
         DeleteJob(jobName);
-
-        if (OutputChangedEvents.ContainsKey(job.Name))
-        {
-            //outputList.OutputChanged -= OutputChangedEvents[job.Name];
-        }
     }
 
     private void CancelJob(ScriptJob job)
@@ -252,6 +241,7 @@ public sealed partial class ScriptJobTable
         foreach (ScriptJobResult result in results)
         {
             ScriptJobSerializer.TryDeleteFile(result.Id.ToString());
+            result.Dispose();
         }
     }
 

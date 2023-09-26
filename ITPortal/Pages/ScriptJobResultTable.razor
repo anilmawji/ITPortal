@@ -6,8 +6,8 @@
 @attribute [AllowAnonymous]
 
 @inject IScriptJobService ScriptJobService
-@inject IObjectSerializationService<ScriptJob> ScriptJobSerializer
-@inject IObjectSerializationService<ScriptJobResult> ScriptJobResultSerializer
+@inject ISerializationService<ScriptJob> ScriptJobSerializer
+@inject ISerializationService<ScriptJobResult> ScriptJobResultSerializer
 @inject NavigationManager NavigationManager
 
 <style>
@@ -18,7 +18,7 @@
         overflow: hidden;
     }
 
-    /* correct table height and color */
+    /* correct table height */
     .mud-table-toolbar {
         --mud-internal-toolbar-height: 48px !important;
     }

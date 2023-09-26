@@ -2,10 +2,11 @@
 
 <MudNavMenu>
 	<MudNavGroup Title="PowerShell Executor" Expanded="true">
-		<MudNavLink Href="/jobs" Match="NavLinkMatch.All">Jobs</MudNavLink>
-		<MudNavLink Href="/job-results" Match="NavLinkMatch.All">Job Results</MudNavLink>
+		<MudNavLink Href=@PageRoute.ScriptJobs Match="NavLinkMatch.All">Jobs</MudNavLink>
+		<MudNavLink Href=@PageRoute.CreateScriptJob Match="NavLinkMatch.All">New Job</MudNavLink>
+		<MudNavLink Href=@PageRoute.ScriptJobResults Match="NavLinkMatch.All">Job Results</MudNavLink>
 	</MudNavGroup>
 	<MudNavGroup Title="Inventory" Expanded="true">
-		<MudNavLink Href="/devices" Match="NavLinkMatch.All">Devices</MudNavLink>
+		<MudNavLink Href=@PageRoute.DeviceInventory Match="NavLinkMatch.All">Devices</MudNavLink>
 	</MudNavGroup>
 </MudNavMenu>

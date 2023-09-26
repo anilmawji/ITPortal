@@ -17,12 +17,12 @@ public static class DependencyInjectionExtensions
     {
         serviceCollection.AddSingleton<IScriptJobService, ScriptJobService>();
 
-        serviceCollection.AddSingleton<IObjectSerializationService<ScriptJob>>(x =>
+        serviceCollection.AddSingleton<ISerializationService<ScriptJob>>(x =>
             ActivatorUtilities.CreateInstance<JsonSerializationService<ScriptJob>>(x,
                 Path.Combine(jobFileSaveFolder, "Jobs"),
                 ScriptJobContext.Default.ScriptJob, true));
 
-        serviceCollection.AddSingleton<IObjectSerializationService<ScriptJobResult>>(x =>
+        serviceCollection.AddSingleton<ISerializationService<ScriptJobResult>>(x =>
             ActivatorUtilities.CreateInstance<JsonSerializationService<ScriptJobResult>>(x,
                 Path.Combine(jobFileSaveFolder, "JobResults"),
                 ScriptJobResultContext.Default.ScriptJobResult, true));

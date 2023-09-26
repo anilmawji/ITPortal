@@ -3,6 +3,7 @@ using ITPortal.Lib.Services.Authentication;
 using Microsoft.Extensions.Configuration;
 using MudBlazor.Services;
 using CommunityToolkit.Maui;
+using Microsoft.Extensions.Logging;
 
 namespace ITPortal;
 public static class MauiProgram

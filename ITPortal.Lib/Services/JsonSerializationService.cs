@@ -4,7 +4,7 @@ using System.Text.Json.Serialization.Metadata;
 
 namespace ITPortal.Lib.Services;
 
-public class JsonSerializationService<T> : IObjectSerializationService<T>
+public class JsonSerializationService<T> : ISerializationService<T>
 {
     public string SaveFolderPath { get; private set; }
     public bool LoggingEnabled { get; private set; }
@@ -20,7 +20,7 @@ public class JsonSerializationService<T> : IObjectSerializationService<T>
 
     public string GetFilePath(string fileName)
     {
-        return Path.Combine(SaveFolderPath, Guid.NewGuid() + ".json");
+        return Path.Combine(SaveFolderPath, fileName + ".json");
     }
 
     private void TryLogEvent(LogEvent eventType, string message)

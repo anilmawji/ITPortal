@@ -53,6 +53,7 @@ public class ScriptJobResult : IDisposable
     public void Dispose()
     {
         ExecutionResultReceived.DisposeSubscriptions();
+        ScriptOutput.Dispose();
         GC.SuppressFinalize(this);
     }
 }

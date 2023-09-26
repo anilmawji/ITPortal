@@ -7,7 +7,7 @@
 @attribute [Route(PageRoute.EditScriptJob)]
 @attribute [AllowAnonymous]
 
-@inject IObjectSerializationService<ScriptJob> ScriptJobSerializer
+@inject ISerializationService<ScriptJob> ScriptJobSerializer
 @inject IScriptJobService ScriptJobService
 @inject NavigationManager NavigationManager
 
