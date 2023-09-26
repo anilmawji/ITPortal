@@ -3,7 +3,14 @@
         <h1>
             @if (NestedTitle != null)
             {
-                <a class="underlined" href=@PreviousPage>@Title</a>
+                if (OnPreviousPageClicked != null)
+                {
+                    <a class="underlined" href=@PreviousPage @onclick="@OnPreviousPageClicked" @onclick:preventDefault>@Title</a>
+                }
+                else
+                {
+                    <a class="underlined" href=@PreviousPage>@Title</a>
+                }
                 <span> > @NestedTitle</span>
             }
             else
@@ -29,7 +36,7 @@
     public RenderFragment ChildContent { get; set; } = null!;
 
     [Parameter]
-    public Action? OnPreviousPageEntered { get; set; }
+    public Action? OnPreviousPageClicked { get; set; }
 
     [Parameter]
     public string? Title { get; set; }

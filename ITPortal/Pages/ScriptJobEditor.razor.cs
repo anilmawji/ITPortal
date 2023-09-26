@@ -58,7 +58,7 @@ public sealed partial class ScriptJobEditor
 
     private void OnJobFieldChanged()
     {
-        System.Diagnostics.Debug.WriteLine("changed");
+        System.Diagnostics.Debug.WriteLine("field changed");
         _jobFieldChanged = true;
     }
 

@@ -11,7 +11,7 @@
 @inject IScriptJobService ScriptJobService
 @inject NavigationManager NavigationManager
 
-<PageContainer Title="PowerShell Jobs" NestedTitle=@_headerTitle PreviousPage="/jobs" Description=@s_pageDescription>
+<PageContainer Title="PowerShell Jobs" NestedTitle=@_headerTitle PreviousPage="/jobs" Description=@s_pageDescription OnPreviousPageClicked=@CancelJobChanges>
     <MudForm @ref=@_jobForm @bind-IsValid=@_jobHasValidState @bind-Errors=@_errors FieldChanged=@OnJobFieldChanged>
         <PageSection Title="Job Details">
             <div class="input-line">
