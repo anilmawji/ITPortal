@@ -8,39 +8,57 @@ namespace ITPortal.Lib.Automation.Script;
 
 public class PowerShellScript : AutomationScript
 {
-    private static readonly InitialSessionState _initialPowerShellState;
+    public InitialSessionState InitialPowerShellState;
+
+    private static readonly InitialSessionState s_defaultInitialPowerShellState;
 
     static PowerShellScript()
     {
-        // CreateDefault2() only loads commands necessary to host PowerShell, CreateDefault() loads all built-in commands
-        _initialPowerShellState = InitialSessionState.CreateDefault();
-        _initialPowerShellState.ApartmentState = ApartmentState.MTA;
-        _initialPowerShellState.ExecutionPolicy = Microsoft.PowerShell.ExecutionPolicy.Bypass;
+        s_defaultInitialPowerShellState = InitialSessionState.CreateDefault();
+        s_defaultInitialPowerShellState.ApartmentState = ApartmentState.MTA;
+        s_defaultInitialPowerShellState.ExecutionPolicy = Microsoft.PowerShell.ExecutionPolicy.Bypass;
     }
 
-    public PowerShellScript() { }
+    public PowerShellScript()
+    {
+        InitialPowerShellState = s_defaultInitialPowerShellState;
+    }
+
+    public PowerShellScript(InitialSessionState initialSessionState)
+    {
+        InitialPowerShellState = initialSessionState;
+    }
 
     [JsonConstructor]
-    public PowerShellScript(string filePath, string fileName, string[] content, List<ScriptParameter> parameters)
-        : base(filePath, fileName, content, parameters) { }
+    public PowerShellScript(string filePath, string[] fileContent, List<ScriptParameter> parameters)
+        : base(filePath, fileContent, parameters)
+    {
+        InitialPowerShellState = s_defaultInitialPowerShellState;
+    }
 
-    public override bool LoadParameters()
+    public PowerShellScript(string filePath, string[] fileContent, List<ScriptParameter> parameters, InitialSessionState initialSessionState)
+        : base(filePath, fileContent, parameters)
+    {
+        InitialPowerShellState = initialSessionState;
+    }
+
+    public override string[] LoadParameters()
     {
         if (!IsContentLoaded())
         {
-            throw new InvalidOperationException("Attempt to load parameters of a script that has not been loaded");
+            return new string[1] { "Attempt to load parameters of a script that has not been loaded" };
         }
+        Parameters.Clear();
 
         ScriptBlockAst scriptAst = Parser.ParseInput(ContentString, out _, out ParseError[] errors);
 
-        if (errors.Length != 0)
-        {
-            return false;
-        }
         if (scriptAst.ParamBlock == null)
         {
-            return true;
+            return Array.Empty<string>();
         }
+
+        string[] errorMessages = CollectErrorMessages(errors);
+
         foreach (var parameterAst in scriptAst.ParamBlock.Parameters)
         {
             ScriptParameter parameter = new(
@@ -50,7 +68,26 @@ public class PowerShellScript : AutomationScript
             );
             Parameters.Add(parameter);
         }
-        return true;
+
+        return errorMessages;
+    }
+
+    private static string[] CollectErrorMessages(ParseError[] errors)
+    {
+        if (errors.Length == 0)
+        {
+            return Array.Empty<string>();
+        }
+
+        string[] errorMessages = new string[errors.Length];
+
+        for (int i = 0; i < errors.Length; i++)
+        {
+            ParseError error = errors[i];
+            errorMessages[i] = error.ErrorId + ": " + error.Message;
+        }
+
+        return errorMessages;
     }
 
     public override ScriptOutputList NewScriptOutputList()
@@ -74,7 +111,7 @@ public class PowerShellScript : AutomationScript
             return ScriptExecutionState.Stopped;
         }
 
-        using PowerShell shell = PowerShell.Create(_initialPowerShellState);
+        using PowerShell shell = PowerShell.Create(InitialPowerShellState);
 
         try
         {

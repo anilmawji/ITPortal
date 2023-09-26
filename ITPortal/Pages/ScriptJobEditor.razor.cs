@@ -29,13 +29,11 @@ public sealed partial class ScriptJobEditor
     private string _newJobName;
     private bool _creatingNewJob;
     private bool _jobHasValidState;
-    private bool _jobFieldChanged;
-    private bool _jobScriptChanged;
+    private bool _canTrySaveJob;
 
     protected override void OnInitialized()
     {
-        _jobFieldChanged = false;
-        _jobScriptChanged = false;
+        _canTrySaveJob = false;
 
         if (JobName == null)
         {
@@ -58,7 +56,10 @@ public sealed partial class ScriptJobEditor
 
     private void OnJobFieldChanged()
     {
-        _jobFieldChanged = true;
+        if (_job.Script.IsContentLoaded())
+        {
+            _canTrySaveJob = true;
+        }
     }
 
     private IEnumerable<string> ValidateJobName(string jobName)
@@ -97,19 +98,36 @@ public sealed partial class ScriptJobEditor
         if (fileResult == null) return;
 
         _job.Script.LoadContent(fileResult.FullPath);
-        _job.Script.LoadParameters();
-        _jobScriptChanged = true;
 
+        string[] errors = _job.Script.LoadParameters();
+
+        if (errors.Length > 0)
+        {
+            Logger.AddMessages(LogEvent.Error, errors);
+        }
+
+        _canTrySaveJob = true;
         StateHasChanged();
     }
 
     private void RefreshScript()
     {
-        if (_job.Script.TryRefresh())
+        string[] errors = _job.Script.Refresh();
+
+        foreach (ScriptParameter p in _job.Script.Parameters)
         {
-            _jobScriptChanged = true;
-            InvokeAsync(StateHasChanged);
+            System.Diagnostics.Debug.WriteLine("p: " + p.Name);
         }
+
+        if (errors.Length > 0)
+        {
+            Logger.AddMessages(LogEvent.Error, errors);
+        }
+        else
+        {
+            _canTrySaveJob = true;
+        }
+        InvokeAsync(StateHasChanged);
     }
 
     private void EditScript()
@@ -122,14 +140,14 @@ public sealed partial class ScriptJobEditor
     private void RemoveScript()
     {
         _job.Script.Unload();
-        _jobScriptChanged = true;
 
+        _canTrySaveJob = false;
         InvokeAsync(StateHasChanged);
     }
 
     private void CancelJobChanges()
     {
-        if (!_creatingNewJob && (_jobScriptChanged || _jobFieldChanged))
+        if (!_creatingNewJob && _canTrySaveJob)
         {
             string filePath = ScriptJobSerializer.GetFilePath(_job.Name);
             ScriptJob job = ScriptJobSerializer.LoadFromFile(filePath);
@@ -163,10 +181,5 @@ public sealed partial class ScriptJobEditor
         ScriptJobSerializer.TryCreateFile(_job, filePath);
 
         NavigationManager.NavigateTo(PageRoute.ScriptJobs);
-    }
-
-    private bool CanTrySaveJob()
-    {
-        return _job.Script.IsContentLoaded() && (_jobFieldChanged || _jobScriptChanged);
     }
 }

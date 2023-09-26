@@ -3,7 +3,7 @@
 ﻿@if (Script.IsContentLoaded())
 {
     <p class="scroll script-content">
-        @foreach (string line in Script.Content)
+        @foreach (string line in Script.FileContent)
         {
             @line
             <br>

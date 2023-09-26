@@ -13,6 +13,14 @@ public static class Logger
     private static readonly string LogDirPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");
     private static readonly string NewLine = Environment.NewLine;
 
+    public static void AddMessages(LogEvent eventType, string[] messages)
+    {
+        foreach (string message in messages)
+        {
+            AddMessage(eventType, message);
+        }
+    }
+
     public static void AddMessage(LogEvent eventType, string message)
     {
         if (!File.Exists(LogDirPath))

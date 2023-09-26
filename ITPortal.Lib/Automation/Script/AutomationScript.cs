@@ -10,72 +10,58 @@ public abstract class AutomationScript
 
     public string? FilePath { get; private set; }
     public string? FileName { get; private set; }
-    public string[] Content { get; private set; }
+    public string[]? FileContent { get; private set; }
 
     [JsonIgnore]
-    public string ContentString { get; private set; }
+    public string? ContentString { get; private set; }
     public ScriptLoadState ContentLoadState { get; private set; }
     public List<ScriptParameter> Parameters { get; private set; }
 
     public AutomationScript()
     {
-        FileName = string.Empty;
-        Content = Array.Empty<string>();
-        ContentString = string.Empty;
         Parameters = new List<ScriptParameter>();
     }
 
-    public AutomationScript(string filePath) : this()
-    {
-        LoadContent(filePath);
-        LoadParameters();
-    }
-
-    public AutomationScript(string filePath, string fileName, string[] content, List<ScriptParameter> parameters)
+    public AutomationScript(string filePath, string[] fileContent, List<ScriptParameter> parameters)
     {
         FilePath = filePath;
-        FileName = fileName;
-        Content = content;
-        ContentString = GetContentString();
+        FileName = Path.GetFileName(FilePath);
+        FileContent = fileContent;
+        ContentString = string.Join("\n", FileContent);
         Parameters = parameters;
         ContentLoadState = ScriptLoadState.Success;
-    }
-
-    private string GetContentString()
-    {
-        return string.Join("\n", Content);
     }
 
     public void LoadContent(string filePath)
     {
         ArgumentNullException.ThrowIfNull(filePath, nameof(filePath));
-        
-        FileName = Path.GetFileName(filePath);
+
         FilePath = filePath;
+        FileName = Path.GetFileName(FilePath);
 
         DoLoadContent(FilePath);
     }
 
     private void DoLoadContent(string filePath)
     {
-        Content = File.ReadAllLines(filePath);
-        ContentString = GetContentString();
+        FileContent = File.ReadAllLines(filePath);
+        ContentString = string.Join("\n", FileContent);
         ContentLoadState = ScriptLoadState.Success;
     }
 
-    public bool TryRefresh()
+    public string[] Refresh()
     {
         if (FilePath != null && ContentLoadState == ScriptLoadState.Success)
         {
             DoLoadContent(FilePath);
-            LoadParameters();
 
-            return true;
+            return LoadParameters();
         }
-        return false;
+
+        return Array.Empty<string>();
     }
 
-    public abstract bool LoadParameters();
+    public abstract string[] LoadParameters();
 
     public void AddParameter(string parameterName, Type parameterType, bool mandatory = false)
     {
@@ -91,8 +77,8 @@ public abstract class AutomationScript
     {
         FilePath = null;
         FileName = null;
-        Content = Array.Empty<string>();
-        ContentString = string.Empty;
+        FileContent = null;
+        ContentString = null;
         Parameters.Clear();
         ContentLoadState = ScriptLoadState.Unloaded;
     }
@@ -111,9 +97,9 @@ public abstract class AutomationScript
     {
         return ContentLoadState == ScriptLoadState.Failed;
     }
-    
+
     public override string ToString()
     {
-        return ContentString;
+        return ContentString ?? string.Empty;
     }
 }

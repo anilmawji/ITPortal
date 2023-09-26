@@ -84,7 +84,7 @@
                     </MudItem>
                     <MudItem>
                         <MudButton OnClick=@TrySaveJob Variant="Variant.Filled" Color="Color.Secondary" Style="color:white"
-                                   Disabled="!CanTrySaveJob()">
+                                   Disabled=@(!_canTrySaveJob)>
                             <MudText>@(_creatingNewJob ? "Done" : "Save")</MudText>
                         </MudButton>
                     </MudItem>
