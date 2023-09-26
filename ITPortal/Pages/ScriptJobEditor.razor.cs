@@ -2,6 +2,7 @@
 using ITPortal.Lib.Automation.Script;
 using ITPortal.Lib.Utility;
 using ITPortal.Utility;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace ITPortal.Pages;
 
@@ -58,7 +59,6 @@ public sealed partial class ScriptJobEditor
 
     private void OnJobFieldChanged()
     {
-        System.Diagnostics.Debug.WriteLine("field changed");
         _jobFieldChanged = true;
     }
 

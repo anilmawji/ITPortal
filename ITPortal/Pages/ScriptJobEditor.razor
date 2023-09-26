@@ -16,11 +16,11 @@
         <PageSection Title="Job Details">
             <div class="input-line">
                 <MudTextField T="string" @bind-Value=@_newJobName Label="Name" Variant="Variant.Filled" Margin="Margin.Dense"
-                              Validation=@(new Func<string, IEnumerable<string>>(ValidateJobName)) Placeholder=@_initialJobName />
+                              Validation=@(new Func<string, IEnumerable<string>>(ValidateJobName)) Placeholder=@_initialJobName OnlyValidateIfDirty="true" />
             </div>
             <div class="input-line">
                 <MudTextField T="string" @bind-Value=@_job.Description Label="Description" Variant="Variant.Filled" Margin="Margin.Dense"
-                              Validation=@(new Func<string, IEnumerable<string>>(ValidateJobDescription))/>
+                              Validation=@(new Func<string, IEnumerable<string>>(ValidateJobDescription)) OnlyValidateIfDirty="true" />
             </div>
         </PageSection>
 

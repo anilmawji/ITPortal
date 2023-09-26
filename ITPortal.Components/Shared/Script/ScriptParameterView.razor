@@ -6,7 +6,7 @@
     <div class="input-line">
         <MudTextField T="string" Label=@ParameterName Lines=@GetNumLinesInTextField() Variant="Variant.Filled" Margin="Margin.Dense"
                       Required=@ScriptParameter.Mandatory Text=@((string)ScriptParameter.Value) TextChanged="(text) => ScriptParameter.Value = text"
-                      RequiredError=@RequiredError />
+                      OnlyValidateIfDirty="true" RequiredError=@RequiredError />
     </div>
 }
 else if (ScriptParameter.IsType(typeof(int)))
@@ -14,7 +14,7 @@ else if (ScriptParameter.IsType(typeof(int)))
     <div class="small-input-line">
         <MudNumericField T="int" Label=@ParameterName Variant="Variant.Filled" Margin="Margin.Dense"
                          Required=@ScriptParameter.Mandatory Value=@((int)ScriptParameter.Value) ValueChanged="(num) => ScriptParameter.Value = num"
-                         RequiredError=@RequiredError />
+                         OnlyValidateIfDirty="true" RequiredError=@RequiredError />
     </div>
 }
 else if (ScriptParameter.IsBinaryType())
@@ -59,7 +59,7 @@ else if (ScriptParameter.IsType(typeof(string[])))
         <MudExtensions.MudChipField T="string" Label=@ParameterName Margin="Margin.Dense" Required=@ScriptParameter.Mandatory
                                     Values=@((List<string>)ScriptParameter.Value) Delimiter=@Delimiter FullWidth="true" ChipColor="Color.Default"
                                     ChipVariant="Variant.Text" ChipSize="Size.Medium" WrapChips="true" ChipsMaxWidth=@ChipsMaxWidth Closeable="true"
-                                    Variant="Variant.Filled" RequiredError=@RequiredError />
+                                    Variant="Variant.Filled" OnlyValidateIfDirty="true" RequiredError=@RequiredError />
     </div>
 }
 else if (ScriptParameter.IsType(typeof(int[])))
@@ -68,7 +68,7 @@ else if (ScriptParameter.IsType(typeof(int[])))
         <MudExtensions.MudChipField T="int" Label=@ParameterName Margin="Margin.Dense" Required=@ScriptParameter.Mandatory
                                     Values=@((List<string>)ScriptParameter.Value) Delimiter=@Delimiter FullWidth="true" ChipColor="Color.Default"
                                     ChipVariant="Variant.Text" ChipSize="Size.Medium" WrapChips="true" ChipsMaxWidth=@ChipsMaxWidth Closeable="true"
-                                    Variant="Variant.Filled" RequiredError=@RequiredError />
+                                    Variant="Variant.Filled" OnlyValidateIfDirty="true" RequiredError=@RequiredError />
     </div>
 }
 else if (ScriptParameter.IsType(typeof(bool[])))
@@ -77,7 +77,8 @@ else if (ScriptParameter.IsType(typeof(bool[])))
         <MudExtensions.MudChipField T="bool" Label=@ParameterName Margin="Margin.Dense" Required=@ScriptParameter.Mandatory
                                     Values=@((List<string>)ScriptParameter.Value) Delimiter=@Delimiter FullWidth="true" ChipColor="Color.Default"
                                     ChipVariant="Variant.Text" ChipSize="Size.Medium" WrapChips="true" ChipsMaxWidth=@ChipsMaxWidth Closeable="true"
-                                    Variant="Variant.Filled" RequiredError=@RequiredError Validation="@(new Func<List<string>, IEnumerable<string>>(ValidateArray))" />
+                                    Variant="Variant.Filled" OnlyValidateIfDirty="true" RequiredError=@RequiredError
+                                    Validation="@(new Func<List<string>, IEnumerable<string>>(ValidateArray))" />
     </div>
 }
 else
