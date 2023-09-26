@@ -37,7 +37,7 @@
                     <MudTableSortLabel SortBy="new Func<ScriptJobResult, object>(x=>x.Id)">Id</MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<ScriptJobResult, object>(x=>x.ScriptName)">Script</MudTableSortLabel>
+                    <MudTableSortLabel SortBy="new Func<ScriptJobResult, object>(x=>x.JobName)">Job</MudTableSortLabel>
                 </MudTh>
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<ScriptJobResult, object>(x=>x.DeviceName)">Device</MudTableSortLabel>
@@ -51,7 +51,7 @@
             </HeaderContent>
             <RowTemplate>
                 <MudTh DataLabel="Id">@context.Id</MudTh>
-                <MudTh DataLabel="Script">@context.ScriptName</MudTh>
+                <MudTh DataLabel="Job">@context.JobName</MudTh>
                 <MudTh DataLabel="Device">@context.DeviceName</MudTh>
                 <MudTh DataLabel="Status">
                     <ScriptExecutionStateChip Result=@context />
