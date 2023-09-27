@@ -1,9 +1,7 @@
 ﻿using ITPortal.Lib.Services;
-using ITPortal.Lib.Services.Authentication;
 using Microsoft.Extensions.Configuration;
 using MudBlazor.Services;
 using CommunityToolkit.Maui;
-using Microsoft.Extensions.Logging;
 
 namespace ITPortal;
 public static class MauiProgram
@@ -29,16 +27,16 @@ public static class MauiProgram
 
         builder.Configuration.AddConfiguration(configuration);
 
-        ConfigureServices(builder.Services);
+        ConfigureServices(builder.Services, configuration);
 
         return builder.Build();
     }
 
-    public static void ConfigureServices(IServiceCollection services)
+    public static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
         services.AddMudServices();
-        services.AddMsalAuthenticationServices();
-        services.AddScriptJobServices(FileSystem.Current.AppDataDirectory);
+        services.AddMsalAuthenticationServices(configuration);
+        services.AddScriptJobServices(configuration, FileSystem.Current.AppDataDirectory);
         services.AddScoped<IGraphClientService, GraphClientService>();
         services.AddGitHubServices();
     }

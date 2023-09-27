@@ -1,32 +1,79 @@
 ﻿using ITPortal.Lib.Automation.Job;
+using ITPortal.Lib.Services.Authentication;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
+using Microsoft.Kiota.Abstractions.Authentication;
 
 namespace ITPortal.Lib.Services;
 
 public static class DependencyInjectionExtensions
 {
-    public static IServiceCollection AddGitHubServices(this IServiceCollection serviceCollection)
-    {
-        serviceCollection.AddHttpClient<IHttpClientService, HttpClientService>("GitHubApi");
-        serviceCollection.AddSingleton<IGitHubService, GitHubService>();
+    private static Dictionary<string, bool> OptionReferences = new();
+    private static bool AuthorizationCoreAdded;
 
-        return serviceCollection;
+    public static void AddOption<T>(this IServiceCollection collection, IConfiguration configuration) where T : class
+    {
+        collection.Configure<T>(configuration.GetSection(typeof(T).Name));
     }
 
-    public static IServiceCollection AddScriptJobServices(this IServiceCollection serviceCollection, string jobFileSaveFolder)
+    public static void TryAddOption<T>(this IServiceCollection collection, IConfiguration configuration) where T : class
     {
-        serviceCollection.AddSingleton<IScriptJobService, ScriptJobService>();
+        string sectionName = typeof(T).Name;
 
-        serviceCollection.AddSingleton<ISerializationService<ScriptJob>>(x =>
-            ActivatorUtilities.CreateInstance<JsonSerializationService<ScriptJob>>(x,
-                Path.Combine(jobFileSaveFolder, "Jobs"),
-                ScriptJobContext.Default.ScriptJob, true));
+        if (OptionReferences.ContainsKey(sectionName)) return;
+        OptionReferences[sectionName] = true;
 
-        serviceCollection.AddSingleton<ISerializationService<ScriptJobResult>>(x =>
-            ActivatorUtilities.CreateInstance<JsonSerializationService<ScriptJobResult>>(x,
-                Path.Combine(jobFileSaveFolder, "JobResults"),
-                ScriptJobResultContext.Default.ScriptJobResult, true));
+        collection.Configure<T>(configuration.GetSection(sectionName));
+    }
 
-        return serviceCollection;
+    private static void TryAddAuthorizationCore(this IServiceCollection collection)
+    {
+        if (AuthorizationCoreAdded) return;
+        AuthorizationCoreAdded = true;
+
+        collection.AddAuthorizationCore();
+    }
+
+    public static IServiceCollection AddMsalAuthenticationServices(this IServiceCollection collection, IConfiguration configuration)
+    {
+        collection.TryAddAuthorizationCore();
+        collection.TryAddOption<AzureAdSettings>(configuration);
+        collection.TryAddScoped<AuthenticationStateProvider, ExternalAuthStateProvider>();
+        collection.TryAddSingleton<IAccessTokenProvider, TokenProvider>();
+        collection.AddSingleton<IAuthenticationService, MsalAuthenticationService>();
+
+        return collection;
+    }
+
+    public static IServiceCollection AddGitHubServices(this IServiceCollection collection)
+    {
+        collection.AddHttpClient<IHttpClientService, HttpClientService>("GitHubApi");
+        collection.AddSingleton<IGitHubService, GitHubService>();
+
+        return collection;
+    }
+
+    //TODO: use settings file for save folder names, and loggingEnabled
+    public static IServiceCollection AddScriptJobServices(this IServiceCollection collection, IConfiguration configuration, string saveFolderPath)
+    {
+        collection.AddSingleton<IScriptJobService, ScriptJobService>();
+        collection.AddOption<SerializationSettings>(configuration);
+
+        collection.AddSingleton<ISerializationService<ScriptJob>, JsonSerializationService<ScriptJob>>(
+            serviceProvider => new JsonSerializationService<ScriptJob>(
+                options: serviceProvider.GetRequiredService<IOptions<SerializationSettings>>(),
+                typeInfo: ScriptJobContext.Default.ScriptJob,
+                saveFolderPath));
+
+        collection.AddSingleton<ISerializationService<ScriptJobResult>, JsonSerializationService<ScriptJobResult>>(
+            serviceProvider => new JsonSerializationService<ScriptJobResult>(
+                options: serviceProvider.GetRequiredService<IOptions<SerializationSettings>>(),
+                typeInfo: ScriptJobResultContext.Default.ScriptJobResult,
+                saveFolderPath));
+
+        return collection;
     }
 }

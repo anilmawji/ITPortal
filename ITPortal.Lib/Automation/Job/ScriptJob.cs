@@ -18,6 +18,10 @@ public class ScriptJob : IDisposable
 
     private CancellationTokenSource _cancellationTokenSource = new();
 
+    public ScriptJob(string name, string description, AutomationScript script) : this(name, description, script, DateTime.Now) { }
+
+    public ScriptJob(string name, AutomationScript script) : this(name, string.Empty, script, DateTime.Now) { }
+
     [JsonConstructor]
     public ScriptJob(string name, string description, AutomationScript script, DateTime creationTime)
     {
@@ -31,10 +35,6 @@ public class ScriptJob : IDisposable
             Script.LoadContent(Script.FilePath);
         }
     }
-
-    public ScriptJob(string name, string description, AutomationScript script) : this(name, description, script, DateTime.Now) { }
-
-    public ScriptJob(string name, AutomationScript script) : this(name, string.Empty, script, DateTime.Now) { }
 
     // TODO: use runDate to determine when to run the job
     public async Task<ScriptExecutionState> Run(string deviceName, ScriptOutputList outputList,

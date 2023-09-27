@@ -1,21 +1,22 @@
-﻿using Microsoft.Identity.Client;
+﻿using Microsoft.Extensions.Options;
+using Microsoft.Identity.Client;
 using System.Net.Http.Headers;
 
 namespace ITPortal.Lib.Services.Authentication;
 
 public sealed class MsalAuthenticationService : IAuthenticationService
 {
-    private readonly AzureAdSettings _settings;
+    private readonly AzureAdSettings _azureAdSettings;
     private readonly IPublicClientApplication? _authenticationClient;
 
-    public MsalAuthenticationService(AzureAdSettings configuration)
+    public MsalAuthenticationService(IOptions<AzureAdSettings> azureAdSettingsAccessor)
     {
-        _settings = configuration;
+        _azureAdSettings = azureAdSettingsAccessor.Value;
         // Public client apps are not trusted to safely keep secrets, so only access web APIs on behalf of the user
-        _authenticationClient = PublicClientApplicationBuilder.Create(_settings.ClientId)
+        _authenticationClient = PublicClientApplicationBuilder.Create(_azureAdSettings.ClientId)
             // Mark as accessible by Arcurve accounts only
-            .WithAuthority(AzureCloudInstance.AzurePublic, _settings.TenantId)
-            .WithRedirectUri($"msal{_settings.ClientId}://auth")
+            .WithAuthority(AzureCloudInstance.AzurePublic, _azureAdSettings.TenantId)
+            .WithRedirectUri($"msal{_azureAdSettings.ClientId}://auth")
             .Build();
     }
 
@@ -40,8 +41,8 @@ public sealed class MsalAuthenticationService : IAuthenticationService
         {
             if (accounts.Any())
             {
-                result = await _authenticationClient.AcquireTokenSilent(_settings.Scopes, accounts.FirstOrDefault())
-                    .WithTenantId(_settings.TenantId)
+                result = await _authenticationClient.AcquireTokenSilent(_azureAdSettings.Scopes, accounts.FirstOrDefault())
+                    .WithTenantId(_azureAdSettings.TenantId)
                     .ExecuteAsync(cancellationToken)
                     .ConfigureAwait(false);
             }
@@ -66,8 +67,8 @@ public sealed class MsalAuthenticationService : IAuthenticationService
         AuthenticationResult result;
         try
         {
-            result = await _authenticationClient.AcquireTokenInteractive(_settings.Scopes)
-                .WithTenantId(_settings.TenantId)
+            result = await _authenticationClient.AcquireTokenInteractive(_azureAdSettings.Scopes)
+                .WithTenantId(_azureAdSettings.TenantId)
                 .WithParentActivityOrWindow(DeviceWindowHelper.WindowHandle)
                 .ExecuteAsync(cancellationToken)
                 .ConfigureAwait(false);
