@@ -19,7 +19,7 @@ public class ScriptJobResult : IDisposable
     [JsonIgnore]
     public Task<ScriptExecutionState>? RunJobTask { get; private set; }
 
-    public ScriptJobResult(int id, string jobName, string scriptName, string deviceName, DateTime executionTime, ScriptOutputList scriptOutput)
+    private ScriptJobResult(int id, string jobName, string scriptName, string deviceName, DateTime executionTime, ScriptOutputList scriptOutput)
     {
         Id = id;
         JobName = jobName;

@@ -114,11 +114,6 @@ public sealed partial class ScriptJobEditor
     {
         string[] errors = _job.Script.Refresh();
 
-        foreach (ScriptParameter p in _job.Script.Parameters)
-        {
-            System.Diagnostics.Debug.WriteLine("p: " + p.Name);
-        }
-
         if (errors.Length > 0)
         {
             Logger.AddMessages(LogEvent.Error, errors);

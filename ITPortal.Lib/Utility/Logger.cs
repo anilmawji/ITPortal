@@ -1,13 +1,5 @@
 ﻿namespace ITPortal.Lib.Utility;
 
-public enum LogEvent
-{
-    Info,
-    Success,
-    Warning,
-    Error
-}
-
 public static class Logger
 {
     private static readonly string LogDirPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");

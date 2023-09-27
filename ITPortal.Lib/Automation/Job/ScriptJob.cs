@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace ITPortal.Lib.Automation.Job;
 
-public class ScriptJob : IDisposable
+public class ScriptJob : IScriptJob, IDisposable
 {
     public string Name { get; set; }
     public string Description { get; set; }
@@ -18,9 +18,9 @@ public class ScriptJob : IDisposable
 
     private CancellationTokenSource _cancellationTokenSource = new();
 
-    public ScriptJob(string name, string description, AutomationScript script) : this(name, description, script, DateTime.Now) { }
-
     public ScriptJob(string name, AutomationScript script) : this(name, string.Empty, script, DateTime.Now) { }
+
+    public ScriptJob(string name, string description, AutomationScript script) : this(name, description, script, DateTime.Now) { }
 
     [JsonConstructor]
     public ScriptJob(string name, string description, AutomationScript script, DateTime creationTime)
@@ -37,8 +37,7 @@ public class ScriptJob : IDisposable
     }
 
     // TODO: use runDate to determine when to run the job
-    public async Task<ScriptExecutionState> Run(string deviceName, ScriptOutputList outputList,
-        string cancellationMessage, DateTime runDate = default)
+    public async Task<ScriptExecutionState> Run(string deviceName, ScriptOutputList outputList, string cancellationMessage, DateTime runDate = default)
     {
         Task<ScriptExecutionState> runScript = Script.InvokeAsync(
             deviceName,
@@ -57,15 +56,15 @@ public class ScriptJob : IDisposable
         return executionResult;
     }
 
-    public void Cancel()
-    {
-        _cancellationTokenSource?.Cancel();
-    }
-
     private void SetState(ScriptJobState state)
     {
         State = state;
         StateChanged?.Invoke(this, State);
+    }
+
+    public void Cancel()
+    {
+        _cancellationTokenSource?.Cancel();
     }
 
     public bool IsIdle()

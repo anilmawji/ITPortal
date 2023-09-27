@@ -48,15 +48,6 @@ public static class DependencyInjectionExtensions
         return collection;
     }
 
-    public static IServiceCollection AddGitHubServices(this IServiceCollection collection)
-    {
-        collection.AddHttpClient<IHttpClientService, HttpClientService>("GitHubApi");
-        collection.AddSingleton<IGitHubService, GitHubService>();
-
-        return collection;
-    }
-
-    //TODO: use settings file for save folder names, and loggingEnabled
     public static IServiceCollection AddScriptJobServices(this IServiceCollection collection, IConfiguration configuration, string saveFolderPath)
     {
         collection.AddSingleton<IScriptJobService, ScriptJobService>();
@@ -73,6 +64,14 @@ public static class DependencyInjectionExtensions
                 options: serviceProvider.GetRequiredService<IOptions<SerializationSettings>>(),
                 typeInfo: ScriptJobResultContext.Default.ScriptJobResult,
                 saveFolderPath));
+
+        return collection;
+    }
+
+    public static IServiceCollection AddGitHubServices(this IServiceCollection collection)
+    {
+        collection.AddHttpClient<IHttpClientService, HttpClientService>("GitHubApi");
+        collection.AddSingleton<IGitHubService, GitHubService>();
 
         return collection;
     }

@@ -22,7 +22,7 @@ public abstract class AutomationScript
         Parameters = new List<ScriptParameter>();
     }
 
-    public AutomationScript(string filePath, string[] fileContent, List<ScriptParameter> parameters)
+    protected AutomationScript(string filePath, string[] fileContent, List<ScriptParameter> parameters)
     {
         FilePath = filePath;
         FileName = Path.GetFileName(FilePath);

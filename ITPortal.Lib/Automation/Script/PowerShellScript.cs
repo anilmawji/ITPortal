@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace ITPortal.Lib.Automation.Script;
 
-public class PowerShellScript : AutomationScript
+public class PowerShellScript : AutomationScript, IPowerShellScript
 {
     public InitialSessionState InitialPowerShellState;
 
@@ -34,12 +34,6 @@ public class PowerShellScript : AutomationScript
         : base(filePath, fileContent, parameters)
     {
         InitialPowerShellState = s_defaultInitialPowerShellState;
-    }
-
-    public PowerShellScript(string filePath, string[] fileContent, List<ScriptParameter> parameters, InitialSessionState initialSessionState)
-        : base(filePath, fileContent, parameters)
-    {
-        InitialPowerShellState = initialSessionState;
     }
 
     public override string[] LoadParameters()
