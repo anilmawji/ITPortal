@@ -1,9 +1,9 @@
 # PowerShell Script Runner
 
 Microsoft-focused desktop application for internal IT operations, made with .NET MAUI Blazor Hybrid.
-•	Dynamically generates modern UI to interact with PowerShell script blocks
-•	Import, track, schedule and execute scripts locally
-•	Authenticate with Microsoft to automatically request and feed API tokens to scripts
+- Dynamically generates modern UI to interact with PowerShell script blocks
+- Import, track, schedule and execute scripts locally
+- Authenticate with Microsoft to automatically request and feed API tokens to scripts
 
 ![login](https://github.com/anilmawji/ITPortal/assets/36245645/6e43a489-54a7-4bd1-a095-26491ef70cd1)
 
