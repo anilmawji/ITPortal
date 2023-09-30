@@ -3,7 +3,7 @@
 Microsoft-focused desktop application for internal IT operations, made with .NET MAUI Blazor Hybrid.
 - Dynamically generates modern UI to interact with PowerShell script blocks
 - Import, track, schedule and execute scripts locally
-- Authenticate with Microsoft to automatically request and feed API tokens to scripts from Azure Key Vault
+- Authenticate with Microsoft to automatically request and feed access tokens to scripts from Azure Key Vault
 
 ![script-demo](https://github.com/anilmawji/PowerShell-Script-Runner/assets/36245645/9c2ef69e-27a2-4085-b594-82332d4d4272)
 
