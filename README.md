@@ -5,9 +5,9 @@ Microsoft-focused desktop application for internal IT operations, made with .NET
 - Import, track, schedule and execute scripts locally
 - Authenticate with Microsoft to automatically request and feed API tokens to scripts
 
-![login](https://github.com/anilmawji/ITPortal/assets/36245645/6e43a489-54a7-4bd1-a095-26491ef70cd1)
-
 ![script-demo](https://github.com/anilmawji/PowerShell-Script-Runner/assets/36245645/9c2ef69e-27a2-4085-b594-82332d4d4272)
+
+![login](https://github.com/anilmawji/ITPortal/assets/36245645/6e43a489-54a7-4bd1-a095-26491ef70cd1)
 
 ![jobs](https://github.com/anilmawji/ITPortal/assets/36245645/f1152d13-a7a1-4705-957e-e21470831d8e)
 
