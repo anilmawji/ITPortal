@@ -2,7 +2,7 @@
 
 Microsoft-focused desktop application for internal IT operations, made with .NET MAUI Blazor Hybrid.
 
-Provides a modern interface to interact with PowerShell script blocks and manage an automation codebase.
+Provides a modern interface to interact with PowerShell script blocks and manage an automation codebase. View script output in real time.
 
 ![login](https://github.com/anilmawji/ITPortal/assets/36245645/6e43a489-54a7-4bd1-a095-26491ef70cd1)
 
