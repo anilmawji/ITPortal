@@ -1,8 +1,8 @@
-# ITPortal
+# PowerShell Script Runner
 
 Microsoft-focused desktop application for internal IT operations, made with .NET MAUI Blazor Hybrid.
 
-PowerShell script executor and device inventory tracker.
+Provides a modern interface to interact with PowerShell script blocks and manage an automation codebase.
 
 ![login](https://github.com/anilmawji/ITPortal/assets/36245645/6e43a489-54a7-4bd1-a095-26491ef70cd1)
 
