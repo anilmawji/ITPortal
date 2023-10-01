@@ -129,22 +129,17 @@ public sealed partial class ScriptJobTable
             job, job.Script.NewScriptOutputList(),
             dialogResultData.DeviceName,
             dialogResultData.ShouldRunJobNow,
-            dialogResultData.ErrorAction,
-            dialogResultData.ShouldViewJobResult
+            dialogResultData.ErrorAction
         );
 
         if (dialogResultData.ShouldViewJobResult)
         {
             NavigationManager.NavigateTo(PageRoute.ScriptJobResultDetailsWithId(jobResult.Id));
         }
-        else
-        {
-            StateHasChanged();
-        }
     }
 
     private ScriptJobResult RunJob(ScriptJob job, ScriptOutputList outputList, string deviceName,
-        bool runJobNow, ScriptJobErrorAction errorAction, bool refreshPage)
+        bool runJobNow, ScriptJobErrorAction errorAction)
     {
         ScriptJobResult jobResult;
 
@@ -169,10 +164,7 @@ public sealed partial class ScriptJobTable
             string filePath = ScriptJobResultSerializer.GetFilePath(jobResult.Id.ToString());
             ScriptJobResultSerializer.TryCreateFile(jobResult, filePath);
 
-            if (refreshPage)
-            {
-                InvokeAsync(StateHasChanged);
-            }
+            InvokeAsync(StateHasChanged);
             outputList.Dispose();
         });
 

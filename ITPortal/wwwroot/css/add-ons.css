@@ -1,4 +1,13 @@
-﻿/* center element horizontally and vertically */
+﻿:root {
+    /* disable dragging/highlighting text by default */
+    -webkit-user-drag: none;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+/* center element horizontally and vertically */
 .centered {
     position: absolute;
     top: 50%;
@@ -6,7 +15,7 @@
     transform: translate(-50%, -50%);
 }
 
-/* add a background behind an element */
+/* add background behind an element */
 .background {
     position: relative;
     height: 100%;

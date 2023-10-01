@@ -31,7 +31,7 @@
 
 <PageContainer Title="PowerShell Job Results" NestedTitle=@($"Result {Result.Id}") PreviousPage="/job-results" Description="View execution details of a job">
     <div class="script-title">
-        <p>job: @Result.JobName</p>
+        <p>Job: @Result.JobName</p>
         <ScriptExecutionStateChip Result=@Result OnResultReceived=@(() => InvokeAsync(this.StateHasChanged))/>
     </div>
     <div class="section">

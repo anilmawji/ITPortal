@@ -4,9 +4,9 @@
 
 @*customize mud chip appearance*@
 <style>
-    .mud-chip-text.mud-chip-color-dark {
-        background-color: var(--mud-palette-dark-hover);
-        border: 1px solid var(--mud-palette-dark);
+    .mud-chip-text.mud-chip-color-default {
+        background-color: var(--mud-palette-background-hover);
+        border: 1px solid grey;
     }
 
     .mud-chip-text.mud-chip-color-secondary {
@@ -20,15 +20,15 @@
     }
 </style>
 
-@if (Job.State != ScriptJobState.Idle)
+@if (Job.State == ScriptJobState.Running)
 {
-    <MudChip Variant="Variant.Text" Size="Size.Medium" Icon=@GetIcon() Label="true" Color=@GetColor()>
+    <MudChip Variant="Variant.Text" Size="Size.Medium" Icon=@GetIcon() Label="true" Color="MudBlazor.Color.Secondary">
         @Job.State.ToStringFast()
     </MudChip>
 }
 else
 {
-    <MudChip Variant="Variant.Text" Size="Size.Medium" Label="true" Color=@GetColor()>
+    <MudChip Variant="Variant.Text" Size="Size.Medium" Label="true">
         @Job.State.ToStringFast()
     </MudChip>
 }

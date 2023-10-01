@@ -1,14 +1,12 @@
 ﻿.login-container {
     text-align: center;
-    border: 1px solid;
     width: 35%;
     min-width: 300px;
     max-width: 600px;
     padding: 40px;
-    border-radius: 12px;
-    border-color: #D2D2D2;
-    box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
-    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 3px 6px rgb(0 0 0 / 0.3);
+    background-color: var(--mud-palette-background);
 }
 
 .company-logo {

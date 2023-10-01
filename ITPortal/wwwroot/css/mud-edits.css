@@ -1,11 +1,10 @@
-﻿* {
+﻿:root {
+    --mud-palette-background-dark: color-mix(in srgb, var(--mud-palette-background), black 15%);
+    --mud-palette-background-light: color-mix(in srgb, var(--mud-palette-background), white 15%);
+}
+
+* {
     font-family: "Segoe UI", Arial, sans-serif;
-    /* disable dragging/highlighting on all browsers */
-    -webkit-user-drag: none;
-    user-select: none;
-    -moz-user-select: none;
-    -webkit-user-select: none;
-    -ms-user-select: none;
 }
 
 html {
@@ -49,11 +48,13 @@ body {
     background-color: rgba(0,0,0,.03) !important;
 }
 
-.mud-table-row .mud-table-cell .mud-table-cell-checkbox .mud-input-control-input-container .mud-checkbox {
-    padding-left: 4px;
+/* shrink size of medium chips */
+.mud-chip.mud-chip-size-medium {
+    height: 28px !important;
+    padding: 0 10px;
 }
 
-/* workaround to make mudtable resize with window */
+/* workaround to make table resize with window */
 .table-container {
     height: calc(100vh - 100px - 90px);
     display: grid;
@@ -61,8 +62,19 @@ body {
     grid-template-rows: minmax(0,1fr);
 }
 
-.mud-chip.mud-chip-size-medium {
-    height: 28px !important;
-    padding: 0 10px;
+/* adjust table border and hide overflowing content */
+.mud-table {
+    border-radius: 8px;
+    border: solid 1px var(--mud-palette-background-dark);
+    overflow: hidden;
 }
 
+/* correct table height and color */
+.mud-table-toolbar {
+    --mud-internal-toolbar-height: 48px !important;
+}
+
+/* correct padding of selection boxex in table */
+.mud-table-row .mud-table-cell .mud-table-cell-checkbox .mud-input-control-input-container .mud-checkbox {
+    padding-left: 4px;
+}

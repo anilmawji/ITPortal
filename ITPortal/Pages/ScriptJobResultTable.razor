@@ -10,20 +10,6 @@
 @inject ISerializationService<ScriptJobResult> ScriptJobResultSerializer
 @inject NavigationManager NavigationManager
 
-<style>
-    /* adjust table border and hide overflowing content */
-    .mud-table {
-        border-radius: 8px;
-        border: solid 1px #D2D2D2;
-        overflow: hidden;
-    }
-
-    /* correct table height */
-    .mud-table-toolbar {
-        --mud-internal-toolbar-height: 48px !important;
-    }
-</style>
-
 <PageContainer Title="PowerShell Job Results" Description="View job execution results">
     <div class="table-container">
         <MudTable T="ScriptJobResult" Items=@ScriptJobService.JobResults Dense="true" Hover="true" FixedHeader="true"
@@ -56,7 +42,11 @@
                 <MudTh DataLabel="Status">
                     <ScriptExecutionStateChip Result=@context />
                 </MudTh>
-                <MudTh DataLabel="ExecutionTime">@context.ExecutionTime</MudTh>
+                <MudTh DataLabel="ExecutionTime">
+                    <MudChip Variant="Variant.Text" Size="Size.Medium" Icon="@Icons.Material.Filled.CalendarMonth" Label="true">
+                        @context.ExecutionTime
+                    </MudChip>
+                </MudTh>
             </RowTemplate>
             <PagerContent>
                 <MudTablePager PageSizeOptions=@s_pageSizeOptions />
