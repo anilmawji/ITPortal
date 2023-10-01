@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace ITPortal.Lib.Automation.Script;
 
-public class PowerShellScript : AutomationScript, IPowerShellScript
+public class PowerShellScript : AutomationScript
 {
     public InitialSessionState InitialPowerShellState;
 
@@ -55,12 +55,7 @@ public class PowerShellScript : AutomationScript, IPowerShellScript
 
         foreach (var parameterAst in scriptAst.ParamBlock.Parameters)
         {
-            ScriptParameter parameter = new(
-                parameterAst.Name.VariablePath.ToString(),
-                parameterAst.StaticType,
-                parameterAst.IsMandatory()
-            );
-            Parameters.Add(parameter);
+            Parameters.Add(parameterAst.ToScriptParameter());
         }
 
         return errorMessages;
@@ -90,7 +85,7 @@ public class PowerShellScript : AutomationScript, IPowerShellScript
     }
 
     public override async Task<ScriptExecutionState> InvokeAsync(string deviceName, ScriptOutputList outputList,
-        string cancellationMessage = DefaultCancellationMessage, CancellationToken cancellationToken = default)
+        string cancellationMessage, CancellationToken cancellationToken = default)
     {
         if (!IsContentLoaded())
         {

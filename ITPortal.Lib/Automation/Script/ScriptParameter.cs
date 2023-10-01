@@ -13,23 +13,26 @@ public class ScriptParameter
     public string Name { get; private set; }
     public object Value { get; set; }
     public string TypeName { get; private set; }
-    public bool Mandatory { get; private set; }
+    public bool IsMandatory { get; private set; }
+    public bool AllowEmptyCollection { get; private set; }
 
-    public ScriptParameter(string name, Type type, bool mandatory = false)
+    public ScriptParameter(string name, Type type, bool isMandatory = false, bool allowEmptyCollection = false)
     {
         Name = name;
         Value = GetDefaultValue(type);
         TypeName = type.AssemblyQualifiedName ?? string.Empty;
-        Mandatory = mandatory;
+        IsMandatory = isMandatory;
+        AllowEmptyCollection = allowEmptyCollection;
     }
 
     [JsonConstructor]
-    public ScriptParameter(string name, object value, string typeName, bool mandatory)
+    public ScriptParameter(string name, object value, string typeName, bool isMandatory, bool allowEmptyCollection)
     {
         Name = name;
         Value = ((JsonElement)value).GetValue(Type.GetType(typeName)) ?? UnknownValue;
         TypeName = typeName;
-        Mandatory = mandatory;
+        IsMandatory = isMandatory;
+        AllowEmptyCollection = allowEmptyCollection;
     }
 
     private static object GetDefaultValue(Type type)

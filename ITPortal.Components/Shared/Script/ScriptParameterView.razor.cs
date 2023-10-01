@@ -1,5 +1,7 @@
 ﻿using ITPortal.Lib.Automation.Script;
 using ITPortal.Lib.Utility;
+using Microsoft.IdentityModel.Tokens;
+using static MudBlazor.CategoryTypes;
 
 namespace ITPortal.Components.Shared.Script;
 
@@ -25,8 +27,16 @@ public sealed partial class ScriptParameterView
         return s_extendedInputFieldTriggers.Contains(ScriptParameter.Name) ? 10 : 1;
     }
 
-    private IEnumerable<string> ValidateArray(List<string> parameterArray)
+    private IEnumerable<string> ValidateArray<T>(T newValue)
     {
-        yield return "test";
+        if (ScriptParameter.Value is not List<string> arrayValues)
+        {
+            yield return ParameterName + "must be a valid list";
+            yield break;
+        }
+        if (ScriptParameter.IsMandatory && !ScriptParameter.AllowEmptyCollection && arrayValues.Count == 0)
+        {
+            yield return RequiredError;
+        }
     }
 }

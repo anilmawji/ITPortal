@@ -83,7 +83,7 @@ public sealed partial class ScriptJobEditor
         }
     }
 
-    private IEnumerable<string> ValidateJobDescription(string jobDescription)
+    private static IEnumerable<string> ValidateJobDescription(string jobDescription)
     {
         if (jobDescription.Length > 100)
         {

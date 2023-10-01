@@ -21,6 +21,7 @@ public sealed class ScriptJobService : IScriptJobService
             ScriptOutputList.FormatAsSystemMessage("Script execution was cancelled"),
             runDate
         );
+
         ScriptJobResult jobResult = new(
             JobResults.GetNextResultId(),
             job.Name,
