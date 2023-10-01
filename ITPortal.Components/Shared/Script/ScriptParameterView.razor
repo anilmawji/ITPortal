@@ -55,6 +55,7 @@ else if (ScriptParameter.IsType(typeof(DateTime)))
 }
 else if (ScriptParameter.IsType(typeof(string[])))
 {
+    // Todo: use Required parameter when this issue is closed https://github.com/CodeBeamOrg/CodeBeam.MudBlazor.Extensions/issues/284
     <div class="input-line">
         <MudExtensions.MudChipField T="string" Label=@ParameterName Margin="Margin.Dense"
                                     Values=@((List<string>)ScriptParameter.Value) Delimiter=@Delimiter FullWidth="true" ChipColor="Color.Default"

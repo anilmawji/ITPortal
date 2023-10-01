@@ -93,7 +93,7 @@ public sealed partial class ScriptJobEditor
 
     private async Task PickAndLoadScript()
     {
-        FileResult fileResult = await FileHelper.PickFileAsync(s_filePickOptions);
+        FileResult fileResult = await MauiFileHelper.PickFileAsync(s_filePickOptions);
 
         if (fileResult == null) return;
 

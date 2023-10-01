@@ -1,5 +1,4 @@
-﻿using System.Management.Automation;
-using System.Management.Automation.Language;
+﻿using System.Management.Automation.Language;
 
 namespace ITPortal.Lib.Automation.Script;
 
@@ -7,21 +6,19 @@ public static class ParameterAstExtensions
 {
     public static bool HasParameter(this ParameterAst parameter, string value)
     {
+        bool foundValue = false;
+
+        foreach (AttributeBaseAst attribute in parameter.Attributes)
         {
-            bool foundValue = false;
-
-            foreach (AttributeBaseAst attribute in parameter.Attributes)
+            if (attribute.TypeName.ToString() == "Parameter")
             {
-                if (attribute.TypeName.ToString() == "Parameter")
-                {
-                    string attributeText = attribute.ToString();
+                string attributeText = attribute.ToString();
 
-                    // PS boolean parameters default to true if $true or $false isn't specified
-                    foundValue = attributeText.Contains(value) && !attributeText.Contains(value + "=$false");
-                }
+                // PS boolean parameters default to true if $true or $false isn't specified
+                foundValue = attributeText.Contains(value) && !attributeText.Contains(value + "=$false");
             }
-            return foundValue;
         }
+        return foundValue;
     }
 
     public static bool HasType(this ParameterAst parameter, string typeName)

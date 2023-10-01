@@ -1,7 +1,5 @@
 ﻿using ITPortal.Lib.Automation.Script;
 using ITPortal.Lib.Utility;
-using Microsoft.IdentityModel.Tokens;
-using static MudBlazor.CategoryTypes;
 
 namespace ITPortal.Components.Shared.Script;
 

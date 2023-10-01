@@ -42,6 +42,7 @@ public class PowerShellScript : AutomationScript
         {
             return new string[1] { "Attempt to load parameters of a script that has not been loaded" };
         }
+
         Parameters.Clear();
 
         ScriptBlockAst scriptAst = Parser.ParseInput(ContentString, out _, out ParseError[] errors);

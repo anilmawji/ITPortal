@@ -1,11 +1,12 @@
-﻿using System.Diagnostics;
+﻿using MudBlazor;
+using System.Diagnostics;
 using System.Text;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 
 namespace ITPortal.Utility;
 
-public static class FileHelper
+public static class MauiFileHelper
 {
     public static async Task<FileResult> PickFileAsync(PickOptions options)
     {
@@ -70,10 +71,5 @@ public static class FileHelper
         MemoryStream stream = new(Encoding.Default.GetBytes(fileContent));
 
         return PickSaveFileAsync(filename, stream);
-    }
-
-    public static void OpenFileWithDefaultProgram(string filePath)
-    {
-        using Process process = Process.Start("explorer", filePath);
     }
 }

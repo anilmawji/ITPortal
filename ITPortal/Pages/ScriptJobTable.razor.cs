@@ -96,7 +96,7 @@ public sealed partial class ScriptJobTable
 
     private async Task PickJobFileAsync()
     {
-        FileResult fileResult = await FileHelper.PickFileAsync(s_filePickOptions);
+        FileResult fileResult = await MauiFileHelper.PickFileAsync(s_filePickOptions);
 
         if (fileResult == null) return;
 

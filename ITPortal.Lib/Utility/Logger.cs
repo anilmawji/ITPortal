@@ -2,6 +2,8 @@
 
 public static class Logger
 {
+    private const int MAX_LOG_FILES = 50;
+
     private static readonly string LogDirPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");
     private static readonly string NewLine = Environment.NewLine;
 
@@ -15,9 +17,11 @@ public static class Logger
 
     public static void AddMessage(LogEvent eventType, string message)
     {
-        if (!File.Exists(LogDirPath))
+        DirectoryInfo dirInfo = Directory.CreateDirectory(LogDirPath);
+
+        if (dirInfo.Exists && FileHelper.GetFileCount(LogDirPath) >= MAX_LOG_FILES)
         {
-            Directory.CreateDirectory(LogDirPath);
+            FileHelper.DeleteOldestFiles(dirInfo, 1);
         }
 
 #if DEBUG
@@ -29,7 +33,7 @@ public static class Logger
 
         try
         {
-            File.AppendAllText(Path.Combine(LogDirPath, Guid.NewGuid() + ".log"), logMessage);
+            File.WriteAllText(Path.Combine(LogDirPath, Guid.NewGuid() + ".log"), logMessage);
         }
         catch (Exception e)
         {
