@@ -8,21 +8,21 @@ namespace ITPortal.Lib.Services;
 public class JsonSerializationService<T> : ISerializationService<T>
 {
     private readonly SerializationSettings _serializationSettings;
-    private readonly string _saveFolderPath;
+    private readonly string _saveDirPath;
 
     public JsonTypeInfo<T> TypeInfo { get; private set; }
 
     // TODO: randomize file name of JSON files
-    public JsonSerializationService(IOptions<SerializationSettings> options, JsonTypeInfo<T> typeInfo, string parentSaveFolderPath)
+    public JsonSerializationService(IOptions<SerializationSettings> options, JsonTypeInfo<T> typeInfo, string parentSaveDirPath)
     {
         _serializationSettings = options.Value;
         TypeInfo = typeInfo;
-        _saveFolderPath = Path.Combine(parentSaveFolderPath, typeof(T).Name);
+        _saveDirPath = Path.Combine(parentSaveDirPath, typeof(T).Name);
     }
 
     public string GetFilePath(string fileName)
     {
-        return Path.Combine(_saveFolderPath, fileName + ".json");
+        return Path.Combine(_saveDirPath, fileName + ".json");
     }
 
     private void TryLogEvent(LogEvent eventType, string message)
@@ -33,17 +33,14 @@ public class JsonSerializationService<T> : ISerializationService<T>
         }
     }
 
-    public void LoadFromSaveFolder(ICollection<T> objList)
+    public void LoadFromSaveDirectory(ICollection<T> objList)
     {
-        DirectoryInfo info = Directory.CreateDirectory(_saveFolderPath);
+        DirectoryInfo info = Directory.CreateDirectory(_saveDirPath);
 
         // Jobs folder has just been created; no jobs to load
-        if (!info.Exists)
-        {
-            return;
-        }
+        if (!info.Exists) return;
 
-        IEnumerable<string> filePaths = Directory.EnumerateFiles(_saveFolderPath);
+        IEnumerable<string> filePaths = Directory.EnumerateFiles(_saveDirPath);
 
         foreach (string path in filePaths)
         {
@@ -72,15 +69,15 @@ public class JsonSerializationService<T> : ISerializationService<T>
             return default;
         }
 
-        if (Path.GetDirectoryName(jsonFilePath) != _saveFolderPath)
+        if (Path.GetDirectoryName(jsonFilePath) != _saveDirPath)
         {
             try
             {
-                File.Copy(jsonFilePath, Path.Combine(_saveFolderPath, Path.GetFileName(jsonFilePath)));
+                File.Copy(jsonFilePath, Path.Combine(_saveDirPath, Path.GetFileName(jsonFilePath)));
             }
             catch (Exception e)
             {
-                TryLogEvent(LogEvent.Warning, $"Failed to copy file to \'{_saveFolderPath}\': {e.Message}");
+                TryLogEvent(LogEvent.Warning, $"Failed to copy file to \'{_saveDirPath}\': {e.Message}");
             }
         }
 

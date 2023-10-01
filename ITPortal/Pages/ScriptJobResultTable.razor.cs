@@ -14,17 +14,23 @@ public sealed partial class ScriptJobResultTable
     {
         if (firstRender)
         {
-            if (ScriptJobService.Jobs.Count == 0)
-            {
-                ScriptJobSerializer.LoadFromSaveFolder(ScriptJobService.Jobs);
-            }
-            if (ScriptJobService.JobResults.Count == 0)
-            {
-                ScriptJobResultSerializer.LoadFromSaveFolder(ScriptJobService.JobResults);
-            }
+            LoadSavedFiles();
             StateHasChanged();
         }
         await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private void LoadSavedFiles()
+    {
+        if (ScriptJobService.Jobs.Count == 0)
+        {
+            ScriptJobSerializer.LoadFromSaveDirectory(ScriptJobService.Jobs);
+        }
+
+        if (ScriptJobService.JobResults.Count == 0)
+        {
+            ScriptJobResultSerializer.LoadFromSaveDirectory(ScriptJobService.JobResults);
+        }
     }
 
     private void GoToJobResultDetailsPage(TableRowClickEventArgs<ScriptJobResult> eventArgs)

@@ -4,7 +4,7 @@ public interface ISerializationService<T>
 {
     public string GetFilePath(string fileName);
 
-    public void LoadFromSaveFolder(ICollection<T> objList);
+    public void LoadFromSaveDirectory(ICollection<T> objList);
 
     public T? LoadFromFile(string filePath);
 
