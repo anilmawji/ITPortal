@@ -15,4 +15,4 @@ Microsoft-focused desktop application for internal IT operations, made with .NET
 
 ![job-results](https://github.com/anilmawji/ITPortal/assets/36245645/15aafb8b-ca2f-486c-b8a0-58b41d081699)
 
-![job-result-details](https://github.com/anilmawji/ITPortal/assets/36245645/4dc0608b-5444-491c-a28c-46947a642723)
+![270132945-4dc0608b-5444-491c-a28c-46947a642723](https://github.com/anilmawji/PowerShell-Script-Runner/assets/36245645/55984ffd-a996-4ed5-9d63-65803e94ca92)
