@@ -122,7 +122,9 @@ public sealed partial class ScriptJobTable
 
         if (dialogResult is null || dialogResult.Canceled) return;
 
-        var dialogResultData = dialogResult.Data as RunScriptJobDialogResult;
+        RunScriptJobDialogResult? dialogResultData = dialogResult.Data as RunScriptJobDialogResult;
+
+        if (dialogResultData == null) return;
 
         ScriptJobResult jobResult = RunJob(
             job, job.Script.NewScriptOutputList(),

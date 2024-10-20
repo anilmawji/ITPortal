@@ -28,7 +28,7 @@
                     <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Name)">Name</MudTableSortLabel>
                 </MudTh>
                 <MudTh>
-                    <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Script.FileName)">Script</MudTableSortLabel>
+                    <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Script.FileName ?? string.Empty)">Script</MudTableSortLabel>
                 </MudTh>
                 <MudTh>
                     <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.State)">Status</MudTableSortLabel>
@@ -52,18 +52,18 @@
                 </MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTh DataLabel="Name">
+                <MudTd DataLabel="name">
                     @context.Name
-                </MudTh>
-                <MudTh DataLabel="script">
+                </MudTd>
+                <MudTd DataLabel="script">
                     @context.Script.FileName
-                </MudTh>
-                <MudTh DataLabel="status">
+                </MudTd>
+                <MudTd DataLabel="status">
                     <ScriptJobStateChip Job=@context />
-                </MudTh>
-                <MudTh DataLabel="Description">
+                </MudTd>
+                <MudTd DataLabel="description">
                     @context.Description.NormalizeLength(40)
-                </MudTh>
+                </MudTd>
                 <MudTh Style="text-align:right">
                     @if (context.State != ScriptJobState.Running)
                     {

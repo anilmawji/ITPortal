@@ -19,23 +19,28 @@
                               Validation=@(new Func<string, IEnumerable<string>>(ValidateJobName)) Placeholder=@_initialJobName OnlyValidateIfDirty="true" />
             </div>
             <div class="input-line">
-                <MudTextField T="string" @bind-Value=@_job.Description Label="Description" Variant="Variant.Filled" Margin="Margin.Dense"
-                              Validation=@(new Func<string, IEnumerable<string>>(ValidateJobDescription)) OnlyValidateIfDirty="true" />
+                @if (_job?.Description != null)
+                {
+                    <MudTextField T="string" @bind-Value=@_job.Description Label="Description" Variant="Variant.Filled" Margin="Margin.Dense"
+                                    Validation=@(new Func<string, IEnumerable<string>>(ValidateJobDescription)) OnlyValidateIfDirty="true" />
+                }
             </div>
         </PageSection>
 
         <PageSection Title="Script">
-            <div class="input-line">
-                <FilePickerContainer FileName=@_job.Script.FileName>
-                    <MudButton OnClick=@PickAndLoadScript Variant="Variant.Filled" Size="Size.Small">
-                        <MudText>Choose File</MudText>
-                    </MudButton>
-                </FilePickerContainer>
-            </div>
-
-            @if (_job.Script.IsContentLoaded())
+            @if (_job != null)
             {
-                <ScriptContentView Script=@_job.Script/>
+                <div class="input-line">
+                    <FilePickerContainer FileName=@_job?.Script.FileName>
+                        <MudButton OnClick=@PickAndLoadScript Variant="Variant.Filled" Size="Size.Small">
+                            <MudText>Choose File</MudText>
+                        </MudButton>
+                    </FilePickerContainer>
+                </div>
+            }
+            @if (_job != null && _job.Script.IsContentLoaded())
+            {
+                <ScriptContentView Script=@_job.Script />
                 <MudGrid Spacing="2">
                     <MudItem>
                         <MudButton OnClick=@RefreshScript Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
@@ -56,7 +61,7 @@
             }
         </PageSection>
 
-        @if (_job.Script.IsContentLoaded())
+        @if (_job != null && _job.Script.IsContentLoaded())
         {
             <PageSection Title="Parameters">
                 @if (_job.Script.Parameters.Any())

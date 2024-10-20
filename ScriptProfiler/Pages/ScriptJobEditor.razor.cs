@@ -148,14 +148,15 @@ public sealed partial class ScriptJobEditor
 
     private void CancelJobChanges()
     {
-        if (!_creatingNewJob && _canTrySaveJob)
+        if (_job != null && !_creatingNewJob && _canTrySaveJob)
         {
             string filePath = ScriptJobSerializer.GetFilePath(_job.Name);
             ScriptJob? job = ScriptJobSerializer.LoadFromFile(filePath);
 
-            if (job == null) return;
-
-            ScriptJobService.Jobs.ReplaceJob(job);
+            if (job != null)
+            {
+                ScriptJobService.Jobs.ReplaceJob(job);
+            }
         }
         NavigationManager.NavigateTo(PageRoute.ScriptJobs);
     }

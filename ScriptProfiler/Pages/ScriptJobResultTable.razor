@@ -36,17 +36,17 @@
                 </MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTh DataLabel="Id">@context.Id</MudTh>
-                <MudTh DataLabel="Job">@context.JobName</MudTh>
-                <MudTh DataLabel="Device">@context.DeviceName</MudTh>
-                <MudTh DataLabel="Status">
+                <MudTd DataLabel="id">@context.Id</MudTd>
+                <MudTd DataLabel="job">@context.JobName</MudTd>
+                <MudTd DataLabel="device">@context.DeviceName</MudTd>
+                <MudTd DataLabel="status">
                     <ScriptExecutionStateChip Result=@context />
-                </MudTh>
-                <MudTh DataLabel="ExecutionTime">
+                </MudTd>
+                <MudTd DataLabel="executionTime">
                     <MudChip T="string" Variant="Variant.Text" Size="Size.Medium" Icon="@Icons.Material.Filled.CalendarMonth" Label="true">
                         @context.ExecutionTime
                     </MudChip>
-                </MudTh>
+                </MudTd>
             </RowTemplate>
             <PagerContent>
                 <MudTablePager PageSizeOptions=@s_pageSizeOptions />
