@@ -1,0 +1,60 @@
+﻿@using Microsoft.JSInterop
+@using ScriptProfiler.Lib.Automation.Output
+@using ScriptProfiler.Lib.Automation.Script
+
+@implements IDisposable
+
+@inject IJSRuntime JSRuntime
+
+<div class="scroll" id="output-container">
+    @for (int i = 0; i < _messages?.Count; i++)
+    {
+        // Must be a standard for loop to avoid modifying an iterator while looping
+        ScriptOutputMessage message = _messages.ElementAt(i);
+
+        <div class="output-message" style=@GetMessageStyle(message)>
+            @(message.Data)
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public ScriptOutputList OutputList { get; set; } = null!;
+
+    [Parameter]
+    public ScriptOutputStreamType? StreamType { get; set; }
+}
+
+<style>
+    #output-container {
+        width: 100%;
+        height: calc(100vh - 510px);
+        min-height: 240px;
+        border: solid 1px #D2D2D2;
+        border-radius: 8px;
+        padding: 24px;
+        background-color: rgba(0,0,0,.02);
+        /* allow text highlighing of script contents */
+        user-select: text;
+        -moz-user-select: text;
+        -webkit-user-select: text;
+        -ms-user-select: text;
+    }
+
+    ::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    .scroll {
+        scrollbar-width: auto;
+        overflow-y: scroll !important;
+        overflow-x: hidden;
+        min-height: 270px !important;
+    }
+
+    .output-message {
+        font-size: 16px;
+    }
+
+</style>

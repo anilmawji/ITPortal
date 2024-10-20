@@ -1,0 +1,100 @@
+﻿@using ScriptProfiler.Lib.Services
+@using ScriptProfiler.Lib.Automation.Job
+@using ScriptProfiler.Lib.Automation.Script
+@using ScriptProfiler.Components.Shared.Script
+
+@attribute [Route(PageRoute.CreateScriptJob)]
+@attribute [Route(PageRoute.EditScriptJob)]
+@attribute [AllowAnonymous]
+
+@inject ISerializationService<ScriptJob> ScriptJobSerializer
+@inject IScriptJobService ScriptJobService
+@inject NavigationManager NavigationManager
+
+<PageContainer Title="PowerShell Jobs" NestedTitle=@_headerTitle PreviousPage="/jobs" Description=@s_pageDescription OnPreviousPageClicked=@CancelJobChanges>
+    <MudForm @ref=@_jobForm @bind-IsValid=@_jobHasValidState @bind-Errors=@_errors FieldChanged=@OnJobFieldChanged>
+        <PageSection Title="Job Details">
+            <div class="input-line">
+                <MudTextField T="string" @bind-Value=@_newJobName Label="Name" Variant="Variant.Filled" Margin="Margin.Dense"
+                              Validation=@(new Func<string, IEnumerable<string>>(ValidateJobName)) Placeholder=@_initialJobName OnlyValidateIfDirty="true" />
+            </div>
+            <div class="input-line">
+                <MudTextField T="string" @bind-Value=@_job.Description Label="Description" Variant="Variant.Filled" Margin="Margin.Dense"
+                              Validation=@(new Func<string, IEnumerable<string>>(ValidateJobDescription)) OnlyValidateIfDirty="true" />
+            </div>
+        </PageSection>
+
+        <PageSection Title="Script">
+            <div class="input-line">
+                <FilePickerContainer FileName=@_job.Script.FileName>
+                    <MudButton OnClick=@PickAndLoadScript Variant="Variant.Filled" Size="Size.Small">
+                        <MudText>Choose File</MudText>
+                    </MudButton>
+                </FilePickerContainer>
+            </div>
+
+            @if (_job.Script.IsContentLoaded())
+            {
+                <ScriptContentView Script=@_job.Script/>
+                <MudGrid Spacing="2">
+                    <MudItem>
+                        <MudButton OnClick=@RefreshScript Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
+                            <MudText>Refresh</MudText>
+                        </MudButton>
+                    </MudItem>
+                    <MudItem>
+                        <MudButton OnClick=@EditScript Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
+                            <MudText>Edit</MudText>
+                        </MudButton>
+                    </MudItem>
+                    <MudItem>
+                        <MudButton OnClick=@RemoveScript Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
+                            <MudText>Remove</MudText>
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+            }
+        </PageSection>
+
+        @if (_job.Script.IsContentLoaded())
+        {
+            <PageSection Title="Parameters">
+                @if (_job.Script.Parameters.Any())
+                {
+                    @foreach (ScriptParameter parameter in _job.Script.Parameters)
+                    {
+                        <ScriptParameterView ScriptParameter=@parameter />
+                    }
+                }
+                else
+                {
+                    <p>This script does not accept any parameters.</p>
+                }
+            </PageSection>
+        }
+
+        <PageSection>
+            <ErrorList Errors="@_errors" />
+            <div class="create-job-buttons">
+                <MudGrid Spacing="2">
+                    <MudItem>
+                        <MudButton OnClick=@CancelJobChanges Variant="Variant.Filled" Color="Color.Secondary" Style="color:white">
+                            <MudText>Cancel</MudText>
+                        </MudButton>
+                    </MudItem>
+                    <MudItem>
+                        <MudButton OnClick=@TrySaveJob Variant="Variant.Filled" Color="Color.Secondary" Style="color:white"
+                                   Disabled=@(!_canTrySaveJob)>
+                            <MudText>@(_creatingNewJob ? "Done" : "Save")</MudText>
+                        </MudButton>
+                    </MudItem>
+                </MudGrid>
+            </div>
+        </PageSection>
+    </MudForm>
+</PageContainer>
+
+@code {
+    [Parameter]
+    public string? JobName { get; set; }
+}

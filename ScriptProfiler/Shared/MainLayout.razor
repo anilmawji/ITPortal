@@ -1,0 +1,94 @@
+﻿﻿@using Microsoft.AspNetCore.Components.Authorization
+@using ScriptProfiler.Components.Shared.Login
+
+@inherits LayoutComponentBase
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@IsDarkMode" Theme="_currentTheme" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="0" Dense="true">
+        <div class="appbar-background" style=@AppbarBackgroundStyle()>
+            <div />
+        </div>
+        <MudIconButton Icon=@Icons.Material.Filled.Menu Color="Color.Inherit" Edge="Edge.Start" OnClick=@DrawerToggle />
+        <div class="appbar-logo-container">
+            <img src="images/arcurve_it_portal_logo.png" class="appbar-logo" />
+            <p>Script Profiler</p>
+        </div>
+        <MudSpacer />
+        <LogoutDisplay />
+        <MudIconButton Icon=@Icons.Material.Filled.Brightness4
+                       Color="Color.Inherit"
+                       Class="nav-button"
+                       OnClick=@ThemeToggle />
+    </MudAppBar>
+    <MudDrawer @bind-Open=@IsDrawerOpen ClipMode="DrawerClipMode.Always" Elevation="1">
+        <NavMenu />
+    </MudDrawer>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    public static bool IsDrawerOpen { get; private set; } = true;
+    public static bool IsDarkMode { get; private set; }
+
+    private MudThemeProvider? _mudThemeProvider;
+
+    private readonly MudTheme _currentTheme = new()
+        {
+            PaletteLight = new PaletteLight
+            {
+                Primary = "#840C16",
+                Secondary = "#0078D4",
+                Tertiary = "#000000",
+                Info = "#64A7E2",
+                Success = StateColors.Green,
+                Warning = "#F59F00",
+                Error = StateColors.Red,
+                AppbarBackground = "#840C16",
+                TextPrimary = "#000000",
+                TextSecondary = "#000000",
+                // TODO: add more color properties
+            },
+            PaletteDark = new PaletteDark
+            {
+                Primary = "#0078D4",
+                Secondary = "#0078D4",
+                Tertiary = "#000000",
+                Info = "#a4c2dd",
+                Success = "#2ECC40",
+                Warning = "#FCAD00",
+                Error = "#de2000",
+                AppbarBackground = "#121212",
+                TextPrimary = "#E0E0E0",
+                TextSecondary = "#BDBDBD",
+                // TODO: add more color properties
+            }
+        };
+
+    private string AppbarBackgroundStyle()
+    {
+        return IsDarkMode ? "background-color: rgba(0,0,0,.8);" : "background-color: #840C16;";
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            //_isDarkMode = await _mudThemeProvider.GetSystemPreference();
+            await Task.CompletedTask; // Temp placeholder to get rid of warning
+            StateHasChanged();
+        }
+    }
+
+    private void DrawerToggle() => IsDrawerOpen = !IsDrawerOpen;
+
+    private void ThemeToggle() => IsDarkMode = !IsDarkMode;
+}

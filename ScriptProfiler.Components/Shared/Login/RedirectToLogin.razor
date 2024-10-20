@@ -1,0 +1,17 @@
+﻿@inject NavigationManager NavigationManager
+
+@using ScriptProfiler.Components
+
+<div class="loader loader-bouncing">
+    <span>Redirecting...</span>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public string LoginRoute { get; set; } = null!;
+
+    protected override void OnInitialized()
+    {
+        NavigationManager.NavigateTo(LoginRoute);
+    }
+}

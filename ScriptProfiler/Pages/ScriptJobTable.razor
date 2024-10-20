@@ -1,0 +1,94 @@
+﻿@using Microsoft.JSInterop
+@using CommunityToolkit.Maui.Storage
+@using ScriptProfiler.Lib.Services
+@using ScriptProfiler.Lib.Automation
+@using ScriptProfiler.Lib.Automation.Job
+
+@attribute [Route(PageRoute.ScriptJobs)]
+@attribute [AllowAnonymous]
+
+@inject IJSRuntime JSRuntime
+@inject ISerializationService<ScriptJob> ScriptJobSerializer
+@inject ISerializationService<ScriptJobResult> ScriptJobResultSerializer
+@inject IScriptJobService ScriptJobService
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+
+<PageContainer Title="PowerShell Jobs" Description="Track and execute PowerShell scripts">
+    <div class="table-container">
+        <MudTable T="ScriptJob" Items=@ScriptJobService.Jobs Dense="true" Hover="true" FixedHeader="true" FixedFooter="true"
+                  Filter="new Func<ScriptJob, bool>(FilterJobFunc)" Height="calc(100% - 100px)" OnRowClick=@(() => InvokeAsync(this.StateHasChanged))
+                  MultiSelection="true" @bind-SelectedItems=@selectedJobs>
+            <ToolBarContent>
+                <MudTextField T="string" @bind-Value=@_searchString Placeholder=@($"Search {ScriptJobService.Jobs.Count} items...")
+                              Adornment="Adornment.Start" AdornmentIcon=@Icons.Material.Filled.Search IconSize="Size.Medium" Class="mt-0" />
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Name)">Name</MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Script.FileName)">Script</MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.State)">Status</MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<ScriptJob, object>(x=>x.Description)">Description</MudTableSortLabel>
+                </MudTh>
+                <MudTh Style="text-align:right">
+                    @if (selectedJobs.Count > 0)
+                    {
+                        <MudTooltip Delay="500" Text="Download selected jobs">
+                            <MudIconButton Icon=@Icons.Material.Filled.FileDownload OnClick=@DownloadSelectedJobsAsync Style="margin-right: 6px" />
+                        </MudTooltip>
+                    }
+                    <MudTooltip Delay="500" Text="Import job">
+                        <MudIconButton Icon=@Icons.Material.Filled.FileUpload OnClick=@PickJobFileAsync Style="margin-right: 4px" />
+                    </MudTooltip>
+                    <MudTooltip Delay="500" Text="New job">
+                        <MudFab StartIcon="@Icons.Material.Filled.Add" Color="Color.Secondary" Size="Size.Small" Style="margin-right: 4px" OnClick=@GoToNewJobPage />
+                    </MudTooltip>
+                </MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTh DataLabel="Name">
+                    @context.Name
+                </MudTh>
+                <MudTh DataLabel="script">
+                    @context.Script.FileName
+                </MudTh>
+                <MudTh DataLabel="status">
+                    <ScriptJobStateChip Job=@context />
+                </MudTh>
+                <MudTh DataLabel="Description">
+                    @context.Description.NormalizeLength(40)
+                </MudTh>
+                <MudTh Style="text-align:right">
+                    @if (context.State != ScriptJobState.Running)
+                    {
+                        <MudTooltip Delay="500" Text="Run job">
+                            <MudIconButton Icon=@Icons.Material.Filled.PlayArrow OnClick="() => OpenRunJobDialog(context)" Style="margin-right: 4px" />
+                        </MudTooltip>
+                        <MudTooltip Delay="500" Text="Edit job">
+                            <MudIconButton Icon=@Icons.Material.Filled.Edit OnClick="() => GoToEditJobPage(context)" Style="margin-right: 4px" />
+                        </MudTooltip>
+                    }
+                    else
+                    {
+                        <MudTooltip Delay="500" Text="Cancel job">
+                            <MudIconButton Icon=@Icons.Material.Filled.Stop OnClick="() => OpenCancelJobDialog(context)" Style="margin-right: 4px" />
+                        </MudTooltip>
+                        <MudIconButton Icon=@Icons.Material.Filled.EditOff Style="margin-right: 4px" />
+                    }
+                    <MudTooltip Delay="500" Text="Delete job">
+                        <MudIconButton Icon=@Icons.Material.Filled.Delete OnClick="() => OpenDeleteJobDialog(context.Name)" />
+                    </MudTooltip>
+                </MudTh>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager PageSizeOptions=@s_pageSizeOptions />
+            </PagerContent>
+        </MudTable>
+    </div>
+</PageContainer>

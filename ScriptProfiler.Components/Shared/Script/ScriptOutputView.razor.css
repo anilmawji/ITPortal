@@ -1,0 +1,29 @@
+#output-container {
+    width: 100%;
+    height: calc(100vh - 510px);
+    min-height: 240px;
+    border: solid 1px #D2D2D2;
+    border-radius: 8px;
+    padding: 24px;
+    background-color: rgba(0,0,0,.02);
+    /* allow text highlighing of script contents */
+    user-select: text;
+    -moz-user-select: text;
+    -webkit-user-select: text;
+    -ms-user-select: text;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+.scroll {
+    scrollbar-width: auto;
+    overflow-y: scroll !important;
+    overflow-x: hidden;
+    background-color: blue;
+}
+
+.output-message {
+    font-size: 16px;
+}

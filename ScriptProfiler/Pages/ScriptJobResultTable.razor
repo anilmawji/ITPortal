@@ -1,0 +1,56 @@
+﻿@using ScriptProfiler.Lib.Services
+@using ScriptProfiler.Lib.Automation
+@using ScriptProfiler.Lib.Automation.Job
+
+@attribute [Route(PageRoute.ScriptJobResults)]
+@attribute [AllowAnonymous]
+
+@inject IScriptJobService ScriptJobService
+@inject ISerializationService<ScriptJob> ScriptJobSerializer
+@inject ISerializationService<ScriptJobResult> ScriptJobResultSerializer
+@inject NavigationManager NavigationManager
+
+<PageContainer Title="PowerShell Job Results" Description="View job execution results">
+    <div class="table-container">
+        <MudTable T="ScriptJobResult" Items=@ScriptJobService.JobResults Dense="true" Hover="true" FixedHeader="true"
+                  Filter="new Func<ScriptJobResult, bool>(FilterJobResultFunc)" OnRowClick=@GoToJobResultDetailsPage Height="calc(100% - 100px)">
+            <ToolBarContent>
+                <MudTextField @bind-Value=@_searchString Placeholder=@($"Search {ScriptJobService.JobResults.Count} items...")
+                              Adornment="Adornment.Start" AdornmentIcon=@Icons.Material.Filled.Search IconSize="Size.Medium" Class="mt-0"></MudTextField>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<ScriptJobResult, object>(x=>x.Id)">Id</MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<ScriptJobResult, object>(x=>x.JobName)">Job</MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<ScriptJobResult, object>(x=>x.DeviceName)">Device</MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<ScriptJobResult, object>(x=>x.ExecutionState)">Status</MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<ScriptJobResult, object>(x=>x.ExecutionTime)">Execution Time</MudTableSortLabel>
+                </MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTh DataLabel="Id">@context.Id</MudTh>
+                <MudTh DataLabel="Job">@context.JobName</MudTh>
+                <MudTh DataLabel="Device">@context.DeviceName</MudTh>
+                <MudTh DataLabel="Status">
+                    <ScriptExecutionStateChip Result=@context />
+                </MudTh>
+                <MudTh DataLabel="ExecutionTime">
+                    <MudChip T="string" Variant="Variant.Text" Size="Size.Medium" Icon="@Icons.Material.Filled.CalendarMonth" Label="true">
+                        @context.ExecutionTime
+                    </MudChip>
+                </MudTh>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager PageSizeOptions=@s_pageSizeOptions />
+            </PagerContent>
+        </MudTable>
+    </div>
+</PageContainer>

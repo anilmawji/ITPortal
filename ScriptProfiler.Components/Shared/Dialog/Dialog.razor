@@ -1,0 +1,20 @@
+﻿@using ScriptProfiler.Components.Models.Dialog
+
+@inherits DialogBase
+
+<MudDialog>
+    <DialogContent>
+        @if (ChildContent != null)
+        {
+            <div>@ChildContent</div>
+        }
+        else
+        {
+            <MudText>@ContentText</MudText>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick=@Cancel>Cancel</MudButton>
+        <MudButton Color=@Color Variant="Variant.Filled" OnClick=@Submit>@SubmitButtonText</MudButton>
+    </DialogActions>
+</MudDialog>
