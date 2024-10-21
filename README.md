@@ -60,7 +60,7 @@ I recommend using [Visual Studio 2022](https://visualstudio.microsoft.com/vs/) o
 
 ## 🚀 Deploying
 
-Ship the app so it can run independently of your IDE and the .NET SDK (Windows only)
+Ship the app as an executable so it can run independently of your IDE and the .NET SDK (Windows only)
 
    ```sh
    dotnet publish -f net8.0-windows10.0.19041.0 -c Release -p:RuntimeIdentifierOverride=win10-x64 -p:WindowsPackageType=None -p:WindowsAppSDKSelfContained=true
