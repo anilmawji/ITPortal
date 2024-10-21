@@ -5,7 +5,10 @@
   PowerShell Script Profiler
 </h1>
 <p align="center">
-  Microsoft-centered desktop application for IT Administrators to manage and execute PowerShell scripts, built with <a href="https://learn.microsoft.com/en-us/dotnet/maui/what-is-maui?view=net-maui-8.0">.NET MAUI Blazor Hybrid</a>
+  Microsoft-centered desktop application for IT Administrators to manage, execute and monitor PowerShell scripts.
+</p>
+<p align="center">
+  Built with <a href="https://learn.microsoft.com/en-us/dotnet/maui/what-is-maui?view=net-maui-8.0">.NET MAUI Blazor Hybrid</a>
 </p>
 
 ![demo](https://github.com/anilmawji/PowerShell-Script-Runner/assets/36245645/9c2ef69e-27a2-4085-b594-82332d4d4272)
@@ -13,16 +16,23 @@
 ## ✨ Features
 
 - Dynamically generate modern UI to interact with PowerShell script blocks
-- Import, track, schedule and execute scripts locally
+- Import, track, and execute scripts locally
 - Authenticate with Microsoft to securely request and feed access tokens to scripts from Azure Key Vault
 - Save and load script jobs via a portable JSON format.
 - Store and compare execution results
-- Worry-free script management system automatically loads script jobs from disk next time the application starts
+- Automatic logging and division between standard output, warnings, and errors when running scripts
+- Worry-free script management system that automatically loads script jobs from disk whenever the application starts
 
 ## 🖥️ Supported Platforms
 
 - Currently, only Windows is officially supported.
 - macOS support will be added in a future update.
+
+## 📌 Roadmap
+
+- Ability to schedule the execution of script jobs so they can run at a specified date & time.
+- I am currently in the middle of abstracting the script execution pipeline from the PowerShell runtine environment. This will allow other types of scripts (Python, Bash) to eventually be supported as well.
+- Mac Catalyst integration for macOS users.
 
 ## 🔗 Dependencies
 
