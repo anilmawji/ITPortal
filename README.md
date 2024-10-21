@@ -10,7 +10,7 @@
 
 ![jobs](https://github.com/anilmawji/ITPortal/assets/36245645/f1152d13-a7a1-4705-957e-e21470831d8e)
 
-## Features
+## ✨ Features
 
 - Dynamically generate modern UI to interact with PowerShell script blocks
 - Import, track, schedule and execute scripts locally
