@@ -23,13 +23,13 @@
 
 This project runs on .NET 8.0. Make sure to install it [here](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)  before attempting to build.
 
-I recommend using [Visual Studio 2022](https://visualstudio.microsoft.com/vs/) to build and deploy the app, though you might be able to get away with VSCode instead.
-
 ## 🛠 Building and Running
 
 This project is still in active development, but feel free to download and play around with it yourself!
 
 As of now, Windows is the only officially supported platform. macOS is currently unsupported, though support will arrive in a future update.
+
+I recommend using [Visual Studio 2022](https://visualstudio.microsoft.com/vs/) to build and deploy the app, though you might be able to get away with VSCode instead.
 
 1. Clone the git repo
 
