@@ -5,7 +5,7 @@
   PowerShell Script Profiler
 </h1>
 <p align="center">
-  Microsoft-centered desktop application for IT Administrators, built with <a href="https://learn.microsoft.com/en-us/dotnet/maui/what-is-maui?view=net-maui-8.0">.NET MAUI Blazor Hybrid</a>
+  Microsoft-centered desktop application for IT Administrators to manage and execute PowerShell scripts, built with <a href="https://learn.microsoft.com/en-us/dotnet/maui/what-is-maui?view=net-maui-8.0">.NET MAUI Blazor Hybrid</a>
 </p>
 
 ![demo](https://github.com/anilmawji/PowerShell-Script-Runner/assets/36245645/9c2ef69e-27a2-4085-b594-82332d4d4272)
@@ -66,14 +66,19 @@ Ship the app as an executable so it can run independently of your IDE and the .N
    dotnet publish -f net8.0-windows10.0.19041.0 -c Release -p:RuntimeIdentifierOverride=win10-x64 -p:WindowsPackageType=None -p:WindowsAppSDKSelfContained=true
    ```
 
-## Screenshots
+## 📸 Screenshots
 
+Login Screen
 ![login](https://github.com/anilmawji/ITPortal/assets/36245645/6e43a489-54a7-4bd1-a095-26491ef70cd1)
 
+Script Job List
 ![jobs](https://github.com/anilmawji/ITPortal/assets/36245645/f1152d13-a7a1-4705-957e-e21470831d8e)
 
+Script Job Editor
 ![job-editor](https://github.com/anilmawji/ITPortal/assets/36245645/497aac0f-5988-47a8-85b9-d6892e7dc5a7)
 
+Script Job Executions List
 ![job-results](https://github.com/anilmawji/ITPortal/assets/36245645/15aafb8b-ca2f-486c-b8a0-58b41d081699)
 
+Script Execution Details
 ![270132945-4dc0608b-5444-491c-a28c-46947a642723](https://github.com/anilmawji/PowerShell-Script-Runner/assets/36245645/55984ffd-a996-4ed5-9d63-65803e94ca92)
