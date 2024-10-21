@@ -8,7 +8,7 @@
   Microsoft-centered desktop application for IT Administrators, built with <a href="https://learn.microsoft.com/en-us/dotnet/maui/what-is-maui?view=net-maui-8.0">.NET MAUI Blazor Hybrid</a>
 </p>
 
-![jobs](https://github.com/anilmawji/ITPortal/assets/36245645/f1152d13-a7a1-4705-957e-e21470831d8e)
+![demo](https://github.com/anilmawji/PowerShell-Script-Runner/assets/36245645/9c2ef69e-27a2-4085-b594-82332d4d4272)
 
 ## ✨ Features
 
@@ -66,11 +66,11 @@ Ship the app as an executable so it can run independently of your IDE and the .N
    dotnet publish -f net8.0-windows10.0.19041.0 -c Release -p:RuntimeIdentifierOverride=win10-x64 -p:WindowsPackageType=None -p:WindowsAppSDKSelfContained=true
    ```
 
-## Demo
-
-![script-demo](https://github.com/anilmawji/PowerShell-Script-Runner/assets/36245645/9c2ef69e-27a2-4085-b594-82332d4d4272)
+## Screenshots
 
 ![login](https://github.com/anilmawji/ITPortal/assets/36245645/6e43a489-54a7-4bd1-a095-26491ef70cd1)
+
+![jobs](https://github.com/anilmawji/ITPortal/assets/36245645/f1152d13-a7a1-4705-957e-e21470831d8e)
 
 ![job-editor](https://github.com/anilmawji/ITPortal/assets/36245645/497aac0f-5988-47a8-85b9-d6892e7dc5a7)
 
