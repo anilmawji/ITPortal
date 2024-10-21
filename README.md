@@ -5,7 +5,7 @@
   PowerShell Script Profiler
 </h1>
 <p align="center">
-  Microsoft-centered desktop application for IT Administrators, built with .NET MAUI Blazor Hybrid.
+  Microsoft-centered desktop application for IT Administrators, built with <a href="https://learn.microsoft.com/en-us/dotnet/maui/what-is-maui?view=net-maui-8.0">.NET MAUI Blazor Hybrid</a>
 </p>
 
 ![jobs](https://github.com/anilmawji/ITPortal/assets/36245645/f1152d13-a7a1-4705-957e-e21470831d8e)
@@ -23,11 +23,13 @@
 
 This project runs on .NET 8.0. Make sure to install it [here](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)  before attempting to build.
 
+I recommend using [Visual Studio 2022](https://visualstudio.microsoft.com/vs/) to build and deploy the app, though you might be able to get away with VSCode instead.
+
 ## 🛠 Building and Running
 
 This project is still in active development, but feel free to download and play around with it yourself!
 
-As of now, Windows is the only officially supported platform. macOS is currently unsupported. Support will arrive in a future update.
+As of now, Windows is the only officially supported platform. macOS is currently unsupported, though support will arrive in a future update.
 
 1. Clone the git repo
 
@@ -47,7 +49,7 @@ As of now, Windows is the only officially supported platform. macOS is currently
    dotnet build
    ```
 
-4. Run (Windows)
+4. Run (Windows only)
 
    ```sh
    dotnet run --framework net8.0-windows10.0.19041.0
@@ -55,7 +57,7 @@ As of now, Windows is the only officially supported platform. macOS is currently
 
 ## 🚀 Deploying
 
-Ship the app so it can run independently of your IDE and the .NET SDK (Windows)
+Ship the app so it can run independently of your IDE and the .NET SDK (Windows only)
 
    ```sh
    dotnet publish -f net8.0-windows10.0.19041.0 -c Release -p:RuntimeIdentifierOverride=win10-x64 -p:WindowsPackageType=None -p:WindowsAppSDKSelfContained=true
