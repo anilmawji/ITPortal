@@ -158,7 +158,8 @@ public sealed partial class ScriptJobEditor
                 ScriptJobService.Jobs.ReplaceJob(job);
             }
         }
-        NavigationManager.NavigateTo(PageRoute.ScriptJobs);
+        NavigationManager.NavigateTo("/");
+        //NavigationManager.NavigateTo(PageRoute.ScriptJobs);
     }
 
     private async Task TrySaveJob()
@@ -186,6 +187,7 @@ public sealed partial class ScriptJobEditor
         string filePath = ScriptJobSerializer.GetFilePath(_job.Name);
         ScriptJobSerializer.TryCreateFile(_job, filePath);
 
-        NavigationManager.NavigateTo(PageRoute.ScriptJobs);
+        NavigationManager.NavigateTo("/");
+        //NavigationManager.NavigateTo(PageRoute.ScriptJobs);
     }
 }
