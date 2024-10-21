@@ -1,16 +1,67 @@
-# PowerShell Script Profiler
+<div align="center">
+  <img alt="logo" src="ScriptProfiler/Resources/Images/powershell_red.svg" width="80" />
+</div>
+<h1 align="center">
+  PowerShell Script Profiler
+</h1>
+<p align="center">
+  Microsoft-centered desktop application for IT Administrators, built with .NET MAUI Blazor Hybrid.
+</p>
 
-Microsoft-focused desktop application for IT Administrators, made with .NET MAUI Blazor Hybrid.
-- Dynamically generates modern UI to interact with PowerShell script blocks
+![jobs](https://github.com/anilmawji/ITPortal/assets/36245645/f1152d13-a7a1-4705-957e-e21470831d8e)
+
+# Features
+
+- Dynamically generate modern UI to interact with PowerShell script blocks
 - Import, track, schedule and execute scripts locally
-- Authenticate with Microsoft to automatically request and feed access tokens to scripts from Azure Key Vault
-- Saved script jobs are JSON-serialized before being written to disk, and automatically loaded in when the program restarts
+- Authenticate with Microsoft to securely request and feed access tokens to scripts from Azure Key Vault
+- Save and load script jobs via a portable JSON format.
+- Store and compare execution results
+- Worry-free script management system automatically loads script jobs from disk next time the application starts
+
+## 🛠 Building and Running
+
+This project is still in active development, but feel free to download and play around with it yourself!
+
+As of now, Windows is the only officially supported platform. Support for macOS will eventually arrive in a future update.
+
+1. Clone the git repo
+
+   ```sh
+   git clone https://github.com/anilmawji/PowerShell-Script-Profiler.git
+   ```
+
+2. Enter project directory
+
+   ```sh
+   cd "PowerShell-Script-Profiler\ScriptProfiler"
+   ```
+
+3. Build application
+
+   ```sh
+   dotnet build
+   ```
+
+4. Run (Windows)
+
+   ```sh
+   dotnet run --framework net8.0-windows10.0.19041.0
+   ```
+
+## 🚀 Deploying
+
+Ship the app so it can run idependently of your IDE and the .NET SDK (Windows)
+
+   ```sh
+   dotnet publish -f net8.0-windows10.0.19041.0 -c Release -p:RuntimeIdentifierOverride=win10-x64 -p:WindowsPackageType=None -p:WindowsAppSDKSelfContained=true
+   ```
+
+## Demo
 
 ![script-demo](https://github.com/anilmawji/PowerShell-Script-Runner/assets/36245645/9c2ef69e-27a2-4085-b594-82332d4d4272)
 
 ![login](https://github.com/anilmawji/ITPortal/assets/36245645/6e43a489-54a7-4bd1-a095-26491ef70cd1)
-
-![jobs](https://github.com/anilmawji/ITPortal/assets/36245645/f1152d13-a7a1-4705-957e-e21470831d8e)
 
 ![job-editor](https://github.com/anilmawji/ITPortal/assets/36245645/497aac0f-5988-47a8-85b9-d6892e7dc5a7)
 
