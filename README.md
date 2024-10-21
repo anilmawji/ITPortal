@@ -29,7 +29,7 @@ This project is still in active development, but feel free to download and play 
 
 As of now, Windows is the only officially supported platform. macOS is currently unsupported, though support will arrive in a future update.
 
-I recommend using [Visual Studio 2022](https://visualstudio.microsoft.com/vs/) to build and deploy the app, though you might be able to get away with VSCode instead.
+I recommend using [Visual Studio 2022](https://visualstudio.microsoft.com/vs/) or greater to build and deploy the app, though you might be able to get away with VSCode instead.
 
 1. Clone the git repo
 
