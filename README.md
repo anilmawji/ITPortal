@@ -15,13 +15,17 @@
 
 ## ✨ Features
 
-- Dynamically generate modern UI to interact with PowerShell script blocks
-- Import, track, and execute scripts locally
-- Authenticate with Microsoft to securely request and feed access tokens to scripts from Azure Key Vault
-- Save and load script jobs via a portable JSON format.
-- Store and compare execution results
-- Automatic logging and division between standard output, warnings, and errors when running scripts
-- Worry-free script management system that automatically loads script jobs from disk whenever the application starts
+- **Dynamic, User-Friendly Interface**: Interact with your scripts using a modern, intuitive UI, allowing for easy parameter entry and editing.
+
+- **Seamless Authentication with Microsoft Azure**: Authenticate with Microsoft Entra ID to securely request and feed access tokens to scripts from Azure Key Vault.
+
+- **Portable Script Management**: Save and load script jobs via a portable JSON format, allowing easy transfer between different environments.
+
+- **Execution Results at Your Fingertips**: Store and compare previous execution results to track performance and troubleshoot with ease.
+
+- **Comprehensive Logging**: View automatically categorized script outputs, clearly distinguishing between standard output, warnings, and errors for easier debugging and analysis.
+
+- **Effortless Script Management**: Enjoy a hassle-free experience as the application automatically loads script jobs from disk on startup, so you’re always ready to run scripts without having to reconfigure settings.
 
 ## 🖥️ Supported Platforms
 
