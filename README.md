@@ -13,7 +13,7 @@
 
 ![demo](https://github.com/anilmawji/PowerShell-Script-Runner/assets/36245645/9c2ef69e-27a2-4085-b594-82332d4d4272)
 
-## ✨ Features
+## Features
 
 - Interact with your scripts using a modern, intuitive UI, allowing for easy parameter entry and editing.
 
@@ -27,18 +27,18 @@
 
 - Enjoy a hassle-free experience as saved script jobs are automatically loaded from disk on startup
 
-## 🖥️ Supported Platforms
+## Supported Platforms
 
 - Currently, only Windows is officially supported.
 - macOS support will be added in a future update.
 
-## 📌 Roadmap
+## Roadmap
 
 - Ability to schedule the execution of script jobs so they can run at a specified date & time.
 - I am currently in the middle of abstracting the script execution pipeline from the PowerShell runtine environment. This will allow other types of scripts (Python, Bash) to eventually be supported as well.
 - Mac Catalyst integration for macOS users.
 
-## 🔗 Dependencies
+## Dependencies
 
 This project runs on .NET 8.0. Make sure to install it [here](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)  before attempting to build.
 
@@ -72,7 +72,7 @@ I recommend using [Visual Studio 2022](https://visualstudio.microsoft.com/vs/) o
    dotnet run --framework net8.0-windows10.0.19041.0
    ```
 
-## 🚀 Deploying
+## Deploying
 
 Ship the app as an executable so it can run independently of your IDE and the .NET SDK (Windows only)
 
@@ -80,7 +80,7 @@ Ship the app as an executable so it can run independently of your IDE and the .N
    dotnet publish -f net8.0-windows10.0.19041.0 -c Release -p:RuntimeIdentifierOverride=win10-x64 -p:WindowsPackageType=None -p:WindowsAppSDKSelfContained=true
    ```
 
-## 📸 Screenshots
+## Screenshots
 
 Login Screen
 ![270132929-6e43a489-54a7-4bd1-a095-26491ef70cd1](https://github.com/user-attachments/assets/e68a8af0-cff3-47f7-b49c-e0687e0ff109)
