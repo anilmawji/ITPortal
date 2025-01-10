@@ -35,7 +35,6 @@
 ## Roadmap
 
 - Ability to schedule the execution of script jobs so they can run at a specified date & time.
-- I am currently in the middle of abstracting the script execution pipeline from the PowerShell runtine environment. This will allow other types of scripts (Python, Bash) to eventually be supported as well.
 - Mac Catalyst integration for macOS users.
 
 ## Dependencies
