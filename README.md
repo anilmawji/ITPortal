@@ -41,7 +41,7 @@
 
 This project runs on .NET 8.0. Make sure to install it [here](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)  before attempting to build.
 
-## 🛠 Building and Running
+## Building and Running
 
 This project is still in active development, but feel free to download and play around with it yourself!
 
